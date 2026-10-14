@@ -395,8 +395,13 @@ describe('EpisodeVideoComponent', () => {
       expect(currentUrl()).toBe('/3/quiz');
     });
 
-    it('goes to the completion screen after the resolution', async () => {
-      await showVideo('?videoType=resolution');
+    it('goes to the completion screen after the answer to the last question', async () => {
+      const [question] = episode.questions;
+      episodeService.setEpisode({
+        ...episode,
+        questions: [question, question, question, question],
+      });
+      await showVideo('?videoType=answer&question=3');
 
       emit('ended');
       await harness.fixture.whenStable();
