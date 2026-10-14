@@ -43,7 +43,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: any) => {
-          if (event.url.includes('/quiz')) {
+          if (this.isQuizScreen(event.url)) {
             this.audioService.playBackgroundMusic(
               '/audio/Guitar Background Mini_QUIZ.mp3',
             );
@@ -73,6 +73,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
 
   private isVideoScreen(url: string): boolean {
     return url.includes('/video');
+  }
+
+  private isQuizScreen(url: string): boolean {
+    return url.includes('/quiz');
   }
 
   private loadEpisode(episodeNumber: number) {
