@@ -303,17 +303,17 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
-    it('displays the screen background', fakeAsync(() => {
+    it('displays the parchment as a background', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
       expect(host().classList).toContain('screen');
       expect(
         host().style.getPropertyValue('--screen-background-landscape'),
-      ).toBe('url("/images/landscape/Ecran_UI.jpg")');
+      ).toBe('url("/images/Parchemin_questions.jpg")');
       expect(
         host().style.getPropertyValue('--screen-background-portrait'),
-      ).toBe('url("/images/portrait/Ecran_UI.jpg")');
+      ).toBe('url("/images/Parchemin_questions.jpg")');
       expect(
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
