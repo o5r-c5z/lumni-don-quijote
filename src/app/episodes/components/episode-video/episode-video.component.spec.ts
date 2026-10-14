@@ -350,6 +350,12 @@ describe('EpisodeVideoComponent', () => {
       expect(links(host)).toEqual([['Retourner au quiz', '/3/quiz']]);
     });
 
+    it('has no axe violation during a clue', async () => {
+      const host = await showVideo('?videoType=clue&clue=0');
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
+
     it('is absent during the resolution', async () => {
       const host = await showVideo('?videoType=resolution');
 
