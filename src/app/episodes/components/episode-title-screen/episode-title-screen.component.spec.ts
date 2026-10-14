@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { axeViolations } from '../../../../testing/axe';
 import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { EpisodeTitleScreenComponent } from './episode-title-screen.component';
@@ -157,6 +158,13 @@ describe('EpisodeTitleScreenComponent', () => {
 
       expect(host.querySelector('h1')?.textContent).toBe('Le vol');
       expect(document.activeElement).toBe(links(host)[0]);
+    });
+
+    it('has no axe violation', async () => {
+      episodeService.setEpisode(createEpisode('La disparition'));
+      const host = await showTitleScreen();
+
+      expect(await axeViolations(host)).toEqual([]);
     });
   });
 });
