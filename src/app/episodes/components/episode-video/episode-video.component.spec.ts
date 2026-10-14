@@ -361,6 +361,12 @@ describe('EpisodeVideoComponent', () => {
 
       expect(links(host)).toEqual([]);
     });
+
+    it('has no axe violation during the resolution', async () => {
+      const host = await showVideo('?videoType=resolution');
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
   });
 
   describe('at the end of the video', () => {
