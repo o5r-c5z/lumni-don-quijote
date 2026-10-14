@@ -1,6 +1,0 @@
----
-description: Enforce accesibility in the ts files
-globs: *.ts
----
-
-- When a part of a form is hidden and another part is shown, the focus should be put on the first element of the newly shown part
