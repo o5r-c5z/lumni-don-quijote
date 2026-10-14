@@ -52,7 +52,9 @@ export class AudioService implements OnDestroy {
 
   playBackgroundMusic(audioSource: string): void {
     if (this.backgroundMusic && audioSource === this.backgroundMusicSource) {
-      this.play(false);
+      if (!this.isPlayingSubject.value) {
+        this.play(false);
+      }
       return;
     }
     this.backgroundMusicSource = audioSource;
