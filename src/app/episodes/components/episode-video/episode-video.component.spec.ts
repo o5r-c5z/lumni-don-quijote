@@ -151,7 +151,7 @@ describe('EpisodeVideoComponent', () => {
       ['', 'https://vimeo.com/500'],
       ['?videoType=unknown', 'https://vimeo.com/500'],
       ['?videoType=introduction', 'https://vimeo.com/500'],
-      ['?videoType=pedagogicalConcept', 'https://vimeo.com/200'],
+      ['?videoType=lesson', 'https://vimeo.com/600'],
       ['?videoType=clue&clue=0', 'https://vimeo.com/300'],
       ['?videoType=clue&clue=1', 'https://vimeo.com/301'],
       ['?videoType=resolution', 'https://vimeo.com/400'],
@@ -240,12 +240,12 @@ describe('EpisodeVideoComponent', () => {
       episodeService.setEpisode(episode);
 
       // Each episode emission adds a subscription to the query parameters.
-      await harness.navigateByUrl('/3/video?videoType=pedagogicalConcept');
+      await harness.navigateByUrl('/3/video?videoType=lesson');
 
       expect(requestedVideos()).toEqual([
         'https://vimeo.com/500',
-        'https://vimeo.com/200',
-        'https://vimeo.com/200',
+        'https://vimeo.com/600',
+        'https://vimeo.com/600',
       ]);
       expect(playerDestroy).toHaveBeenCalledTimes(2);
     });
