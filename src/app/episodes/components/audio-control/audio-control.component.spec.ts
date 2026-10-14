@@ -328,4 +328,19 @@ describe('AudioControlComponent', () => {
 
     expect(await axeViolations(host)).toEqual([]);
   });
+
+  it('has no axe violation while the music is muted', async () => {
+    // Same as above: the mock clock captures the hint timers started on
+    // display and on toggle.
+    jasmine.clock().install();
+    try {
+      createComponent();
+      button()!.click();
+      fixture.detectChanges();
+    } finally {
+      jasmine.clock().uninstall();
+    }
+
+    expect(await axeViolations(host)).toEqual([]);
+  });
 });
