@@ -141,13 +141,16 @@ export class EpisodeQuizComponent implements OnInit {
         fieldset.disabled = true;
       }
 
-      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement);
+      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
       this.handleIncorrectAnswer(correction);
     }
   }
 
-  private handleCorrectAnswer(fieldset: HTMLFieldSetElement): void {
+  private handleCorrectAnswer(
+    fieldset: HTMLFieldSetElement,
+    questionIndex: number,
+  ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
 
     timer(2000)
@@ -161,6 +164,11 @@ export class EpisodeQuizComponent implements OnInit {
           if (this.episodeService.isQuizComplete()) {
             this.router.navigate(['../video'], {
               queryParams: { videoType: 'resolution' },
+              relativeTo: this.route,
+            });
+          } else {
+            this.router.navigate(['../video'], {
+              queryParams: { videoType: 'answer', question: questionIndex },
               relativeTo: this.route,
             });
           }
