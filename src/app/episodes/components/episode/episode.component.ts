@@ -43,6 +43,11 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: any) => {
+          if (event.url.includes('/quiz')) {
+            this.audioService.playBackgroundMusic(
+              '/audio/Guitar Background Mini_QUIZ.mp3',
+            );
+          }
           if (!this.isVideoScreen(event.url)) {
             if (!this.audioService.isPlaying()) {
               this.audioService.play(false);
