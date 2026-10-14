@@ -283,7 +283,7 @@ describe('EpisodeQuizComponent', () => {
       expect(document.activeElement).toBe(radios(first)[0]);
     }));
 
-    it('links to the lesson and to each clue video', fakeAsync(() => {
+    it('links only to the lesson of Rossinante', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
@@ -298,17 +298,7 @@ describe('EpisodeQuizComponent', () => {
         [
           'Revoir la leçon de Rossinante',
           null,
-          '/3/video?videoType=pedagogicalConcept',
-        ],
-        [
-          'Revoir indice 1',
-          'Revoir indice 1',
-          '/3/video?videoType=clue&clue=0',
-        ],
-        [
-          'Revoir indice 2',
-          'Revoir indice 2',
-          '/3/video?videoType=clue&clue=1',
+          '/3/video?videoType=lesson',
         ],
       ]);
     }));
