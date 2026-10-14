@@ -86,20 +86,8 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
 
           this.videoType = params['videoType'];
           switch (this.videoType) {
-            case VideoType.PedagogicalConcept:
-              this.video = this.episode?.pedagogicalConcept;
-              break;
             case VideoType.Lesson:
               this.video = this.episode?.lesson;
-              break;
-            case VideoType.Clue:
-              const clueNumber = params['clue'];
-              if (clueNumber) {
-                this.video = this.episode?.clues[clueNumber];
-              }
-              break;
-            case VideoType.Resolution:
-              this.video = this.episode?.resolution;
               break;
             case VideoType.Answer:
               this.video =
@@ -168,11 +156,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private onVideoEnded() {
     switch (this.videoType) {
       case VideoType.Lesson:
-      case VideoType.Clue:
         this.goToQuiz();
-        break;
-      case VideoType.Resolution:
-        this.goToCompletion();
         break;
       case VideoType.Answer:
         this.navigateTo(this.pathAfterAnswer());
@@ -208,10 +192,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     this.navigateTo(QUIZ_PATH);
   }
 
-  private goToCompletion() {
-    this.navigateTo(COMPLETION_PATH);
-  }
-
   private navigateTo(path: string) {
     this.router.navigate([path], { relativeTo: this.route });
   }
@@ -243,15 +223,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     this.initializePlayer();
     this.audioService.pause();
     this.announcementService.announce('Redémarrage de la vidéo');
-    this.player?.play();
-  }
-
-  protected goToPedagogicalConcept() {
-    this.videoEnded = false;
-    this.audioService.pause();
-    this.announcementService.announce(
-      'Changement vers la vidéo du concept pédagogique',
-    );
     this.player?.play();
   }
 }

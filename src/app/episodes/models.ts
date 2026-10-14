@@ -6,10 +6,6 @@ export interface Episode {
   };
   introduction: Video;
   lesson: Video;
-  investigation: Video;
-  pedagogicalConcept: Video;
-  clues: Video[];
-  resolution: Video;
   questions: QuizQuestion[];
 }
 
@@ -26,10 +22,6 @@ export interface QuizQuestion {
 }
 
 export enum VideoType {
-  Investigation = 'investigation',
-  PedagogicalConcept = 'pedagogicalConcept',
   Lesson = 'lesson',
-  Clue = 'clue',
-  Resolution = 'resolution',
   Answer = 'answer',
 }

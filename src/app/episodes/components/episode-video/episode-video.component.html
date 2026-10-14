@@ -8,7 +8,7 @@
     >
       Passer la vidéo
     </a>
-  } @else if (videoType !== VideoType.Resolution) {
+  } @else {
     <a
       id="episode-video__exit-btn"
       class="btn btn-plain"
@@ -16,11 +16,7 @@
       [routerLink]="[exitLink]"
       tabindex="0"
     >
-      @if (videoType === VideoType.Clue) {
-        Retourner au quiz
-      } @else {
-        Passer la vidéo
-      }
+      Passer la vidéo
     </a>
   }
 } @else {
@@ -40,15 +36,5 @@
       <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
       Revoir toute la vidéo
     </button>
-    @if (videoType !== VideoType.PedagogicalConcept) {
-      <a
-        class="btn btn-plain"
-        [routerLink]="['../video']"
-        [queryParams]="{ videoType: VideoType.PedagogicalConcept }"
-      >
-        <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
-        Revoir la leçon de Rossinante
-      </a>
-    }
   </nav>
 }
