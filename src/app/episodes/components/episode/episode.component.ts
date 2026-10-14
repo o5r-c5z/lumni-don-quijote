@@ -33,7 +33,9 @@ export class EpisodeComponent implements OnInit, OnDestroy {
     );
 
     this.audioService.play();
-    this.audioService.playBackgroundMusic('/audio/Entertainment_FOND_SONORE.mp3');
+    this.audioService.playBackgroundMusic(
+      '/audio/Entertainment_FOND_SONORE.mp3',
+    );
 
     this.subscriptions.add(
       this.router.events
