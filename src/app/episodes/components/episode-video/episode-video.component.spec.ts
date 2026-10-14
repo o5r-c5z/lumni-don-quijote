@@ -280,6 +280,14 @@ describe('EpisodeVideoComponent', () => {
       expect(document.activeElement).toBe(iframe);
     });
 
+    it('leaves the player container as a plain container', () => {
+      // The iframe carries its own title: a landmark around it is redundant.
+      const container = playerContainer(host);
+
+      expect(container.getAttribute('role')).toBeNull();
+      expect(container.getAttribute('aria-label')).toBeNull();
+    });
+
     it('announces when the video plays and pauses', () => {
       audioService.pause.calls.reset();
 
