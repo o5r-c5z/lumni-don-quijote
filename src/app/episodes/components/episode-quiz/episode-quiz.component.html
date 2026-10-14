@@ -26,7 +26,7 @@
             class="episode-quiz__answer-input cdk-visually-hidden"
             [class.correct]="aIndex === question.correctAnswer"
             [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
-            (change)="checkedAnswers[qIndex] = aIndex"
+            (change)="onCheckAnswer(qIndex, aIndex)"
             [attr.aria-describedby]="
               'question-' + qIndex + '-answer-' + aIndex + '-correction'
             "

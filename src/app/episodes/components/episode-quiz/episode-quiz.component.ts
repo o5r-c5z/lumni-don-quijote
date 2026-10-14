@@ -93,6 +93,10 @@ export class EpisodeQuizComponent implements OnInit {
       });
   }
 
+  protected onCheckAnswer(questionIndex: number, answerIndex: number): void {
+    this.checkedAnswers[questionIndex] = answerIndex;
+  }
+
   protected onValidateAnswer($event: Event) {
     const button = $event.target as HTMLButtonElement;
     const fieldset = button.closest('fieldset');
