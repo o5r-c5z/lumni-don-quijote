@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { axeViolations } from '../../../../testing/axe';
 import { EpisodeService } from '../../services/episode.service';
 import { EpisodeCompletionComponent } from './episode-completion.component';
 
@@ -78,5 +79,9 @@ describe('EpisodeCompletionComponent', () => {
     expect(
       host.style.getPropertyValue('--screen-background-overlay-opacity'),
     ).toBe('0.9');
+  });
+
+  it('has no axe violation', async () => {
+    expect(await axeViolations(host)).toEqual([]);
   });
 });
