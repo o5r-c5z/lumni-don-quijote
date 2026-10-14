@@ -519,5 +519,15 @@ describe('EpisodeVideoComponent', () => {
       expect(linkNamed(host, 'Revoir la leçon de Rossinante')).toBeUndefined();
       expect(host.querySelector('a[href*="pedagogicalConcept"]')).toBeNull();
     });
+
+    it('has no axe violation', async () => {
+      const host = await showVideo();
+      endVideo();
+      jasmine.clock().tick(100);
+      // axe relies on real timers.
+      jasmine.clock().uninstall();
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
   });
 });
