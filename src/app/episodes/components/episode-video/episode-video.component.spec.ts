@@ -150,6 +150,7 @@ describe('EpisodeVideoComponent', () => {
     for (const [query, expected] of [
       ['', 'https://vimeo.com/500'],
       ['?videoType=unknown', 'https://vimeo.com/500'],
+      ['?videoType=introduction', 'https://vimeo.com/500'],
       ['?videoType=pedagogicalConcept', 'https://vimeo.com/200'],
       ['?videoType=clue&clue=0', 'https://vimeo.com/300'],
       ['?videoType=clue&clue=1', 'https://vimeo.com/301'],
