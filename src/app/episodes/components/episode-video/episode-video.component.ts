@@ -174,7 +174,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
         if (this.isBeforeLastQuestion()) {
           this.goToQuiz();
         } else {
-          this.endVideo();
+          this.router.navigate(['../completion'], { relativeTo: this.route });
         }
         break;
       case undefined:
