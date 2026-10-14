@@ -31,4 +31,5 @@ export enum VideoType {
   Lesson = 'lesson',
   Clue = 'clue',
   Resolution = 'resolution',
+  Answer = 'answer',
 }
