@@ -129,6 +129,17 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
+    it('plays the background track again when going from the quiz to the completion screen', async () => {
+      await navigate('/3/quiz');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3/completion');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
+    });
+
     it('leaves it alone on a screen change while it is playing', async () => {
       await navigate('/3');
       audioService.play.calls.reset();
