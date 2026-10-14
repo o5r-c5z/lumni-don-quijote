@@ -7,6 +7,8 @@ function createEpisode(questionCount: number): Episode {
   return {
     title: 'Episode',
     titleBackground: { landscape: 'landscape.jpg', portrait: 'portrait.jpg' },
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     investigation: video,
     pedagogicalConcept: video,
     clues: [video],
@@ -15,6 +17,10 @@ function createEpisode(questionCount: number): Episode {
       label: `Question ${index + 1}`,
       answers: ['A', 'B'],
       correctAnswer: 0,
+      answerVideo: {
+        url: `https://vimeo.com/${10 + index}`,
+        title: `Réponse ${index + 1}`,
+      },
     })),
   };
 }

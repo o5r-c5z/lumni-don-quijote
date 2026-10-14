@@ -14,11 +14,13 @@ const questions: QuizQuestion[] = [
     label: 'Qui a volé le tableau ?',
     answers: ['Le chat', 'Le jardinier', 'Le majordome'],
     correctAnswer: 2,
+    answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
   },
   {
     label: 'Où était-il caché ?',
     answers: ['Au grenier', 'À la cave'],
     correctAnswer: 0,
+    answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
   },
 ];
 
@@ -27,6 +29,8 @@ function createEpisode(quiz = questions): Episode {
   return {
     title: 'La disparition',
     titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     investigation: video,
     pedagogicalConcept: video,
     clues: [{ ...video }, { ...video }],

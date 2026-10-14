@@ -17,6 +17,8 @@ function video(id: number, title: string) {
 const episode: Episode = {
   title: 'La disparition',
   titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+  introduction: video(500, 'Introduction'),
+  lesson: video(600, 'Leçon'),
   investigation: video(100, 'Enquête'),
   pedagogicalConcept: video(200, 'Cours'),
   clues: [video(300, 'Indice 0'), video(301, 'Indice 1')],

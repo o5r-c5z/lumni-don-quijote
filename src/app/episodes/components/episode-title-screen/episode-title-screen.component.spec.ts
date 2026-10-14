@@ -16,6 +16,8 @@ function createEpisode(title: string): Episode {
       landscape: `data:,${title} landscape`,
       portrait: `data:,${title} portrait`,
     },
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     investigation: video,
     pedagogicalConcept: video,
     clues: [video],

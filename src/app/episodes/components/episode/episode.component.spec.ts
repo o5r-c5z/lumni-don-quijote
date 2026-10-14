@@ -14,6 +14,8 @@ function createEpisode(title: string): Episode {
   return {
     title,
     titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     investigation: video,
     pedagogicalConcept: video,
     clues: [video],
