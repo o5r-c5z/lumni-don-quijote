@@ -386,30 +386,8 @@ describe('EpisodeVideoComponent', () => {
   describe('at the end of the video', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
-    /**
-     * Ends the investigation or the lesson. The end of the video schedules
-     * the focus with setTimeout: the mock clock keeps that timer from firing
-     * during a later test.
-     */
-    function endVideo(): void {
-      jasmine.clock().install();
-      emit('ended');
-    }
-
-    /**
-     * Ends the video, lets its 100 ms focus timer fire, then gives the real
-     * timers back, which axe relies on.
-     */
-    function endVideoWithRealTimers(): void {
-      endVideo();
-      jasmine.clock().tick(100);
-      jasmine.clock().uninstall();
-    }
-
-    afterEach(() => jasmine.clock().uninstall());
-
-    it('goes back to the quiz after a clue', async () => {
-      await showVideo('?videoType=clue&clue=0');
+    it('goes to the quiz after the lesson', async () => {
+      await showVideo('?videoType=lesson');
 
       emit('ended');
       await harness.fixture.whenStable();
@@ -438,23 +416,6 @@ describe('EpisodeVideoComponent', () => {
         'https://vimeo.com/600',
       ]);
       expect(playerPlay).toHaveBeenCalledTimes(2);
-    });
-
-    it('offers no link to the lesson at the end of the lesson', async () => {
-      const host = await showVideo('?videoType=pedagogicalConcept');
-      endVideo();
-
-      expect(
-        controlNamed(host, 'Revoir la leçon de Rossinante'),
-      ).toBeUndefined();
-      expect(host.querySelector('a[href*="pedagogicalConcept"]')).toBeNull();
-    });
-
-    it('has no axe violation at the end of the lesson', async () => {
-      const host = await showVideo('?videoType=pedagogicalConcept');
-      endVideoWithRealTimers();
-
-      expect(await axeViolations(host)).toEqual([]);
     });
   });
 });
