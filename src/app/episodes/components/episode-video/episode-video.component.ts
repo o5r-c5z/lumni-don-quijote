@@ -169,6 +169,12 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       case VideoType.Resolution:
         this.router.navigate(['../completion'], { relativeTo: this.route });
         break;
+      case undefined:
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { videoType: VideoType.Lesson },
+        });
+        break;
       default:
         this.videoEnded = true;
         this.destroyPlayer();
