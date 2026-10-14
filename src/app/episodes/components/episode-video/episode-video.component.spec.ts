@@ -533,6 +533,15 @@ describe('EpisodeVideoComponent', () => {
       expect(lessonLink.getAttribute('aria-label')).toBeNull();
     });
 
+    it('names the button to replay the video as its visible text', async () => {
+      const host = await showVideo();
+      endVideo();
+
+      const replayButton = controlNamed(host, 'Revoir toute la vidéo');
+
+      expect(replayButton.getAttribute('aria-label')).toBeNull();
+    });
+
     it('offers no link to the lesson at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
       endVideo();
