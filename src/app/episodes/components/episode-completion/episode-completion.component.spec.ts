@@ -68,13 +68,13 @@ describe('EpisodeCompletionComponent', () => {
     expect(harness.routeNativeElement?.textContent).toBe('Title screen');
   });
 
-  it('displays the investigation table as a mostly hidden background', () => {
+  it('displays the parchment as a mostly hidden background', () => {
     expect(host.classList).toContain('screen');
     expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-      'url("/images/landscape/Table_enquete_UI.jpg")',
+      'url("/images/Parchemin_questions.jpg")',
     );
     expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-      'url("/images/portrait/Table_enquete_UI.jpg")',
+      'url("/images/Parchemin_questions.jpg")',
     );
     expect(
       host.style.getPropertyValue('--screen-background-overlay-opacity'),
