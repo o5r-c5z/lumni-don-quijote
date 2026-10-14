@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Episode, VideoType } from '../../models';
@@ -162,20 +162,24 @@ export class EpisodeQuizComponent implements OnInit {
           this.episodeService.incrementQuizStep();
 
           if (this.episodeService.isQuizComplete()) {
-            this.router.navigate(['../video'], {
-              queryParams: { videoType: 'resolution' },
-              relativeTo: this.route,
-            });
+            this.playVideo({ videoType: VideoType.Resolution });
           } else {
-            this.router.navigate(['../video'], {
-              queryParams: { videoType: 'answer', question: questionIndex },
-              relativeTo: this.route,
+            this.playVideo({
+              videoType: VideoType.Answer,
+              question: questionIndex,
             });
           }
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
+  }
+
+  private playVideo(queryParams: Params): void {
+    this.router.navigate(['../video'], {
+      queryParams,
+      relativeTo: this.route,
+    });
   }
 
   private handleIncorrectAnswer(correction: HTMLElement | null): void {
