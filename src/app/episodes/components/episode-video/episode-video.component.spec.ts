@@ -404,6 +404,15 @@ describe('EpisodeVideoComponent', () => {
       expect(currentUrl()).toBe('/3/completion');
     });
 
+    it('goes to the quiz after the answer to a question before the last', async () => {
+      await showVideo('?videoType=answer&question=0');
+
+      emit('ended');
+      await harness.fixture.whenStable();
+
+      expect(currentUrl()).toBe('/3/quiz');
+    });
+
     it('plays the lesson after the introduction', async () => {
       await showVideo();
 
