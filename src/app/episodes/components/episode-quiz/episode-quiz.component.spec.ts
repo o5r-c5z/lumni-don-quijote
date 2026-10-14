@@ -263,8 +263,8 @@ describe('EpisodeQuizComponent', () => {
         ]),
       ).toEqual([
         [
-          'Revoir le cours d’Owliver',
-          'Revoir le cours d’Owliver',
+          'Revoir la leçon de Rossinante',
+          'Revoir la leçon de Rossinante',
           '/3/video?videoType=pedagogicalConcept',
         ],
         [
