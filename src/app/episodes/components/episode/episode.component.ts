@@ -32,7 +32,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       '/audio/Dark Comedy Ident - Main.mp3',
     );
 
-    if (!this.router.url.includes('/video')) {
+    if (!this.isVideoScreen(this.router.url)) {
       this.audioService.play();
       this.audioService.playBackgroundMusic(
         '/audio/Entertainment_FOND_SONORE.mp3',
@@ -43,10 +43,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: any) => {
-          const url = event.url;
-          const isVideoScreen = url.includes('/video');
-
-          if (!isVideoScreen) {
+          if (!this.isVideoScreen(event.url)) {
             if (!this.audioService.isPlaying()) {
               this.audioService.play(false);
             }
@@ -67,6 +64,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     this.audioService.pause();
+  }
+
+  private isVideoScreen(url: string): boolean {
+    return url.includes('/video');
   }
 
   private loadEpisode(episodeNumber: number) {
