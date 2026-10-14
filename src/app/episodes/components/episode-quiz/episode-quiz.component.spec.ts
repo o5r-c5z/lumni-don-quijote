@@ -486,6 +486,28 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
+    it('has no axe violation once validated', async () => {
+      episodeService.setEpisode(createEpisode());
+      await harness.navigateByUrl('/3/quiz');
+      // Waits out the component's 100 ms timer, after which it reveals the
+      // question and focuses its first answer.
+      await sleep(100);
+
+      // axe needs real timers, so the test cannot be `fakeAsync`: the mock
+      // clock captures the 2 s slide-out timer instead, keeping the
+      // correction shown, and discards it on uninstall rather than letting
+      // it fire during a later test.
+      jasmine.clock().install();
+      try {
+        answer(2);
+        expect(fieldsets()[0].disabled).toBeTrue();
+      } finally {
+        jasmine.clock().uninstall();
+      }
+
+      expect(await axeViolations(host())).toEqual([]);
+    });
+
     it('slides the question out after 2 seconds, then shows the next one', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
