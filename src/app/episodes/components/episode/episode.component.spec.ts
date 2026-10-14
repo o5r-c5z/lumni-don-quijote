@@ -111,10 +111,11 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
-    it('asks to play it even when the episode opens on the video', async () => {
+    it('plays no music when the episode opens on the video', async () => {
       await navigate('/3/video');
 
-      expect(audioService.play.calls.allArgs()).toEqual([[]]);
+      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
+      expect(audioService.play).not.toHaveBeenCalled();
     });
 
     it('resumes it without rewinding on each screen but the video', async () => {
