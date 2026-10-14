@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
+import { sleep } from '../../../../testing/timers';
 import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { EpisodeTitleScreenComponent } from './episode-title-screen.component';
@@ -21,11 +22,6 @@ function createEpisode(title: string): Episode {
     resolution: video,
     questions: [],
   };
-}
-
-/** Lets the pending `setTimeout` callbacks run. */
-function nextMacrotask(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve));
 }
 
 describe('EpisodeTitleScreenComponent', () => {
@@ -48,7 +44,7 @@ describe('EpisodeTitleScreenComponent', () => {
   });
 
   // Lets the focus timer of the last displayed episode run before teardown.
-  afterEach(() => nextMacrotask());
+  afterEach(() => sleep());
 
   async function showTitleScreen(url = '/3'): Promise<HTMLElement> {
     await harness.navigateByUrl(url, EpisodeTitleScreenComponent);
@@ -130,7 +126,7 @@ describe('EpisodeTitleScreenComponent', () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
 
-      await nextMacrotask();
+      await sleep();
 
       expect(document.activeElement).toBe(links(host)[0]);
     });
@@ -140,7 +136,7 @@ describe('EpisodeTitleScreenComponent', () => {
 
       episodeService.setEpisode(createEpisode('La disparition'));
       harness.detectChanges();
-      await nextMacrotask();
+      await sleep();
 
       expect(host.querySelector('h1')?.textContent).toBe('La disparition');
       expect(document.activeElement).toBe(links(host)[0]);
@@ -149,12 +145,12 @@ describe('EpisodeTitleScreenComponent', () => {
     it('shows and focuses again when another episode is set', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
-      await nextMacrotask();
+      await sleep();
       links(host)[1].focus();
 
       episodeService.setEpisode(createEpisode('Le vol'));
       harness.detectChanges();
-      await nextMacrotask();
+      await sleep();
 
       expect(host.querySelector('h1')?.textContent).toBe('Le vol');
       expect(document.activeElement).toBe(links(host)[0]);

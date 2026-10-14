@@ -3,6 +3,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
+import { sleep } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
@@ -300,8 +301,9 @@ describe('EpisodeQuizComponent', () => {
     it('has no axe violation', async () => {
       episodeService.setEpisode(createEpisode());
       await harness.navigateByUrl('/3/quiz');
-      // Lets the slide-in and focus timers of the component run out.
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Waits out the component's 100 ms timer, after which it reveals the
+      // question and focuses its first answer.
+      await sleep(100);
 
       expect(await axeViolations(host())).toEqual([]);
     });

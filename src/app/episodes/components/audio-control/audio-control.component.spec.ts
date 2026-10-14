@@ -316,7 +316,15 @@ describe('AudioControlComponent', () => {
   });
 
   it('has no axe violation while the music plays', async () => {
-    createComponent();
+    // axe needs real timers, so the test cannot be `fakeAsync`: the mock
+    // clock captures the keyboard hint timer instead, and discards it on
+    // uninstall rather than letting it fire during a later test.
+    jasmine.clock().install();
+    try {
+      createComponent();
+    } finally {
+      jasmine.clock().uninstall();
+    }
 
     expect(await axeViolations(host)).toEqual([]);
   });
