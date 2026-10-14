@@ -161,14 +161,10 @@ export class EpisodeQuizComponent implements OnInit {
           fieldset.classList.remove('hiding');
           this.episodeService.incrementQuizStep();
 
-          if (this.episodeService.isQuizComplete()) {
-            this.playVideo({ videoType: VideoType.Resolution });
-          } else {
-            this.playVideo({
-              videoType: VideoType.Answer,
-              question: questionIndex,
-            });
-          }
+          this.playVideo({
+            videoType: VideoType.Answer,
+            question: questionIndex,
+          });
         }),
         takeUntilDestroyed(this.destroyRef),
       )
