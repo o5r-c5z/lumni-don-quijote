@@ -13,6 +13,9 @@ Rossinante » reste accessible depuis les questions.
 - [x] `git merge upstream/main` une fois la roadmap de Biggle terminée
       (tests, `AGENTS.md`, CI)
 - [x] `AGENTS.md` : TDD obligatoire via `tdd:feature`
+- [x] Reprise de la PR #21 de Biggle : test vidéo instable corrigé, build
+      de production (vérification des templates) dans la CI, specs générés
+      par `ng generate`
 
 ## 2. Renommage et textes
 

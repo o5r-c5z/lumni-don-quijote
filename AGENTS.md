@@ -11,14 +11,16 @@ are in English.
 ```sh
 npm install          # dependencies (npm install <package> to add one)
 npm start            # dev server on http://localhost:4200/
-npm run build        # production build
+npm run build        # production build (AOT, type-checks the templates)
 npm test             # unit tests in watch mode (Karma + Jasmine, Chrome)
 npm run test:ci      # unit tests once, headless Chrome
 npm run typecheck    # type check (application code and specs)
 ```
 
-Before pushing, `npm run typecheck` and `npm run test:ci` must pass. The
-GitHub Actions CI runs both on every pull request.
+Before pushing, `npm run typecheck`, `npm run test:ci` and `npm run build`
+must pass. The GitHub Actions CI runs all three on every pull request and on
+`main`. Of the three, only the build type-checks the templates: `tsc` skips
+them and `ng test` compiles them in JIT mode.
 
 ## Tests
 

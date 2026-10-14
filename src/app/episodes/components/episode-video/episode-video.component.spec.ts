@@ -355,6 +355,18 @@ describe('EpisodeVideoComponent', () => {
   describe('at the end of the video', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
+    /**
+     * Ends the investigation or the lesson. The end of the video schedules
+     * the focus with setTimeout: the mock clock keeps that timer from firing
+     * during a later test.
+     */
+    function endVideo(): void {
+      jasmine.clock().install();
+      emit('ended');
+    }
+
+    afterEach(() => jasmine.clock().uninstall());
+
     it('goes back to the quiz after a clue', async () => {
       await showVideo('?videoType=clue&clue=0');
 
@@ -379,12 +391,8 @@ describe('EpisodeVideoComponent', () => {
 
         beforeEach(async () => {
           host = await showVideo(query);
-          // The end of the video schedules the focus with setTimeout.
-          jasmine.clock().install();
-          emit('ended');
+          endVideo();
         });
-
-        afterEach(() => jasmine.clock().uninstall());
 
         it('stays on the screen and destroys the player', () => {
           expect(currentUrl()).toBe(`/3/video${query}`);
@@ -471,7 +479,7 @@ describe('EpisodeVideoComponent', () => {
 
     it('plays the lesson from the end of the investigation', async () => {
       const host = await showVideo();
-      emit('ended');
+      endVideo();
 
       linkNamed(host, 'Revoir le cours d’Owliver').click();
       await harness.fixture.whenStable();
@@ -485,7 +493,7 @@ describe('EpisodeVideoComponent', () => {
 
     it('does nothing on "Revoir le cours" at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
-      emit('ended');
+      endVideo();
 
       linkNamed(host, 'Revoir le cours d’Owliver').click();
       await harness.fixture.whenStable();
