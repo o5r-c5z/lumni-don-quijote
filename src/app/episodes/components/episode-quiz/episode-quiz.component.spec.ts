@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { axeViolations } from '../../../../testing/axe';
 import { Episode, QuizQuestion } from '../../models';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
@@ -295,6 +296,15 @@ describe('EpisodeQuizComponent', () => {
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
     }));
+
+    it('has no axe violation', async () => {
+      episodeService.setEpisode(createEpisode());
+      await harness.navigateByUrl('/3/quiz');
+      // Lets the slide-in and focus timers of the component run out.
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(await axeViolations(host())).toEqual([]);
+    });
   });
 
   describe('without a question to show', () => {
