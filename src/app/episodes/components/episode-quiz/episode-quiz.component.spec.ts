@@ -502,11 +502,11 @@ describe('EpisodeQuizComponent', () => {
       expect(await axeViolations(host())).toEqual([]);
     });
 
-    it('slides the question out after 2 seconds, then shows the next one', fakeAsync(() => {
+    it('slides the question out after 2 seconds, then plays its answer video', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
-      const [first, second] = fieldsets();
+      const [first] = fieldsets();
 
       answer(2);
       tick(1999);
@@ -517,32 +517,9 @@ describe('EpisodeQuizComponent', () => {
       expect(episodeService.quizStep).toBe(0);
 
       tick(300);
-      harness.detectChanges();
-      expect(first.classList).not.toContain('hiding');
-      expect(episodeService.quizStep).toBe(1);
-      expect(visibleFieldsets()).toEqual([second]);
-      expect(second.classList).toContain('hidden');
-
-      tick(100);
-      expect(second.classList).not.toContain('hidden');
-      expect(document.activeElement).toBe(radios(second)[0]);
-    }));
-
-    it('plays the resolution video after the last question', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
-      showQuiz();
-      tick(100);
-
-      answer(2);
-      tick(2300);
-      harness.detectChanges();
-      tick(100);
-      answer(0);
-      tick(2300);
       tick();
-
-      expect(episodeService.quizStep).toBe(2);
-      expect(url()).toBe('/3/video?videoType=resolution');
+      expect(episodeService.quizStep).toBe(1);
+      expect(url()).toBe('/3/video?videoType=answer&question=0');
       expect(host().textContent).toBe('Video');
     }));
 
@@ -590,8 +567,7 @@ describe('EpisodeQuizComponent', () => {
 
       // Each episode emission adds a subscription to the quiz step.
       const secondFocus = spyOn(radios(second)[0], 'focus');
-      answer(2);
-      tick(2300);
+      episodeService.incrementQuizStep();
       harness.detectChanges();
       tick(100);
       expect(secondFocus).toHaveBeenCalledTimes(2);
