@@ -118,15 +118,15 @@ describe('EpisodeComponent', () => {
       expect(audioService.play).not.toHaveBeenCalled();
     });
 
-    it('resumes it without rewinding on each screen but the video', async () => {
+    it('plays the quiz music when going to the quiz', async () => {
       await navigate('/3');
-      audioService.play.calls.reset();
-
-      await navigate('/3/video');
-      expect(audioService.play).not.toHaveBeenCalled();
+      audioService.playBackgroundMusic.calls.reset();
 
       await navigate('/3/quiz');
-      expect(audioService.play.calls.allArgs()).toEqual([[false]]);
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
     });
 
     it('leaves it alone on a screen change while it is playing', async () => {
@@ -160,11 +160,11 @@ describe('EpisodeComponent', () => {
     it('stops following the navigation once the episode is closed', async () => {
       await navigate('/3');
       await navigate('/');
-      audioService.play.calls.reset();
+      audioService.playBackgroundMusic.calls.reset();
 
       await navigate('/?query=1');
 
-      expect(audioService.play).not.toHaveBeenCalled();
+      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
     });
   });
 
