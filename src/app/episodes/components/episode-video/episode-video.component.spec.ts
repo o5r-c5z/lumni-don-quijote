@@ -385,8 +385,13 @@ describe('EpisodeVideoComponent', () => {
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/completion']]);
     });
 
-    it('has no axe violation during the resolution', async () => {
-      const host = await showVideo('?videoType=resolution');
+    it('has no axe violation during the answer to the last question', async () => {
+      const [question] = episode.questions;
+      episodeService.setEpisode({
+        ...episode,
+        questions: [question, question, question, question, question],
+      });
+      const host = await showVideo('?videoType=answer&question=4');
 
       expect(await axeViolations(host)).toEqual([]);
     });
