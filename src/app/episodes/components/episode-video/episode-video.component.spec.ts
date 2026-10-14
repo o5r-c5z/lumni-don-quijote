@@ -524,6 +524,15 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
+    it('names the link to the quiz as its visible text', async () => {
+      const host = await showVideo();
+      endVideo();
+
+      const quizLink = controlNamed(host, 'Lancer le quiz !');
+
+      expect(quizLink.getAttribute('aria-label')).toBeNull();
+    });
+
     it('names the lesson link as its visible text', async () => {
       const host = await showVideo();
       endVideo();
