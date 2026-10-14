@@ -463,6 +463,16 @@ describe('EpisodeVideoComponent', () => {
           expect(document.activeElement).toBe(quizLink);
         });
 
+        it('lets the keyboard focus the button to replay the video', () => {
+          const replayButton = controlNamed(host, 'Revoir toute la vidéo');
+
+          replayButton.focus();
+
+          expect(replayButton.tagName).toBe('BUTTON');
+          expect(replayButton.getAttribute('type')).toBe('button');
+          expect(document.activeElement).toBe(replayButton);
+        });
+
         it('displays the office as a background', () => {
           expect(
             host.style.getPropertyValue('--screen-background-landscape'),
