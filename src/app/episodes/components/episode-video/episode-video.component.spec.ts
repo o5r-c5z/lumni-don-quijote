@@ -329,13 +329,13 @@ describe('EpisodeVideoComponent', () => {
       expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
-    it('displays the board as a background', () => {
+    it('displays the parchment as a background', () => {
       expect(host.classList).toContain('screen');
       expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("/images/landscape/Tableau_UI.jpg")',
+        'url("/images/Parchemin_questions.jpg")',
       );
       expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-        'url("/images/portrait/Tableau_UI.jpg")',
+        'url("/images/Parchemin_questions.jpg")',
       );
       expect(
         host.style.getPropertyValue('--screen-background-overlay-opacity'),
