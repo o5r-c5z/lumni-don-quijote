@@ -6,6 +6,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
+import { axeViolations } from '../../../../testing/axe';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { AudioControlComponent } from './audio-control.component';
@@ -312,5 +313,11 @@ describe('AudioControlComponent', () => {
       expect(hint()).toBeUndefined();
       flush();
     }));
+  });
+
+  it('has no axe violation while the music plays', async () => {
+    createComponent();
+
+    expect(await axeViolations(host)).toEqual([]);
   });
 });
