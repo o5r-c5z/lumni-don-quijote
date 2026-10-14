@@ -415,7 +415,7 @@ describe('EpisodeVideoComponent', () => {
             ['Lancer le quiz !', '/3/quiz'],
             ['Revoir toute la vidéo', null],
             [
-              'Revoir le cours d’Owliver',
+              'Revoir la leçon de Rossinante',
               '/3/video?videoType=pedagogicalConcept',
             ],
           ]);
@@ -481,7 +481,7 @@ describe('EpisodeVideoComponent', () => {
       const host = await showVideo();
       endVideo();
 
-      linkNamed(host, 'Revoir le cours d’Owliver').click();
+      linkNamed(host, 'Revoir la leçon de Rossinante').click();
       await harness.fixture.whenStable();
 
       expect(currentUrl()).toBe('/3/video?videoType=pedagogicalConcept');
@@ -491,11 +491,11 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
-    it('does nothing on "Revoir le cours" at the end of the lesson', async () => {
+    it('does nothing on "Revoir la leçon" at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
       endVideo();
 
-      linkNamed(host, 'Revoir le cours d’Owliver').click();
+      linkNamed(host, 'Revoir la leçon de Rossinante').click();
       await harness.fixture.whenStable();
 
       expect(requestedVideos()).toEqual(['https://vimeo.com/200']);
