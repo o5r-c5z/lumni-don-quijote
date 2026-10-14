@@ -163,6 +163,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
 
   private onVideoEnded() {
     switch (this.videoType) {
+      case VideoType.Lesson:
       case VideoType.Clue:
         this.router.navigate(['../quiz'], { relativeTo: this.route });
         break;
