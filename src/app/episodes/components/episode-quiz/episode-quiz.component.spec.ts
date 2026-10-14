@@ -220,6 +220,22 @@ describe('EpisodeQuizComponent', () => {
       expect(input.getAttribute('aria-checked')).toBe('true');
     }));
 
+    it('sets aria-checked back to "false" on the previously checked answer', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const inputs = radios(fieldsets()[0]);
+      inputs[1].click();
+      harness.detectChanges();
+
+      inputs[2].click();
+      harness.detectChanges();
+
+      expect(inputs.map((input) => input.getAttribute('aria-checked'))).toEqual(
+        ['false', 'false', 'true'],
+      );
+    }));
+
     it('marks the right answer and its correction as correct', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
