@@ -309,18 +309,10 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
-    it('offers to leave the video for the quiz', () => {
+    it('offers to skip the introduction for the lesson', () => {
       expect(controls(host)).toEqual([
-        ['Quitter la vidéo et lancer le quiz', '/3/quiz'],
+        ['Passer la vidéo', '/3/video?videoType=lesson'],
       ]);
-    });
-
-    it('restarts the background music when leaving for the quiz', async () => {
-      controlNamed(host, 'Quitter la vidéo et lancer le quiz').click();
-      await harness.fixture.whenStable();
-
-      expect(audioService.play).toHaveBeenCalledOnceWith(true);
-      expect(currentUrl()).toBe('/3/quiz');
     });
 
     it('destroys the player when leaving the screen', async () => {
