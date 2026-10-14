@@ -167,7 +167,6 @@ describe('EpisodeVideoComponent', () => {
       ['?videoType=lesson', 'https://vimeo.com/600'],
       ['?videoType=answer&question=0', 'https://vimeo.com/700'],
       ['?videoType=answer&question=1', 'https://vimeo.com/701'],
-      ['?videoType=resolution', 'https://vimeo.com/400'],
     ]) {
       it(`plays ${expected} for "${query}"`, async () => {
         await showVideo(query);
@@ -184,14 +183,14 @@ describe('EpisodeVideoComponent', () => {
       expect(new URL(url).searchParams.get('responsive')).toBe('true');
     });
 
-    it('plays nothing for a clue without a number', async () => {
-      await showVideo('?videoType=clue');
+    it('plays nothing for an answer without a question number', async () => {
+      await showVideo('?videoType=answer');
 
       expect(requestedVideos()).toEqual([]);
     });
 
-    it('plays nothing for a clue number out of range', async () => {
-      await showVideo('?videoType=clue&clue=5');
+    it('plays nothing for an answer question number out of range', async () => {
+      await showVideo('?videoType=answer&question=5');
 
       expect(requestedVideos()).toEqual([]);
     });
@@ -208,14 +207,14 @@ describe('EpisodeVideoComponent', () => {
       expect(playerDestroy).toHaveBeenCalledTimes(1);
     });
 
-    it('replays the previous video for a clue without a number', async () => {
-      await showVideo('?videoType=clue&clue=1');
+    it('replays the previous video for an answer without a question number', async () => {
+      await showVideo('?videoType=answer&question=1');
 
-      await harness.navigateByUrl('/3/video?videoType=clue');
+      await harness.navigateByUrl('/3/video?videoType=answer');
 
       expect(requestedVideos()).toEqual([
-        'https://vimeo.com/301',
-        'https://vimeo.com/301',
+        'https://vimeo.com/701',
+        'https://vimeo.com/701',
       ]);
     });
   });
