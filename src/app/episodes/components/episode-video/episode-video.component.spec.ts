@@ -148,9 +148,8 @@ describe('EpisodeVideoComponent', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
     for (const [query, expected] of [
-      ['', 'https://vimeo.com/100'],
-      ['?videoType=investigation', 'https://vimeo.com/100'],
-      ['?videoType=unknown', 'https://vimeo.com/100'],
+      ['', 'https://vimeo.com/500'],
+      ['?videoType=unknown', 'https://vimeo.com/500'],
       ['?videoType=pedagogicalConcept', 'https://vimeo.com/200'],
       ['?videoType=clue&clue=0', 'https://vimeo.com/300'],
       ['?videoType=clue&clue=1', 'https://vimeo.com/301'],
@@ -232,7 +231,7 @@ describe('EpisodeVideoComponent', () => {
 
       episodeService.setEpisode(episode);
 
-      expect(requestedVideos()).toEqual(['https://vimeo.com/100']);
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
     it('then creates the player twice on each query change', async () => {
@@ -243,7 +242,7 @@ describe('EpisodeVideoComponent', () => {
       await harness.navigateByUrl('/3/video?videoType=pedagogicalConcept');
 
       expect(requestedVideos()).toEqual([
-        'https://vimeo.com/100',
+        'https://vimeo.com/500',
         'https://vimeo.com/200',
         'https://vimeo.com/200',
       ]);
@@ -271,8 +270,8 @@ describe('EpisodeVideoComponent', () => {
 
       emit('loaded');
 
-      expect(iframe.getAttribute('title')).toBe('Enquête');
-      expect(iframe.getAttribute('aria-label')).toBe('Vidéo: Enquête');
+      expect(iframe.getAttribute('title')).toBe('Introduction');
+      expect(iframe.getAttribute('aria-label')).toBe('Vidéo: Introduction');
       expect(document.activeElement).toBe(iframe);
     });
 
@@ -292,7 +291,7 @@ describe('EpisodeVideoComponent', () => {
 
       expect(audioService.pause).toHaveBeenCalledTimes(1);
       expect(announcementService.announce.calls.allArgs()).toEqual([
-        ['Lecture de la vidéo: Enquête'],
+        ['Lecture de la vidéo: Introduction'],
         ['Mise en pause de la vidéo'],
       ]);
     });
@@ -322,7 +321,7 @@ describe('EpisodeVideoComponent', () => {
 
       episodeService.setEpisode({ ...episode });
 
-      expect(requestedVideos()).toEqual(['https://vimeo.com/100']);
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
     it('displays the board as a background', () => {
@@ -513,20 +512,6 @@ describe('EpisodeVideoComponent', () => {
         });
       });
     }
-
-    it('plays the lesson from the end of the investigation', async () => {
-      const host = await showVideo();
-      endVideo();
-
-      controlNamed(host, 'Revoir la leçon de Rossinante').click();
-      await harness.fixture.whenStable();
-
-      expect(currentUrl()).toBe('/3/video?videoType=pedagogicalConcept');
-      expect(requestedVideos()).toEqual([
-        'https://vimeo.com/100',
-        'https://vimeo.com/200',
-      ]);
-    });
 
     it('names the link to the quiz as its visible text', async () => {
       const host = await showVideo();
