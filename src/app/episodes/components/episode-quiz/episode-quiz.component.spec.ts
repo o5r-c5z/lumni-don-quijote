@@ -523,6 +523,38 @@ describe('EpisodeQuizComponent', () => {
       expect(host().textContent).toBe('Video');
     }));
 
+    it('plays the answer video of the last question', fakeAsync(() => {
+      episodeService.setEpisode(
+        createEpisode([
+          ...questions,
+          {
+            label: 'Quand a-t-il été volé ?',
+            answers: ['La nuit', 'Le jour'],
+            correctAnswer: 1,
+            answerVideo: { url: 'https://vimeo.com/12', title: 'Réponse 3' },
+          },
+          {
+            label: 'Pourquoi ?',
+            answers: ['Par jalousie', 'Par cupidité', 'Par erreur'],
+            correctAnswer: 1,
+            answerVideo: { url: 'https://vimeo.com/13', title: 'Réponse 4' },
+          },
+        ]),
+      );
+      episodeService.incrementQuizStep();
+      episodeService.incrementQuizStep();
+      episodeService.incrementQuizStep();
+      showQuiz();
+      tick(100);
+
+      answer(1);
+      tick(2000);
+      tick(300);
+      tick();
+
+      expect(url()).toBe('/3/video?videoType=answer&question=3');
+    }));
+
     it('goes on even when the sound cannot be played', fakeAsync(() => {
       audioService.playSoundEffect.and.rejectWith(
         new DOMException('Not allowed', 'NotAllowedError'),
