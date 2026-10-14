@@ -406,7 +406,9 @@ describe('EpisodeVideoComponent', () => {
           );
         });
 
-        it('offers the quiz, the video again and the lesson', () => {
+        const isLesson = query === '?videoType=pedagogicalConcept';
+
+        it(`offers the quiz, the video again${isLesson ? '' : ' and the lesson'}`, () => {
           const nav = host.querySelector('nav');
           expect(nav?.getAttribute('aria-label')).toBe(
             'Options après la vidéo',
@@ -414,10 +416,14 @@ describe('EpisodeVideoComponent', () => {
           expect(links(host)).toEqual([
             ['Lancer le quiz !', '/3/quiz'],
             ['Revoir toute la vidéo', null],
-            [
-              'Revoir la leçon de Rossinante',
-              '/3/video?videoType=pedagogicalConcept',
-            ],
+            ...(isLesson
+              ? []
+              : [
+                  [
+                    'Revoir la leçon de Rossinante',
+                    '/3/video?videoType=pedagogicalConcept',
+                  ],
+                ]),
           ]);
         });
 
@@ -500,15 +506,12 @@ describe('EpisodeVideoComponent', () => {
       expect(lessonLink.getAttribute('aria-label')).toBeNull();
     });
 
-    it('does nothing on "Revoir la leçon" at the end of the lesson', async () => {
+    it('offers no link to the lesson at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
       endVideo();
 
-      linkNamed(host, 'Revoir la leçon de Rossinante').click();
-      await harness.fixture.whenStable();
-
-      expect(requestedVideos()).toEqual(['https://vimeo.com/200']);
-      expect(host.querySelector('nav')).not.toBeNull();
+      expect(linkNamed(host, 'Revoir la leçon de Rossinante')).toBeUndefined();
+      expect(host.querySelector('a[href*="pedagogicalConcept"]')).toBeNull();
     });
   });
 });
