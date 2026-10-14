@@ -58,7 +58,7 @@ Prérequis : Node.js et npm (versions compatibles avec Angular 19 / Angular CLI 
 ```sh
 npm install
 npm start            # serveur de développement sur http://localhost:4200/
-npm run build        # build de production dans dist/enquetes-educatives/
+npm run build        # build de production dans dist/lumni-don-quijote/
 npm run watch        # build de développement en watch
 npm test             # tests unitaires en watch (Karma/Jasmine, Chrome)
 npm run test:ci      # tests unitaires en une passe, Chrome headless
@@ -97,7 +97,7 @@ Le code existant est couvert par des tests de caractérisation (sauf l'amorçage
 - L'application attend les données d'un épisode à l'URL `uploads/episodes/<n>/episode.json` (avec `<n>` le numéro d'épisode dans la route). En configuration `development`, `angular.json` copie le dossier local `uploads/` vers `/uploads`. Ce dossier n'est pas versionné : il faut le fournir pour faire tourner l'application. Un `episode.json` décrit le titre, les images de fond, les vidéos (URL Vimeo) et les questions du quiz — voir `src/app/episodes/models.ts`.
 - La configuration de production (`npm run build`) ne copie pas `uploads/` ; l'hébergement doit exposer ce chemin.
 - Fichiers audio référencés en dur depuis `public/audio/` : `Dark Comedy Ident - Main.mp3` (musique de fond), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse).
-- Chemin de sortie du build : `dist/enquetes-educatives/`.
+- Chemin de sortie du build : `dist/lumni-don-quijote/`.
 
 ## Crédits
 
