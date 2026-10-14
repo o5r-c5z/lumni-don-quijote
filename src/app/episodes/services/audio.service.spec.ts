@@ -4,7 +4,8 @@ import { AudioService } from './audio.service';
 /**
  * Stand-in for `HTMLAudioElement`: a plain DOM node (so it can be appended to
  * the document and receive events) with the media properties the service uses
- * and spies for the media methods. It never loads or plays anything.
+ * and spies for the media methods. It never loads or plays anything, but its
+ * `paused` flag follows the `play` and `pause` calls like a real element's.
  */
 interface FakeAudio extends HTMLAudioElement {
   play: jasmine.Spy<() => Promise<void>>;
@@ -26,9 +27,15 @@ describe('AudioService', () => {
       muted: false,
       currentTime: 0,
       error: null,
+      paused: true,
     });
-    audio.play = jasmine.createSpy('play').and.resolveTo();
-    audio.pause = jasmine.createSpy('pause');
+    audio.play = jasmine.createSpy('play').and.callFake(() => {
+      Object.assign(audio, { paused: false });
+      return Promise.resolve();
+    });
+    audio.pause = jasmine.createSpy('pause').and.callFake(() => {
+      Object.assign(audio, { paused: true });
+    });
     audio.load = jasmine.createSpy('load');
     createdAudio.push(audio);
     return audio;
@@ -152,6 +159,24 @@ describe('AudioService', () => {
         expect(music.src).toBe('/audio/second.mp3');
         expect(music.load).toHaveBeenCalledTimes(1);
         expect(music.currentTime).toBe(0);
+        expect(music.play).toHaveBeenCalledTimes(2);
+        expect(service.isPlaying()).toBeTrue();
+      }));
+
+      it('resumes the paused music of the same source without rewinding or reloading it', fakeAsync(() => {
+        service.playBackgroundMusic('/audio/music.mp3');
+        flushMicrotasks();
+        const music = createdAudio[0];
+        music.currentTime = 42;
+        service.pause();
+
+        service.playBackgroundMusic('/audio/music.mp3');
+        flushMicrotasks();
+
+        expect(audioConstructor).toHaveBeenCalledTimes(1);
+        expect(music.src).toBe('/audio/music.mp3');
+        expect(music.load).not.toHaveBeenCalled();
+        expect(music.currentTime).toBe(42);
         expect(music.play).toHaveBeenCalledTimes(2);
         expect(service.isPlaying()).toBeTrue();
       }));
