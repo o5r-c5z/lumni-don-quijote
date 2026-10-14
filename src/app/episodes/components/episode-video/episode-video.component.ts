@@ -1,10 +1,10 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   HostBinding,
   inject,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -23,7 +23,7 @@ import { EpisodeService } from '../../services/episode.service';
   templateUrl: './episode-video.component.html',
   styleUrl: './episode-video.component.scss',
 })
-export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
+export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -39,7 +39,7 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
   protected VideoType = VideoType;
   protected faArrowRotateLeft = faArrowRotateLeft;
 
-  @ViewChild('playerContainer') playerContainer!: ElementRef;
+  @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
 
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
@@ -61,7 +61,7 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
     return this.videoEnded ? 0.45 : 0.8;
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.setupSubscriptions();
   }
 
