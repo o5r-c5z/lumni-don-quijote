@@ -36,12 +36,12 @@ La règle `color-contrast` est désactivée, car Karma ne charge ni les styles
 globaux ni les fonds : les contrastes sont vérifiés par Playwright
 (section 5).
 
-- [ ] `axe-core` en devDependency, en version exacte
-- [ ] Écran titre
-- [ ] Écran Bravo
-- [ ] Contrôle audio
-- [ ] Quiz
-- [ ] Vidéo, pendant la lecture et à la fin
+- [x] `axe-core` en devDependency, en version exacte
+- [x] Écran titre
+- [x] Écran Bravo
+- [x] Contrôle audio
+- [x] Quiz
+- [x] Vidéo, pendant la lecture et à la fin
 
 ## 4. Fonctionnalités (TDD)
 
