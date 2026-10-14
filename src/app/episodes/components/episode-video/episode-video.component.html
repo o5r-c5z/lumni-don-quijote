@@ -37,11 +37,11 @@
       <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
       Revoir toute la vidéo
     </a>
-    @if (videoType !== 'pedagogicalConcept') {
+    @if (videoType !== VideoType.PedagogicalConcept) {
       <a
         class="btn btn-plain"
         [routerLink]="['../video']"
-        [queryParams]="{ videoType: 'pedagogicalConcept' }"
+        [queryParams]="{ videoType: VideoType.PedagogicalConcept }"
       >
         <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
         Revoir la leçon de Rossinante
