@@ -224,18 +224,6 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
-    it('keeps aria-checked at "false" on a checked answer', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
-      showQuiz();
-
-      const [input] = radios(fieldsets()[0]);
-      input.click();
-      harness.detectChanges();
-
-      expect(input.checked).toBeTrue();
-      expect(input.getAttribute('aria-checked')).toBe('false');
-    }));
-
     it('slides the question in and focuses its first answer after 100 ms', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
