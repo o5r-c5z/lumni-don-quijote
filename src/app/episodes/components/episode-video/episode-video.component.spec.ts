@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import Player from '@vimeo/player';
+import { axeViolations } from '../../../../testing/axe';
 import { Episode } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
@@ -333,6 +334,10 @@ describe('EpisodeVideoComponent', () => {
       expect(
         host.style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
+    });
+
+    it('has no axe violation', async () => {
+      expect(await axeViolations(host)).toEqual([]);
     });
   });
 
