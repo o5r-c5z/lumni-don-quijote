@@ -19,11 +19,11 @@ Rossinante » reste accessible depuis les questions.
 
 ## 2. Renommage et textes
 
-- [ ] Nom du projet dans `package.json`, `package-lock.json` et
+- [x] Nom du projet dans `package.json`, `package-lock.json` et
       `angular.json` (`outputPath` compris), chemin du build dans le README
-- [ ] `<title>` de `src/index.html` (encore `EnquetesEducatives`) et
+- [x] `<title>` de `src/index.html` (encore `EnquetesEducatives`) et
       `title` de `AppComponent` (encore `enquetes-educatives`)
-- [ ] Plus aucune mention de Biggle, d'Owliver ni d'« enquête »
+- [x] Plus aucune mention de Biggle, d'Owliver ni d'« enquête »
 
 ## 3. Fonctionnalités (TDD)
 
