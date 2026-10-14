@@ -32,10 +32,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       '/audio/Dark Comedy Ident - Main.mp3',
     );
 
-    this.audioService.play();
-    this.audioService.playBackgroundMusic(
-      '/audio/Entertainment_FOND_SONORE.mp3',
-    );
+    if (!this.router.url.includes('/video')) {
+      this.audioService.play();
+      this.audioService.playBackgroundMusic(
+        '/audio/Entertainment_FOND_SONORE.mp3',
+      );
+    }
 
     this.subscriptions.add(
       this.router.events
