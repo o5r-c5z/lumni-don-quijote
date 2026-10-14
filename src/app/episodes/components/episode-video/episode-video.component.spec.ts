@@ -356,10 +356,10 @@ describe('EpisodeVideoComponent', () => {
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
-    it('goes back to the quiz during a clue', async () => {
-      const host = await showVideo('?videoType=clue&clue=0');
+    it('offers to skip the answer to a question before the last for the quiz', async () => {
+      const host = await showVideo('?videoType=answer&question=0');
 
-      expect(controls(host)).toEqual([['Retourner au quiz', '/3/quiz']]);
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
     it('has no axe violation during a clue', async () => {
