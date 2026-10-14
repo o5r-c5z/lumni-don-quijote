@@ -16,10 +16,10 @@ import { Episode, Video, VideoType } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
+import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
 const QUIZ_PATH = '../quiz';
 const COMPLETION_PATH = '../completion';
-const PARCHMENT_BACKGROUND = `url("/images/Parchemin_questions.jpg")`;
 
 @Component({
   selector: 'app-episode-video',

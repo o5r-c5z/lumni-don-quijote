@@ -14,6 +14,7 @@ import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
+import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
 @Component({
   selector: 'app-episode-quiz',
@@ -40,12 +41,12 @@ export class EpisodeQuizComponent implements OnInit {
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return `url("/images/Parchemin_questions.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return `url("/images/Parchemin_questions.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')
