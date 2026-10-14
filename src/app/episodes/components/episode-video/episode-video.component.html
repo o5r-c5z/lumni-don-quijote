@@ -1,6 +1,14 @@
 <div #playerContainer id="episode-video__player-container"></div>
 @if (!videoEnded) {
-  @if (videoType !== VideoType.Resolution) {
+  @if (videoType === undefined) {
+    <a
+      class="btn btn-plain"
+      [routerLink]="['../video']"
+      [queryParams]="{ videoType: VideoType.Lesson }"
+    >
+      Passer la vidéo
+    </a>
+  } @else if (videoType !== VideoType.Resolution) {
     <a
       id="episode-video__exit-btn"
       class="btn btn-plain"
