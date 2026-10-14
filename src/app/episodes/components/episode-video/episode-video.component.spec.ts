@@ -529,5 +529,15 @@ describe('EpisodeVideoComponent', () => {
 
       expect(await axeViolations(host)).toEqual([]);
     });
+
+    it('has no axe violation at the end of the lesson', async () => {
+      const host = await showVideo('?videoType=pedagogicalConcept');
+      endVideo();
+      jasmine.clock().tick(100);
+      // axe relies on real timers.
+      jasmine.clock().uninstall();
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
   });
 });
