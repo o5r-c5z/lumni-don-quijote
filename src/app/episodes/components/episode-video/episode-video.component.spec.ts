@@ -23,7 +23,20 @@ const episode: Episode = {
   pedagogicalConcept: video(200, 'Cours'),
   clues: [video(300, 'Indice 0'), video(301, 'Indice 1')],
   resolution: video(400, 'Résolution'),
-  questions: [],
+  questions: [
+    {
+      label: 'Question 0',
+      answers: ['Oui', 'Non'],
+      correctAnswer: 0,
+      answerVideo: video(700, 'Réponse 0'),
+    },
+    {
+      label: 'Question 1',
+      answers: ['Oui', 'Non'],
+      correctAnswer: 1,
+      answerVideo: video(701, 'Réponse 1'),
+    },
+  ],
 };
 
 @Component({ template: '<p>Quiz</p>' })
@@ -152,7 +165,7 @@ describe('EpisodeVideoComponent', () => {
       ['?videoType=unknown', 'https://vimeo.com/500'],
       ['?videoType=introduction', 'https://vimeo.com/500'],
       ['?videoType=lesson', 'https://vimeo.com/600'],
-      ['?videoType=clue&clue=0', 'https://vimeo.com/300'],
+      ['?videoType=answer&question=0', 'https://vimeo.com/700'],
       ['?videoType=clue&clue=1', 'https://vimeo.com/301'],
       ['?videoType=resolution', 'https://vimeo.com/400'],
     ]) {
