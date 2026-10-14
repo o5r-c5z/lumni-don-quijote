@@ -85,6 +85,9 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
             case VideoType.PedagogicalConcept:
               this.video = this.episode?.pedagogicalConcept;
               break;
+            case VideoType.Lesson:
+              this.video = this.episode?.lesson;
+              break;
             case VideoType.Clue:
               const clueNumber = params['clue'];
               if (clueNumber) {

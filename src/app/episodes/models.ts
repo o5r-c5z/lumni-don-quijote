@@ -28,6 +28,7 @@ export interface QuizQuestion {
 export enum VideoType {
   Investigation = 'investigation',
   PedagogicalConcept = 'pedagogicalConcept',
+  Lesson = 'lesson',
   Clue = 'clue',
   Resolution = 'resolution',
 }
