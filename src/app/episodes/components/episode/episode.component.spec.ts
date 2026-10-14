@@ -46,6 +46,7 @@ describe('EpisodeComponent', () => {
   beforeEach(async () => {
     audioService = jasmine.createSpyObj<AudioService>('AudioService', [
       'initBackgroundMusic',
+      'playBackgroundMusic',
       'play',
       'pause',
       'isPlaying',
@@ -100,23 +101,14 @@ describe('EpisodeComponent', () => {
   });
 
   describe('background music', () => {
-    it('starts the main theme when the episode opens', async () => {
-      await navigate('/3');
-
-      expect(audioService.initBackgroundMusic).toHaveBeenCalledOnceWith(
-        '/audio/Dark Comedy Ident - Main.mp3',
-      );
-      expect(audioService.initBackgroundMusic).toHaveBeenCalledBefore(
-        audioService.play,
-      );
-    });
-
-    it('asks to play it once when the episode opens', async () => {
+    it('plays the background track once when the episode opens on the title screen', async () => {
       // The NavigationEnd subscription starts in ngOnInit, which runs after
       // the initial navigation has ended.
       await navigate('/3');
 
-      expect(audioService.play.calls.allArgs()).toEqual([[]]);
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
     });
 
     it('asks to play it even when the episode opens on the video', async () => {
