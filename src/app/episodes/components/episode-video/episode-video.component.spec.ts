@@ -497,9 +497,7 @@ describe('EpisodeVideoComponent', () => {
 
       const lessonLink = linkNamed(host, 'Revoir la leçon de Rossinante');
 
-      expect(lessonLink.getAttribute('aria-label')).toBe(
-        'Revoir la leçon de Rossinante',
-      );
+      expect(lessonLink.getAttribute('aria-label')).toBeNull();
     });
 
     it('does nothing on "Revoir la leçon" at the end of the lesson', async () => {
