@@ -98,7 +98,9 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
               this.video = this.episode?.resolution;
               break;
             case VideoType.Answer:
-              this.video = this.episode?.questions[params['question']]?.answerVideo;
+              this.video =
+                this.episode?.questions[params['question']]?.answerVideo ??
+                this.video;
               break;
             default:
               this.video = this.episode?.introduction;
