@@ -1,9 +1,10 @@
-# Détective Biggle — agent instructions
+# Don Quijote — agent instructions
 
-Angular 19 application (standalone components). See `README.md` for the
-repository contents and `ROADMAP.md` for the work in progress. The user-facing
-text, `README.md` and `ROADMAP.md` are in French; this file, code, commits and
-pull requests are in English.
+Angular 19 application (standalone components), derived from Détective
+Biggle (git remote `upstream`). See `README.md` for the repository contents
+and `ROADMAP.md` for the work in progress. The user-facing text, `README.md`
+and `ROADMAP.md` are in French; this file, code, commits and pull requests
+are in English.
 
 ## Commands
 
@@ -31,7 +32,11 @@ GitHub Actions CI runs both on every pull request.
 
 ## Test-driven development
 
-Every new feature or bug fix starts with a failing test:
+TDD is mandatory: develop every new feature or bug fix with the
+`tdd:feature` skill, which runs one red/green/refactor cycle per behavior
+through the `tdd:red`, `tdd:green` and `tdd:refactor` subagents, on its own
+branch and pull request. Never write production code before a failing test
+that requires it. Each cycle follows these steps:
 
 1. **Red** — write a single test for the target behavior and watch it fail
    for the right reason.
