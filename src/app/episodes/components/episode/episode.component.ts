@@ -48,6 +48,11 @@ export class EpisodeComponent implements OnInit, OnDestroy {
               '/audio/Guitar Background Mini_QUIZ.mp3',
             );
           }
+          if (event.url.includes('/completion')) {
+            this.audioService.playBackgroundMusic(
+              '/audio/Entertainment_FOND_SONORE.mp3',
+            );
+          }
           if (!this.isVideoScreen(event.url)) {
             if (!this.audioService.isPlaying()) {
               this.audioService.play(false);
