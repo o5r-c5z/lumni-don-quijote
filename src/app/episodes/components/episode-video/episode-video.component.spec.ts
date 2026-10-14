@@ -368,8 +368,8 @@ describe('EpisodeVideoComponent', () => {
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
-    it('has no axe violation during a clue', async () => {
-      const host = await showVideo('?videoType=clue&clue=0');
+    it('has no axe violation during the answer to a question before the last', async () => {
+      const host = await showVideo('?videoType=answer&question=0');
 
       expect(await axeViolations(host)).toEqual([]);
     });
