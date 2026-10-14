@@ -208,6 +208,18 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('sets aria-checked to "true" on the checked answer', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const input = radios(fieldsets()[0])[1];
+
+      input.click();
+      harness.detectChanges();
+
+      expect(input.getAttribute('aria-checked')).toBe('true');
+    }));
+
     it('marks the right answer and its correction as correct', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
