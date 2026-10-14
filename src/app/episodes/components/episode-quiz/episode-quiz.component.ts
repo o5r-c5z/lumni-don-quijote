@@ -40,12 +40,12 @@ export class EpisodeQuizComponent implements OnInit {
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return `url("/images/landscape/Ecran_UI.jpg")`;
+    return `url("/images/Parchemin_questions.jpg")`;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return `url("/images/portrait/Ecran_UI.jpg")`;
+    return `url("/images/Parchemin_questions.jpg")`;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')
