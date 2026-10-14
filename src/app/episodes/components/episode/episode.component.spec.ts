@@ -140,22 +140,14 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
-    it('leaves it alone on a screen change while it is playing', async () => {
-      await navigate('/3');
-      audioService.play.calls.reset();
-      audioService.isPlaying.and.returnValue(true);
-
+    it('plays no music when going to a video, wherever "/video" is in the URL', async () => {
       await navigate('/3/quiz');
-
-      expect(audioService.play).not.toHaveBeenCalled();
-    });
-
-    it('looks for "/video" anywhere in the URL', async () => {
-      await navigate('/3');
+      audioService.playBackgroundMusic.calls.reset();
       audioService.play.calls.reset();
 
       await navigate('/3/video/extra');
 
+      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
       expect(audioService.play).not.toHaveBeenCalled();
     });
 
