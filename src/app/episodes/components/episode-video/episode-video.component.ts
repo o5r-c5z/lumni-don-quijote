@@ -17,6 +17,9 @@ import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 
+const QUIZ_PATH = '../quiz';
+const COMPLETION_PATH = '../completion';
+
 @Component({
   selector: 'app-episode-video',
   imports: [RouterLink, FontAwesomeModule],
@@ -171,11 +174,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
         this.goToCompletion();
         break;
       case VideoType.Answer:
-        if (this.isBeforeLastQuestion()) {
-          this.goToQuiz();
-        } else {
-          this.goToCompletion();
-        }
+        this.navigateTo(this.pathAfterAnswer());
         break;
       case undefined:
         this.router.navigate([], {
@@ -189,9 +188,13 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   protected get exitLink(): string {
-    return this.videoType === VideoType.Answer && !this.isBeforeLastQuestion()
-      ? '../completion'
-      : '../quiz';
+    return this.videoType === VideoType.Answer
+      ? this.pathAfterAnswer()
+      : QUIZ_PATH;
+  }
+
+  private pathAfterAnswer(): string {
+    return this.isBeforeLastQuestion() ? QUIZ_PATH : COMPLETION_PATH;
   }
 
   private isBeforeLastQuestion(): boolean {
@@ -201,11 +204,15 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   private goToQuiz() {
-    this.router.navigate(['../quiz'], { relativeTo: this.route });
+    this.navigateTo(QUIZ_PATH);
   }
 
   private goToCompletion() {
-    this.router.navigate(['../completion'], { relativeTo: this.route });
+    this.navigateTo(COMPLETION_PATH);
+  }
+
+  private navigateTo(path: string) {
+    this.router.navigate([path], { relativeTo: this.route });
   }
 
   private endVideo() {
