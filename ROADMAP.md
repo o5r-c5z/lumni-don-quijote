@@ -10,9 +10,9 @@ Rossinante » reste accessible depuis les questions.
 
 ## 1. Reprise des tests de Biggle
 
-- [ ] `git merge upstream/main` une fois la roadmap de Biggle terminée
+- [x] `git merge upstream/main` une fois la roadmap de Biggle terminée
       (tests, `AGENTS.md`, CI)
-- [ ] `AGENTS.md` : TDD obligatoire via `tdd:feature`
+- [x] `AGENTS.md` : TDD obligatoire via `tdd:feature`
 
 ## 2. Renommage et textes
 

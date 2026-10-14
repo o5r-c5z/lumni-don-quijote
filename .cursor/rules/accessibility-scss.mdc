@@ -1,6 +1,0 @@
----
-description: Enforce accesibility in the scss files
-globs: *.scss
----
-
-- Interactive elements should have an outline with a 3:1 contrast at least
