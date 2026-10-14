@@ -382,6 +382,16 @@ describe('EpisodeVideoComponent', () => {
       emit('ended');
     }
 
+    /**
+     * Ends the video, lets its 100 ms focus timer fire, then gives the real
+     * timers back, which axe relies on.
+     */
+    function endVideoWithRealTimers(): void {
+      endVideo();
+      jasmine.clock().tick(100);
+      jasmine.clock().uninstall();
+    }
+
     afterEach(() => jasmine.clock().uninstall());
 
     it('goes back to the quiz after a clue', async () => {
@@ -534,20 +544,14 @@ describe('EpisodeVideoComponent', () => {
 
     it('has no axe violation', async () => {
       const host = await showVideo();
-      endVideo();
-      jasmine.clock().tick(100);
-      // axe relies on real timers.
-      jasmine.clock().uninstall();
+      endVideoWithRealTimers();
 
       expect(await axeViolations(host)).toEqual([]);
     });
 
     it('has no axe violation at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
-      endVideo();
-      jasmine.clock().tick(100);
-      // axe relies on real timers.
-      jasmine.clock().uninstall();
+      endVideoWithRealTimers();
 
       expect(await axeViolations(host)).toEqual([]);
     });

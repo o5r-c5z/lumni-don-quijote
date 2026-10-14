@@ -3,7 +3,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
-import { sleep } from '../../../../testing/timers';
+import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
@@ -98,6 +98,17 @@ describe('EpisodeQuizComponent', () => {
   function showQuiz(): void {
     harness.navigateByUrl('/3/quiz');
     tick();
+  }
+
+  /**
+   * Displays the quiz screen and waits out the component's 100 ms timer,
+   * after which it reveals the question and focuses its first answer.
+   *
+   * Relies on real timers: do not call it inside `fakeAsync`.
+   */
+  async function showRevealedQuiz(): Promise<void> {
+    await harness.navigateByUrl('/3/quiz');
+    await sleep(100);
   }
 
   function url(): string {
@@ -316,10 +327,7 @@ describe('EpisodeQuizComponent', () => {
 
     it('has no axe violation', async () => {
       episodeService.setEpisode(createEpisode());
-      await harness.navigateByUrl('/3/quiz');
-      // Waits out the component's 100 ms timer, after which it reveals the
-      // question and focuses its first answer.
-      await sleep(100);
+      await showRevealedQuiz();
 
       expect(await axeViolations(host())).toEqual([]);
     });
@@ -488,22 +496,14 @@ describe('EpisodeQuizComponent', () => {
 
     it('has no axe violation once validated', async () => {
       episodeService.setEpisode(createEpisode());
-      await harness.navigateByUrl('/3/quiz');
-      // Waits out the component's 100 ms timer, after which it reveals the
-      // question and focuses its first answer.
-      await sleep(100);
+      await showRevealedQuiz();
 
-      // axe needs real timers, so the test cannot be `fakeAsync`: the mock
-      // clock captures the 2 s slide-out timer instead, keeping the
-      // correction shown, and discards it on uninstall rather than letting
-      // it fire during a later test.
-      jasmine.clock().install();
-      try {
+      // The mock clock captures the 2 s slide-out timer, keeping the
+      // correction shown.
+      withMockClock(() => {
         answer(2);
         expect(fieldsets()[0].disabled).toBeTrue();
-      } finally {
-        jasmine.clock().uninstall();
-      }
+      });
 
       expect(await axeViolations(host())).toEqual([]);
     });

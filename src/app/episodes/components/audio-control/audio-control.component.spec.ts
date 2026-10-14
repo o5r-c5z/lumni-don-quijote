@@ -7,6 +7,7 @@ import {
 } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
+import { withMockClock } from '../../../../testing/timers';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { AudioControlComponent } from './audio-control.component';
@@ -316,45 +317,34 @@ describe('AudioControlComponent', () => {
   });
 
   it('has no axe violation while the music plays', async () => {
-    // axe needs real timers, so the test cannot be `fakeAsync`: the mock
-    // clock captures the keyboard hint timer instead, and discards it on
-    // uninstall rather than letting it fire during a later test.
-    jasmine.clock().install();
-    try {
+    // The mock clock captures the keyboard hint timer.
+    withMockClock(() => {
       createComponent();
-    } finally {
-      jasmine.clock().uninstall();
-    }
+    });
 
     expect(await axeViolations(host)).toEqual([]);
   });
 
   it('has no axe violation while the music is muted', async () => {
-    // Same as above: the mock clock captures the hint timers started on
-    // display and on toggle.
-    jasmine.clock().install();
-    try {
+    // The mock clock captures the hint timers started on display and on
+    // toggle.
+    withMockClock(() => {
       createComponent();
       button()!.click();
       fixture.detectChanges();
-    } finally {
-      jasmine.clock().uninstall();
-    }
+    });
 
     expect(await axeViolations(host)).toEqual([]);
   });
 
   it('has no axe violation once the keyboard hint is hidden', async () => {
-    // Same as above: the mock clock runs the 5 s hint timer to completion,
-    // so no timer is left pending once it is uninstalled.
-    jasmine.clock().install();
-    try {
+    // The mock clock runs the 5 s hint timer to completion, so no timer is
+    // left pending once it is uninstalled.
+    withMockClock(() => {
       createComponent();
       jasmine.clock().tick(5000);
       fixture.detectChanges();
-    } finally {
-      jasmine.clock().uninstall();
-    }
+    });
     expect(hint()).toBeUndefined();
 
     expect(await axeViolations(host)).toEqual([]);
