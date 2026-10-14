@@ -264,7 +264,7 @@ describe('EpisodeQuizComponent', () => {
       ).toEqual([
         [
           'Revoir la leçon de Rossinante',
-          'Revoir la leçon de Rossinante',
+          null,
           '/3/video?videoType=pedagogicalConcept',
         ],
         [
