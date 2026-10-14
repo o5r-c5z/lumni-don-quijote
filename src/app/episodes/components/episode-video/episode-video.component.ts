@@ -19,6 +19,7 @@ import { EpisodeService } from '../../services/episode.service';
 
 const QUIZ_PATH = '../quiz';
 const COMPLETION_PATH = '../completion';
+const PARCHMENT_BACKGROUND = `url("/images/Parchemin_questions.jpg")`;
 
 @Component({
   selector: 'app-episode-video',
@@ -48,14 +49,14 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
     return !this.videoEnded
-      ? `url("/images/Parchemin_questions.jpg")`
+      ? PARCHMENT_BACKGROUND
       : `url("/images/landscape/Decors_Bureau 1.jpg")`;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
     return !this.videoEnded
-      ? `url("/images/Parchemin_questions.jpg")`
+      ? PARCHMENT_BACKGROUND
       : `url("/images/portrait/decor_bureau.jpg")`;
   }
 
