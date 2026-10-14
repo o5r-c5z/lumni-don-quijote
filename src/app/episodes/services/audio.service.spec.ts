@@ -138,6 +138,23 @@ describe('AudioService', () => {
         expect(music.play).toHaveBeenCalledTimes(1);
         expect(service.isPlaying()).toBeTrue();
       }));
+
+      it('switches to another source and plays it from the beginning', fakeAsync(() => {
+        service.playBackgroundMusic('/audio/first.mp3');
+        flushMicrotasks();
+        const music = createdAudio[0];
+        music.currentTime = 42;
+
+        service.playBackgroundMusic('/audio/second.mp3');
+        flushMicrotasks();
+
+        expect(audioConstructor).toHaveBeenCalledTimes(1);
+        expect(music.src).toBe('/audio/second.mp3');
+        expect(music.load).toHaveBeenCalledTimes(1);
+        expect(music.currentTime).toBe(0);
+        expect(music.play).toHaveBeenCalledTimes(2);
+        expect(service.isPlaying()).toBeTrue();
+      }));
     });
   });
 
