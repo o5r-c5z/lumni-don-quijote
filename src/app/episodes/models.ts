@@ -4,6 +4,8 @@ export interface Episode {
     landscape: string;
     portrait: string;
   };
+  introduction: Video;
+  lesson: Video;
   investigation: Video;
   pedagogicalConcept: Video;
   clues: Video[];
@@ -20,6 +22,7 @@ export interface QuizQuestion {
   label: string;
   answers: string[];
   correctAnswer: number;
+  answerVideo: Video;
 }
 
 export enum VideoType {
