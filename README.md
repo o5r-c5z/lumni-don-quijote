@@ -32,7 +32,7 @@ d'écran. Projet commandé par Lumni, produit par Big Company.
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
 - `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types et tests sur chaque pull request et sur `main`.
 - `AGENTS.md` — instructions pour les agents de code (en anglais) : commandes, conventions de test, TDD.
-- `ROADMAP.md` — feuille de route de la couverture de tests.
+- `ROADMAP.md` — feuille de route de Don Quijote (reprise des tests de Biggle, renommage, fonctionnalités, assets).
 - `angular.json`, `tsconfig*.json`, `.editorconfig`, `.vscode/` — configuration du projet et de l'éditeur.
 - `uploads/` — **non versionné** (`.gitignore`) ; contient les données des épisodes (`episodes/<n>/episode.json`), servies uniquement en configuration de développement.
 
@@ -84,13 +84,13 @@ Les dépendances externes sont remplacées par des doublures, si bien qu'aucun t
 
 ### Développer en TDD
 
-Toute nouvelle fonctionnalité et toute correction commencent par un test qui échoue :
+Le TDD est obligatoire : toute nouvelle fonctionnalité et toute correction se développent avec le skill `tdd:feature`, qui enchaîne un cycle rouge/vert/refactorisation par comportement. Chaque cycle commence par un test qui échoue :
 
 1. **Rouge** — écrire un seul test pour le comportement visé et le voir échouer pour la bonne raison.
 2. **Vert** — écrire l'implémentation minimale qui le fait passer.
 3. **Refactorisation** — améliorer la structure du code, la suite restant verte.
 
-Le code existant est couvert par des tests de caractérisation (sauf l'amorçage, `main.ts` et `app.config.ts`) : ils figent le comportement actuel, défauts compris. Avant de modifier du code encore sans test, écrire d'abord de tels tests. Pour corriger un comportement figé par l'un d'eux, modifier d'abord ce test pour qu'il décrive le comportement attendu, le voir échouer, puis changer le code. Les issues #15 (nettoyage sans effet visible) et #19 (défauts visibles, surtout d'accessibilité) listent les défauts relevés pendant l'écriture de ces tests et, le cas échéant, le test qui fige chacun d'eux.
+Le code existant est couvert par des tests de caractérisation (sauf l'amorçage, `main.ts` et `app.config.ts`) : ils figent le comportement actuel, défauts compris. Avant de modifier du code encore sans test, écrire d'abord de tels tests. Pour corriger un comportement figé par l'un d'eux, modifier d'abord ce test pour qu'il décrive le comportement attendu, le voir échouer, puis changer le code. Les issues [#15](https://github.com/o5r-c5z/lumni-detective-biggle/issues/15) (nettoyage sans effet visible) et [#19](https://github.com/o5r-c5z/lumni-detective-biggle/issues/19) (défauts visibles, surtout d'accessibilité) du dépôt de Biggle listent les défauts relevés pendant l'écriture de ces tests et, le cas échéant, le test qui fige chacun d'eux.
 
 ### Notes de configuration
 
