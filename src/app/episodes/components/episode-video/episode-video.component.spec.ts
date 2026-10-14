@@ -211,18 +211,12 @@ describe('EpisodeVideoComponent', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
     for (const query of [
+      '',
+      '?videoType=pedagogicalConcept',
       '?videoType=clue',
       '?videoType=clue&clue=0',
       '?videoType=resolution',
     ]) {
-      it(`reports a view changed after it was checked for "${query}"`, async () => {
-        await expectAsync(
-          harness.navigateByUrl(`/3/video${query}`),
-        ).toBeRejectedWithError(/NG0100/);
-      });
-    }
-
-    for (const query of ['', '?videoType=pedagogicalConcept']) {
       it(`reports nothing for "${query}"`, async () => {
         await expectAsync(
           harness.navigateByUrl(`/3/video${query}`),
