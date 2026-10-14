@@ -165,17 +165,14 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     switch (this.videoType) {
       case VideoType.Lesson:
       case VideoType.Clue:
-        this.router.navigate(['../quiz'], { relativeTo: this.route });
+        this.goToQuiz();
         break;
       case VideoType.Resolution:
         this.router.navigate(['../completion'], { relativeTo: this.route });
         break;
       case VideoType.Answer:
-        if (
-          Number(this.route.snapshot.queryParams['question']) <
-          (this.episode?.questions.length ?? 0) - 1
-        ) {
-          this.router.navigate(['../quiz'], { relativeTo: this.route });
+        if (this.isBeforeLastQuestion()) {
+          this.goToQuiz();
         } else {
           this.endVideo();
         }
@@ -189,6 +186,16 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       default:
         this.endVideo();
     }
+  }
+
+  private isBeforeLastQuestion(): boolean {
+    const questionIndex = Number(this.route.snapshot.queryParams['question']);
+    const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
+    return questionIndex < lastQuestionIndex;
+  }
+
+  private goToQuiz() {
+    this.router.navigate(['../quiz'], { relativeTo: this.route });
   }
 
   private endVideo() {
