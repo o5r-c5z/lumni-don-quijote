@@ -72,6 +72,7 @@ body {
   background-color: transparent;
   color: var(--default-text-color);
   cursor: pointer;
+  font-family: inherit;
   font-size: figma.figma-font-size-to-rem(35);
   font-weight: bold;
   text-align: center;

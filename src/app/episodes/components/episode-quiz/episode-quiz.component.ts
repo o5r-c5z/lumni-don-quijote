@@ -33,6 +33,7 @@ export class EpisodeQuizComponent implements OnInit {
 
   protected episode?: Episode;
   protected quizStep: number = 0;
+  protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
 
   @HostBinding('class.screen')
@@ -90,6 +91,10 @@ export class EpisodeQuizComponent implements OnInit {
         ) as HTMLFieldSetElement;
         fieldset.classList.remove('hidden');
       });
+  }
+
+  protected onCheckAnswer(questionIndex: number, answerIndex: number): void {
+    this.checkedAnswers[questionIndex] = answerIndex;
   }
 
   protected onValidateAnswer($event: Event) {

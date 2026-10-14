@@ -6,6 +6,8 @@ import {
   tick,
 } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
+import { axeViolations } from '../../../../testing/axe';
+import { withMockClock } from '../../../../testing/timers';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { AudioControlComponent } from './audio-control.component';
@@ -312,5 +314,39 @@ describe('AudioControlComponent', () => {
       expect(hint()).toBeUndefined();
       flush();
     }));
+  });
+
+  it('has no axe violation while the music plays', async () => {
+    // The mock clock captures the keyboard hint timer.
+    withMockClock(() => {
+      createComponent();
+    });
+
+    expect(await axeViolations(host)).toEqual([]);
+  });
+
+  it('has no axe violation while the music is muted', async () => {
+    // The mock clock captures the hint timers started on display and on
+    // toggle.
+    withMockClock(() => {
+      createComponent();
+      button()!.click();
+      fixture.detectChanges();
+    });
+
+    expect(await axeViolations(host)).toEqual([]);
+  });
+
+  it('has no axe violation once the keyboard hint is hidden', async () => {
+    // The mock clock runs the 5 s hint timer to completion, so no timer is
+    // left pending once it is uninstalled.
+    withMockClock(() => {
+      createComponent();
+      jasmine.clock().tick(5000);
+      fixture.detectChanges();
+    });
+    expect(hint()).toBeUndefined();
+
+    expect(await axeViolations(host)).toEqual([]);
   });
 });

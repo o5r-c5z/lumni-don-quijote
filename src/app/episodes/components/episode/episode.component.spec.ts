@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { sleep } from '../../../../testing/timers';
 import { Episode } from '../../models';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
@@ -23,11 +24,6 @@ function createEpisode(title: string): Episode {
 
 function respondWith(body: unknown, init: Partial<Response> = {}): Response {
   return { ok: true, json: async () => body, ...init } as Response;
-}
-
-/** Lets the pending promise callbacks and `setTimeout` callbacks run. */
-function nextMacrotask(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve));
 }
 
 @Component({ selector: 'app-audio-control', template: '' })
@@ -83,7 +79,7 @@ describe('EpisodeComponent', () => {
 
   async function navigate(url: string): Promise<void> {
     await harness.navigateByUrl(url);
-    await nextMacrotask();
+    await sleep();
     await harness.fixture.whenStable();
   }
 
@@ -223,11 +219,11 @@ describe('EpisodeComponent', () => {
       resolvers.get('uploads/episodes/4/episode.json')!(
         respondWith(createEpisode('Episode 4')),
       );
-      await nextMacrotask();
+      await sleep();
       resolvers.get('uploads/episodes/3/episode.json')!(
         respondWith(createEpisode('Episode 3')),
       );
-      await nextMacrotask();
+      await sleep();
 
       expect(TestBed.inject(Router).url).toBe('/4');
       expect(episodeService.getEpisode()?.title).toBe('Episode 3');

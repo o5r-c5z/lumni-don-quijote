@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import Player from '@vimeo/player';
+import { axeViolations } from '../../../../testing/axe';
 import { Episode } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
@@ -123,16 +124,17 @@ describe('EpisodeVideoComponent', () => {
     return host.querySelector('#episode-video__player-container')!;
   }
 
-  function links(host: HTMLElement): (string | null)[][] {
-    return Array.from(host.querySelectorAll('a'), (link) => [
-      link.textContent?.trim() ?? '',
-      link.getAttribute('href'),
+  /** The links and buttons, as their text and their `href` (if any). */
+  function controls(host: HTMLElement): (string | null)[][] {
+    return Array.from(host.querySelectorAll('a, button'), (control) => [
+      control.textContent?.trim() ?? '',
+      control.getAttribute('href'),
     ]);
   }
 
-  function linkNamed(host: HTMLElement, text: string): HTMLAnchorElement {
-    return Array.from(host.querySelectorAll('a')).find(
-      (link) => link.textContent?.trim() === text,
+  function controlNamed(host: HTMLElement, text: string): HTMLElement {
+    return Array.from(host.querySelectorAll<HTMLElement>('a, button')).find(
+      (control) => control.textContent?.trim() === text,
     )!;
   }
 
@@ -161,13 +163,10 @@ describe('EpisodeVideoComponent', () => {
     }
 
     it('creates a responsive player in the container', async () => {
-      const host = await showVideo();
+      await showVideo();
 
       const [, url] = oEmbedRequests.calls.mostRecent().args;
       expect(new URL(url).searchParams.get('responsive')).toBe('true');
-      expect(playerContainer(host).getAttribute('aria-label')).toBe(
-        'Lecteur vidéo',
-      );
     });
 
     it('plays nothing for a clue without a number', async () => {
@@ -281,6 +280,14 @@ describe('EpisodeVideoComponent', () => {
       expect(document.activeElement).toBe(iframe);
     });
 
+    it('leaves the player container as a plain container', () => {
+      // The iframe carries its own title: a landmark around it is redundant.
+      const container = playerContainer(host);
+
+      expect(container.getAttribute('role')).toBeNull();
+      expect(container.getAttribute('aria-label')).toBeNull();
+    });
+
     it('announces when the video plays and pauses', () => {
       audioService.pause.calls.reset();
 
@@ -295,13 +302,13 @@ describe('EpisodeVideoComponent', () => {
     });
 
     it('offers to leave the video for the quiz', () => {
-      expect(links(host)).toEqual([
+      expect(controls(host)).toEqual([
         ['Quitter la vidéo et lancer le quiz', '/3/quiz'],
       ]);
     });
 
     it('restarts the background music when leaving for the quiz', async () => {
-      linkNamed(host, 'Quitter la vidéo et lancer le quiz').click();
+      controlNamed(host, 'Quitter la vidéo et lancer le quiz').click();
       await harness.fixture.whenStable();
 
       expect(audioService.play).toHaveBeenCalledOnceWith(true);
@@ -334,6 +341,10 @@ describe('EpisodeVideoComponent', () => {
         host.style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
     });
+
+    it('has no axe violation', async () => {
+      expect(await axeViolations(host)).toEqual([]);
+    });
   });
 
   describe('exit link', () => {
@@ -342,13 +353,25 @@ describe('EpisodeVideoComponent', () => {
     it('goes back to the quiz during a clue', async () => {
       const host = await showVideo('?videoType=clue&clue=0');
 
-      expect(links(host)).toEqual([['Retourner au quiz', '/3/quiz']]);
+      expect(controls(host)).toEqual([['Retourner au quiz', '/3/quiz']]);
+    });
+
+    it('has no axe violation during a clue', async () => {
+      const host = await showVideo('?videoType=clue&clue=0');
+
+      expect(await axeViolations(host)).toEqual([]);
     });
 
     it('is absent during the resolution', async () => {
       const host = await showVideo('?videoType=resolution');
 
-      expect(links(host)).toEqual([]);
+      expect(controls(host)).toEqual([]);
+    });
+
+    it('has no axe violation during the resolution', async () => {
+      const host = await showVideo('?videoType=resolution');
+
+      expect(await axeViolations(host)).toEqual([]);
     });
   });
 
@@ -363,6 +386,16 @@ describe('EpisodeVideoComponent', () => {
     function endVideo(): void {
       jasmine.clock().install();
       emit('ended');
+    }
+
+    /**
+     * Ends the video, lets its 100 ms focus timer fire, then gives the real
+     * timers back, which axe relies on.
+     */
+    function endVideoWithRealTimers(): void {
+      endVideo();
+      jasmine.clock().tick(100);
+      jasmine.clock().uninstall();
     }
 
     afterEach(() => jasmine.clock().uninstall());
@@ -414,7 +447,7 @@ describe('EpisodeVideoComponent', () => {
           expect(nav?.getAttribute('aria-label')).toBe(
             'Options après la vidéo',
           );
-          expect(links(host)).toEqual([
+          expect(controls(host)).toEqual([
             ['Lancer le quiz !', '/3/quiz'],
             ['Revoir toute la vidéo', null],
             ...(isLesson
@@ -428,23 +461,24 @@ describe('EpisodeVideoComponent', () => {
           ]);
         });
 
-        it('cannot reach "Revoir toute la vidéo" with the keyboard', () => {
-          const replay = linkNamed(host, 'Revoir toute la vidéo');
-
-          replay.focus();
-
-          expect(replay.hasAttribute('href')).toBeFalse();
-          expect(document.activeElement).not.toBe(replay);
-        });
-
         it('focuses the link to the quiz after 100 ms', () => {
-          const quizLink = linkNamed(host, 'Lancer le quiz !');
+          const quizLink = controlNamed(host, 'Lancer le quiz !');
 
           jasmine.clock().tick(99);
           expect(document.activeElement).not.toBe(quizLink);
 
           jasmine.clock().tick(1);
           expect(document.activeElement).toBe(quizLink);
+        });
+
+        it('lets the keyboard focus the button to replay the video', () => {
+          const replayButton = controlNamed(host, 'Revoir toute la vidéo');
+
+          replayButton.focus();
+
+          expect(replayButton.tagName).toBe('BUTTON');
+          expect(replayButton.getAttribute('type')).toBe('button');
+          expect(document.activeElement).toBe(replayButton);
         });
 
         it('displays the office as a background', () => {
@@ -464,7 +498,7 @@ describe('EpisodeVideoComponent', () => {
           announcementService.announce.calls.reset();
           playerPlay.calls.reset();
 
-          linkNamed(host, 'Revoir toute la vidéo').click();
+          controlNamed(host, 'Revoir toute la vidéo').click();
           harness.detectChanges();
 
           expect(requestedVideos().length).toBe(2);
@@ -488,7 +522,7 @@ describe('EpisodeVideoComponent', () => {
       const host = await showVideo();
       endVideo();
 
-      linkNamed(host, 'Revoir la leçon de Rossinante').click();
+      controlNamed(host, 'Revoir la leçon de Rossinante').click();
       await harness.fixture.whenStable();
 
       expect(currentUrl()).toBe('/3/video?videoType=pedagogicalConcept');
@@ -498,21 +532,55 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
+    it('names the link to the quiz as its visible text', async () => {
+      const host = await showVideo();
+      endVideo();
+
+      const quizLink = controlNamed(host, 'Lancer le quiz !');
+
+      expect(quizLink.getAttribute('aria-label')).toBeNull();
+    });
+
     it('names the lesson link as its visible text', async () => {
       const host = await showVideo();
       endVideo();
 
-      const lessonLink = linkNamed(host, 'Revoir la leçon de Rossinante');
+      const lessonLink = controlNamed(host, 'Revoir la leçon de Rossinante');
 
       expect(lessonLink.getAttribute('aria-label')).toBeNull();
+    });
+
+    it('names the button to replay the video as its visible text', async () => {
+      const host = await showVideo();
+      endVideo();
+
+      const replayButton = controlNamed(host, 'Revoir toute la vidéo');
+
+      expect(replayButton.getAttribute('aria-label')).toBeNull();
     });
 
     it('offers no link to the lesson at the end of the lesson', async () => {
       const host = await showVideo('?videoType=pedagogicalConcept');
       endVideo();
 
-      expect(linkNamed(host, 'Revoir la leçon de Rossinante')).toBeUndefined();
+      expect(
+        controlNamed(host, 'Revoir la leçon de Rossinante'),
+      ).toBeUndefined();
       expect(host.querySelector('a[href*="pedagogicalConcept"]')).toBeNull();
+    });
+
+    it('has no axe violation', async () => {
+      const host = await showVideo();
+      endVideoWithRealTimers();
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
+
+    it('has no axe violation at the end of the lesson', async () => {
+      const host = await showVideo('?videoType=pedagogicalConcept');
+      endVideoWithRealTimers();
+
+      expect(await axeViolations(host)).toEqual([]);
     });
   });
 });

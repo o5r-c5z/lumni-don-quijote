@@ -1,8 +1,4 @@
-<div
-  #playerContainer
-  id="episode-video__player-container"
-  aria-label="Lecteur vidéo"
-></div>
+<div #playerContainer id="episode-video__player-container"></div>
 @if (!videoEnded) {
   @if (videoType !== VideoType.Resolution) {
     <a
@@ -25,18 +21,17 @@
       id="episode-video__go-to-quiz-btn"
       class="btn btn-plain"
       [routerLink]="['../quiz']"
-      aria-label="Lancer le quiz"
     >
       Lancer le quiz !
     </a>
-    <a
+    <button
+      type="button"
       class="btn btn-plain"
       (click)="restartVideo()"
-      aria-label="Revoir toute la vidéo"
     >
       <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
       Revoir toute la vidéo
-    </a>
+    </button>
     @if (videoType !== VideoType.PedagogicalConcept) {
       <a
         class="btn btn-plain"

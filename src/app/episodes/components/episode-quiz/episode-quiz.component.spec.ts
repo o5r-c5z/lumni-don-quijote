@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { axeViolations } from '../../../../testing/axe';
+import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
@@ -96,6 +98,17 @@ describe('EpisodeQuizComponent', () => {
   function showQuiz(): void {
     harness.navigateByUrl('/3/quiz');
     tick();
+  }
+
+  /**
+   * Displays the quiz screen and waits out the component's 100 ms timer,
+   * after which it reveals the question and focuses its first answer.
+   *
+   * Relies on real timers: do not call it inside `fakeAsync`.
+   */
+  async function showRevealedQuiz(): Promise<void> {
+    await harness.navigateByUrl('/3/quiz');
+    await sleep(100);
   }
 
   function url(): string {
@@ -206,6 +219,34 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('sets aria-checked to "true" on the checked answer', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const input = radios(fieldsets()[0])[1];
+
+      input.click();
+      harness.detectChanges();
+
+      expect(input.getAttribute('aria-checked')).toBe('true');
+    }));
+
+    it('sets aria-checked back to "false" on the previously checked answer', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const inputs = radios(fieldsets()[0]);
+      inputs[1].click();
+      harness.detectChanges();
+
+      inputs[2].click();
+      harness.detectChanges();
+
+      expect(inputs.map((input) => input.getAttribute('aria-checked'))).toEqual(
+        ['false', 'false', 'true'],
+      );
+    }));
+
     it('marks the right answer and its correction as correct', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
@@ -220,18 +261,6 @@ describe('EpisodeQuizComponent', () => {
         [false, false],
         [true, true],
       ]);
-    }));
-
-    it('keeps aria-checked at "false" on a checked answer', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
-      showQuiz();
-
-      const [input] = radios(fieldsets()[0]);
-      input.click();
-      harness.detectChanges();
-
-      expect(input.checked).toBeTrue();
-      expect(input.getAttribute('aria-checked')).toBe('false');
     }));
 
     it('slides the question in and focuses its first answer after 100 ms', fakeAsync(() => {
@@ -295,6 +324,13 @@ describe('EpisodeQuizComponent', () => {
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
     }));
+
+    it('has no axe violation', async () => {
+      episodeService.setEpisode(createEpisode());
+      await showRevealedQuiz();
+
+      expect(await axeViolations(host())).toEqual([]);
+    });
   });
 
   describe('without a question to show', () => {
@@ -457,6 +493,20 @@ describe('EpisodeQuizComponent', () => {
       expect(correction(input).classList).toContain('active');
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
+
+    it('has no axe violation once validated', async () => {
+      episodeService.setEpisode(createEpisode());
+      await showRevealedQuiz();
+
+      // The mock clock captures the 2 s slide-out timer, keeping the
+      // correction shown.
+      withMockClock(() => {
+        answer(2);
+        expect(fieldsets()[0].disabled).toBeTrue();
+      });
+
+      expect(await axeViolations(host())).toEqual([]);
+    });
 
     it('slides the question out after 2 seconds, then shows the next one', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());

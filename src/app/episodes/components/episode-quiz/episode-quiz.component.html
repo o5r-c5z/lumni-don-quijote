@@ -5,6 +5,7 @@
         class="episode-quiz__question hidden"
         [style.--animation-duration]="animationDuration + 's'"
         [hidden]="quizStep !== qIndex"
+        role="radiogroup"
         aria-required="true"
       >
         <legend class="episode-quiz__question-label">
@@ -24,7 +25,8 @@
             value="{{ aIndex }}"
             class="episode-quiz__answer-input cdk-visually-hidden"
             [class.correct]="aIndex === question.correctAnswer"
-            [attr.aria-checked]="false"
+            [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
+            (change)="onCheckAnswer(qIndex, aIndex)"
             [attr.aria-describedby]="
               'question-' + qIndex + '-answer-' + aIndex + '-correction'
             "
