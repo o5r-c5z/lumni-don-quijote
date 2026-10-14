@@ -24,11 +24,26 @@ Rossinante » reste accessible depuis les questions.
 - [x] `<title>` de `src/index.html` (`Don Quijote`) et `title` de
       `AppComponent` (`lumni-don-quijote`)
 - [x] Plus aucune mention de Biggle, d'Owliver ni d'« enquête » dans les
-      textes de l'application ; restent le README (section 6), les noms de
-      fichiers des assets (section 4) et les liens « Revoir indice N »
-      (section 3)
+      textes de l'application ; restent le README (section 8), les noms de
+      fichiers des assets (section 6) et les liens « Revoir indice N »
+      (section 4)
 
-## 3. Fonctionnalités (TDD)
+## 3. Tests d'accessibilité (axe-core)
+
+Tests déterministes dans Karma : `axe.run()` sur l'élément hôte de chaque
+écran ne renvoie aucune violation. Les résultats `incomplete` sont ignorés.
+La règle `color-contrast` est désactivée, car Karma ne charge ni les styles
+globaux ni les fonds : les contrastes sont vérifiés par Playwright
+(section 5).
+
+- [ ] `axe-core` en devDependency, en version exacte
+- [ ] Écran titre
+- [ ] Écran Bravo
+- [ ] Contrôle audio
+- [ ] Quiz
+- [ ] Vidéo, pendant la lecture et à la fin
+
+## 4. Fonctionnalités (TDD)
 
 - [ ] Modèle d'épisode : introduction, leçon, questions avec leur
       vidéo-réponse (`answerVideo`) ; plus d'indices, donc plus de liens
@@ -43,7 +58,19 @@ Rossinante » reste accessible depuis les questions.
 - [ ] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
       paysage comme en portrait (il n'existe qu'en paysage)
 
-## 4. Assets
+## 5. Tests e2e (Playwright)
+
+Hors des cycles TDD : ces tests vérifient l'application assemblée dans un
+vrai navigateur, une fois les fonctionnalités en place.
+
+- [ ] Parcours complet de l'épisode au clavier
+- [ ] Une mauvaise réponse bloque la progression
+- [ ] « Revoir la leçon de Rossinante » depuis une question
+- [ ] axe sur chaque écran, contrastes compris
+- [ ] Lecteur Vimeo et `episode.json` simulés avec `page.route`
+- [ ] Commande `npm run e2e`, lancée par la CI
+
+## 6. Assets
 
 - [ ] Fond commun à tous les écrans sauf le titre :
       `public/images/Parchemin_questions.jpg`
@@ -57,7 +84,7 @@ Rossinante » reste accessible depuis les questions.
       README, pour que l'app ne charge aucun fichier manquant
 - [ ] À recevoir : image de l'écran titre, personnages éventuels
 
-## 5. Données de l'épisode 1
+## 7. Données de l'épisode 1
 
 Comme dans Biggle, les contenus des épisodes vivent dans `uploads/`,
 gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
@@ -67,7 +94,7 @@ gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
       (`?h=…`, à fournir)
 - [ ] Questions du QUIZZ.docx (bonnes réponses : A, B, B)
 
-## 6. Documentation
+## 8. Documentation
 
 - [ ] README propre à Don Quijote
 
