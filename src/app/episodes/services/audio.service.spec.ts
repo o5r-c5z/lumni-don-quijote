@@ -125,6 +125,20 @@ describe('AudioService', () => {
       expect(music.src).toBe('/audio/second.mp3');
       expect(music.load).toHaveBeenCalledTimes(1);
     });
+
+    describe('playBackgroundMusic', () => {
+      it('creates the looping music and plays it from the beginning', fakeAsync(() => {
+        service.playBackgroundMusic('/audio/music.mp3');
+        flushMicrotasks();
+
+        const music = createdAudio[0];
+        expect(audioConstructor).toHaveBeenCalledOnceWith('/audio/music.mp3');
+        expect(music.loop).toBeTrue();
+        expect(music.currentTime).toBe(0);
+        expect(music.play).toHaveBeenCalledTimes(1);
+        expect(service.isPlaying()).toBeTrue();
+      }));
+    });
   });
 
   describe('play', () => {
