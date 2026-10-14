@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
-import { Episode } from '../../models';
+import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
 
@@ -35,6 +35,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected quizStep: number = 0;
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
+  protected VideoType = VideoType;
 
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
