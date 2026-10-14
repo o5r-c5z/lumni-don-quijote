@@ -11,6 +11,8 @@ import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioControlComponent } from '../audio-control/audio-control.component';
 
+const EPISODE_BACKGROUND_TRACK = '/audio/Entertainment_FOND_SONORE.mp3';
+
 @Component({
   selector: 'app-episode',
   imports: [RouterOutlet, AudioControlComponent],
@@ -34,9 +36,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
 
     if (!this.isVideoScreen(this.router.url)) {
       this.audioService.play();
-      this.audioService.playBackgroundMusic(
-        '/audio/Entertainment_FOND_SONORE.mp3',
-      );
+      this.audioService.playBackgroundMusic(EPISODE_BACKGROUND_TRACK);
     }
 
     this.subscriptions.add(
@@ -48,10 +48,8 @@ export class EpisodeComponent implements OnInit, OnDestroy {
               '/audio/Guitar Background Mini_QUIZ.mp3',
             );
           }
-          if (event.url.includes('/completion')) {
-            this.audioService.playBackgroundMusic(
-              '/audio/Entertainment_FOND_SONORE.mp3',
-            );
+          if (this.isCompletionScreen(event.url)) {
+            this.audioService.playBackgroundMusic(EPISODE_BACKGROUND_TRACK);
           }
           if (!this.isVideoScreen(event.url)) {
             if (!this.audioService.isPlaying()) {
@@ -82,6 +80,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
 
   private isQuizScreen(url: string): boolean {
     return url.includes('/quiz');
+  }
+
+  private isCompletionScreen(url: string): boolean {
+    return url.includes('/completion');
   }
 
   private loadEpisode(episodeNumber: number) {
