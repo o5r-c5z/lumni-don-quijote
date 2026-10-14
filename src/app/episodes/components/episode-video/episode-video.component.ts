@@ -188,6 +188,12 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected get exitLink(): string {
+    return this.videoType === VideoType.Answer && !this.isBeforeLastQuestion()
+      ? '../completion'
+      : '../quiz';
+  }
+
   private isBeforeLastQuestion(): boolean {
     const questionIndex = Number(this.route.snapshot.queryParams['question']);
     const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
