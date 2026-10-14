@@ -37,13 +37,15 @@
       <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
       Revoir toute la vidéo
     </a>
-    <a
-      class="btn btn-plain"
-      [routerLink]="['../video']"
-      [queryParams]="{ videoType: 'pedagogicalConcept' }"
-    >
-      <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
-      Revoir la leçon de Rossinante
-    </a>
+    @if (videoType !== 'pedagogicalConcept') {
+      <a
+        class="btn btn-plain"
+        [routerLink]="['../video']"
+        [queryParams]="{ videoType: 'pedagogicalConcept' }"
+      >
+        <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
+        Revoir la leçon de Rossinante
+      </a>
+    }
   </nav>
 }
