@@ -343,4 +343,20 @@ describe('AudioControlComponent', () => {
 
     expect(await axeViolations(host)).toEqual([]);
   });
+
+  it('has no axe violation once the keyboard hint is hidden', async () => {
+    // Same as above: the mock clock runs the 5 s hint timer to completion,
+    // so no timer is left pending once it is uninstalled.
+    jasmine.clock().install();
+    try {
+      createComponent();
+      jasmine.clock().tick(5000);
+      fixture.detectChanges();
+    } finally {
+      jasmine.clock().uninstall();
+    }
+    expect(hint()).toBeUndefined();
+
+    expect(await axeViolations(host)).toEqual([]);
+  });
 });
