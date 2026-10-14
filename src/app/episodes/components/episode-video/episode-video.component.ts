@@ -170,6 +170,16 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       case VideoType.Resolution:
         this.router.navigate(['../completion'], { relativeTo: this.route });
         break;
+      case VideoType.Answer:
+        if (
+          Number(this.route.snapshot.queryParams['question']) <
+          (this.episode?.questions.length ?? 0) - 1
+        ) {
+          this.router.navigate(['../quiz'], { relativeTo: this.route });
+        } else {
+          this.endVideo();
+        }
+        break;
       case undefined:
         this.router.navigate([], {
           relativeTo: this.route,
@@ -177,21 +187,25 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
         });
         break;
       default:
-        this.videoEnded = true;
-        this.destroyPlayer();
-
-        this.restartBackgroundMusic();
-        this.announcementService.announce('Vidéo terminée');
-
-        setTimeout(() => {
-          const firstButton = document.getElementById(
-            'episode-video__go-to-quiz-btn',
-          );
-          if (firstButton) {
-            firstButton.focus();
-          }
-        }, 100);
+        this.endVideo();
     }
+  }
+
+  private endVideo() {
+    this.videoEnded = true;
+    this.destroyPlayer();
+
+    this.restartBackgroundMusic();
+    this.announcementService.announce('Vidéo terminée');
+
+    setTimeout(() => {
+      const firstButton = document.getElementById(
+        'episode-video__go-to-quiz-btn',
+      );
+      if (firstButton) {
+        firstButton.focus();
+      }
+    }, 100);
   }
 
   private destroyPlayer() {
