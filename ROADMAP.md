@@ -32,9 +32,8 @@ Rossinante » reste accessible depuis les questions.
 
 Tests déterministes dans Karma : `axe.run()` sur l'élément hôte de chaque
 écran ne renvoie aucune violation. Les résultats `incomplete` sont ignorés.
-La règle `color-contrast` est désactivée, car Karma ne charge ni les styles
-globaux ni les fonds : les contrastes sont vérifiés par Playwright
-(section 5).
+La règle `color-contrast` est désactivée : les contrastes sont vérifiés par
+Playwright, dans un vrai navigateur (section 5).
 
 - [x] `axe-core` en devDependency, en version exacte
 - [x] Écran titre
