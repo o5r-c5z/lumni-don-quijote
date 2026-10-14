@@ -40,7 +40,7 @@ describe('EpisodeCompletionComponent', () => {
   it('congratulates the player', () => {
     expect(host.querySelector('h2')?.textContent).toBe('Bravo !');
     expect(host.querySelector('p')?.textContent).toBe(
-      "Vous avez réussi l'enquête !",
+      "Vous avez terminé l'épisode !",
     );
   });
 
