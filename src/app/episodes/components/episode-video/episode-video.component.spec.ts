@@ -350,6 +350,12 @@ describe('EpisodeVideoComponent', () => {
   describe('exit link', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
+    it('offers to skip the lesson for the quiz', async () => {
+      const host = await showVideo('?videoType=lesson');
+
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
+    });
+
     it('goes back to the quiz during a clue', async () => {
       const host = await showVideo('?videoType=clue&clue=0');
 
