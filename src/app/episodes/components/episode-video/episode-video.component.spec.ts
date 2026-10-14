@@ -407,8 +407,9 @@ describe('EpisodeVideoComponent', () => {
         });
 
         const isLesson = query === '?videoType=pedagogicalConcept';
+        const lessonOffer = isLesson ? '' : ' and the lesson';
 
-        it(`offers the quiz, the video again${isLesson ? '' : ' and the lesson'}`, () => {
+        it(`offers the quiz, the video again${lessonOffer}`, () => {
           const nav = host.querySelector('nav');
           expect(nav?.getAttribute('aria-label')).toBe(
             'Options après la vidéo',
