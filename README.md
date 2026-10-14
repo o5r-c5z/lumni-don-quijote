@@ -30,7 +30,7 @@ d'écran. Projet commandé par Lumni, produit par Big Company.
 - `public/` — fichiers statiques copiés tels quels : `audio/` (musique et effets `.mp3`), `images/landscape/` et `images/portrait/` (décors), `images/` (personnages Biggle et Owliver), `favicon.ico`.
 - `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
-- `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types et tests sur chaque pull request et sur `main`.
+- `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, tests et build de production sur chaque pull request et sur `main`.
 - `AGENTS.md` — instructions pour les agents de code (en anglais) : commandes, conventions de test, TDD.
 - `ROADMAP.md` — feuille de route de Don Quijote (reprise des tests de Biggle, renommage, fonctionnalités, assets).
 - `angular.json`, `tsconfig*.json`, `.editorconfig`, `.vscode/` — configuration du projet et de l'éditeur.
@@ -48,7 +48,7 @@ d'écran. Projet commandé par Lumni, produit par Big Company.
 - Audio HTML5 (`Audio`) : musique de fond en boucle, effets sonores ponctuels, gestion de l'autoplay bloqué (reprise à la première interaction).
 - Données d'épisode chargées en `fetch` JSON au runtime, pas de back-end applicatif.
 - Cadrage fixe 16/9, orientation paysage (la prise en charge du portrait a été retirée).
-- Tests unitaires avec Karma + Jasmine : un `*.spec.ts` à côté de chaque fichier testé (`skipTests` reste activé pour les schematics).
+- Tests unitaires avec Karma + Jasmine : un `*.spec.ts` à côté de chaque fichier testé, que `ng generate` crée par défaut.
 - Gestion des dépendances : npm (`package-lock.json`).
 
 ## Développement
@@ -70,7 +70,7 @@ npm run typecheck    # vérification des types (code de l'application et specs)
 - `npm test` lance Karma en watch dans Chrome : la suite repasse à chaque modification.
 - `npm run test:ci` lance la suite une seule fois dans Chrome headless.
 - `npm run typecheck` lance `tsc --noEmit` sur `tsconfig.app.json` puis sur `tsconfig.spec.json`, donc vérifie aussi les specs. Il ne vérifie pas les templates HTML : `ng test` les compile en JIT, sans vérification de types ; `npm run build` et `npm start` (via `ng serve`) les vérifient, car ils compilent en AOT avec `strictTemplates`.
-- Avant de pousser, `npm run typecheck` et `npm run test:ci` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les deux sur chaque pull request.
+- Avant de pousser, `npm run typecheck`, `npm run test:ci` et `npm run build` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les trois sur chaque pull request et sur `main`. Des trois, seul le build vérifie les types des templates ; il n'a pas besoin du dossier `uploads/`.
 
 Chaque fichier testé a son spec à côté de lui (`episode.service.ts` → `episode.service.spec.ts`). Les tests vérifient le comportement observable (DOM rendu, navigation, valeurs émises) et non les détails d'implémentation.
 
