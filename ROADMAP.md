@@ -21,14 +21,18 @@ Rossinante » reste accessible depuis les questions.
 
 - [x] Nom du projet dans `package.json`, `package-lock.json` et
       `angular.json` (`outputPath` compris), chemin du build dans le README
-- [x] `<title>` de `src/index.html` (encore `EnquetesEducatives`) et
-      `title` de `AppComponent` (encore `enquetes-educatives`)
-- [x] Plus aucune mention de Biggle, d'Owliver ni d'« enquête »
+- [x] `<title>` de `src/index.html` (`Don Quijote`) et `title` de
+      `AppComponent` (`lumni-don-quijote`)
+- [x] Plus aucune mention de Biggle, d'Owliver ni d'« enquête » dans les
+      textes de l'application ; restent le README (section 6), les noms de
+      fichiers des assets (section 4) et les liens « Revoir indice N »
+      (section 3)
 
 ## 3. Fonctionnalités (TDD)
 
 - [ ] Modèle d'épisode : introduction, leçon, questions avec leur
-      vidéo-réponse (`answerVideo`)
+      vidéo-réponse (`answerVideo`) ; plus d'indices, donc plus de liens
+      « Revoir indice N » sur les questions
 - [ ] Titre → Introduction → leçon → première question (plus d'accès direct
       au quiz)
 - [ ] Bonne réponse → vidéo-réponse → question suivante, ou écran de fin
