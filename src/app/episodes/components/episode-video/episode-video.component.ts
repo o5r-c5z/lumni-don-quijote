@@ -96,7 +96,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
               break;
             case VideoType.Investigation:
             default:
-              this.video = this.episode?.investigation;
+              this.video = this.episode?.introduction;
               break;
           }
 
