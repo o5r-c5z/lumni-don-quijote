@@ -10,16 +10,11 @@ import { AudioControlComponent } from '../audio-control/audio-control.component'
 import { EpisodeComponent } from './episode.component';
 
 function createEpisode(title: string): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title,
     titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [video],
-    resolution: video,
     questions: [],
   };
 }

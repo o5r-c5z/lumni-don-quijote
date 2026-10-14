@@ -3,16 +3,11 @@ import { Episode } from '../models';
 import { EpisodeService } from './episode.service';
 
 function createEpisode(questionCount: number): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title: 'Episode',
     titleBackground: { landscape: 'landscape.jpg', portrait: 'portrait.jpg' },
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [video],
-    resolution: video,
     questions: Array.from({ length: questionCount }, (_, index) => ({
       label: `Question ${index + 1}`,
       answers: ['A', 'B'],

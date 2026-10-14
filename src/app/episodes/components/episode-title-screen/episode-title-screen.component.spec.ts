@@ -8,7 +8,6 @@ import { EpisodeService } from '../../services/episode.service';
 import { EpisodeTitleScreenComponent } from './episode-title-screen.component';
 
 function createEpisode(title: string): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title,
     // Data URLs, so that displaying the background makes no request.
@@ -18,10 +17,6 @@ function createEpisode(title: string): Episode {
     },
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [video],
-    resolution: video,
     questions: [],
   };
 }

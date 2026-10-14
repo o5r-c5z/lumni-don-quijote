@@ -19,10 +19,6 @@ const episode: Episode = {
   titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
   introduction: video(500, 'Introduction'),
   lesson: video(600, 'Leçon'),
-  investigation: video(100, 'Enquête'),
-  pedagogicalConcept: video(200, 'Cours'),
-  clues: [video(300, 'Indice 0'), video(301, 'Indice 1')],
-  resolution: video(400, 'Résolution'),
   questions: [
     {
       label: 'Question 0',

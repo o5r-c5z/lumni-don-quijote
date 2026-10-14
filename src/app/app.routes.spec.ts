@@ -61,7 +61,7 @@ describe('routes', () => {
   for (const [url, screen] of [
     ['/3', 'EpisodeTitleScreenComponent'],
     ['/3/video', 'EpisodeVideoComponent'],
-    ['/3/video?videoType=clue&clue=1', 'EpisodeVideoComponent'],
+    ['/3/video?videoType=answer&question=1', 'EpisodeVideoComponent'],
     ['/3/quiz', 'EpisodeQuizComponent'],
     ['/3/completion', 'EpisodeCompletionComponent'],
     ['/3/unknown', 'EpisodeTitleScreenComponent'],
