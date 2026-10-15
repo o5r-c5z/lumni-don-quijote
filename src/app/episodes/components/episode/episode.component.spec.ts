@@ -135,6 +135,17 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
+    it('plays the background track again when going back from the quiz to the title screen', async () => {
+      await navigate('/3/quiz');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
+    });
+
     it('plays no music when going to a video, wherever "/video" is in the URL', async () => {
       await navigate('/3/quiz');
       audioService.playBackgroundMusic.calls.reset();
