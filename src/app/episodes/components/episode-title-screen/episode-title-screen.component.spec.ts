@@ -115,6 +115,14 @@ describe('EpisodeTitleScreenComponent', () => {
       );
     });
 
+    it('shows no background image behind the links', async () => {
+      episodeService.setEpisode(createEpisode('La disparition'));
+      const host = await showTitleScreen();
+
+      const panel = host.querySelector('nav.episode-title-screen__links')!;
+      expect(getComputedStyle(panel).backgroundImage).toBe('none');
+    });
+
     it('focuses the link to the episode', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
