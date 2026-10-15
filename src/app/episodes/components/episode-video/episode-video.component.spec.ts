@@ -238,19 +238,18 @@ describe('EpisodeVideoComponent', () => {
       expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
-    it('then creates the player twice on each query change', async () => {
+    it('then creates a single player for the lesson when the introduction ends', async () => {
       await showVideo();
       episodeService.setEpisode(episode);
 
-      // Each episode emission adds a subscription to the query parameters.
-      await harness.navigateByUrl('/3/video?videoType=lesson');
+      emit('ended');
+      await harness.fixture.whenStable();
 
+      expect(currentUrl()).toBe('/3/video?videoType=lesson');
       expect(requestedVideos()).toEqual([
         'https://vimeo.com/500',
         'https://vimeo.com/600',
-        'https://vimeo.com/600',
       ]);
-      expect(playerDestroy).toHaveBeenCalledTimes(2);
     });
   });
 
