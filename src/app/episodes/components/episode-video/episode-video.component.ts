@@ -193,23 +193,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     this.router.navigate([path], { relativeTo: this.route });
   }
 
-  private endVideo() {
-    this.videoEnded = true;
-    this.destroyPlayer();
-
-    this.restartBackgroundMusic();
-    this.announcementService.announce('Vidéo terminée');
-
-    setTimeout(() => {
-      const firstButton = document.getElementById(
-        'episode-video__go-to-quiz-btn',
-      );
-      if (firstButton) {
-        firstButton.focus();
-      }
-    }, 100);
-  }
-
   private destroyPlayer() {
     this.player?.destroy();
     this.player = undefined;
