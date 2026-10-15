@@ -71,7 +71,8 @@ export class AudioControlComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (
-      document.activeElement instanceof HTMLInputElement ||
+      (document.activeElement instanceof HTMLInputElement &&
+        document.activeElement.type !== 'radio') ||
       document.activeElement instanceof HTMLTextAreaElement ||
       document.activeElement instanceof HTMLSelectElement
     ) {
