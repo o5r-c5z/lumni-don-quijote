@@ -27,7 +27,7 @@ const questions: QuizQuestion[] = [
 function createEpisode(quiz = questions): Episode {
   return {
     title: 'La disparition',
-    titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+    titleBackground: 'background.png',
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: quiz,

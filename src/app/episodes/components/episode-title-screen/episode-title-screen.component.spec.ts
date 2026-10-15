@@ -10,11 +10,8 @@ import { EpisodeTitleScreenComponent } from './episode-title-screen.component';
 function createEpisode(title: string): Episode {
   return {
     title,
-    // Data URLs, so that displaying the background makes no request.
-    titleBackground: {
-      landscape: `data:,${title} landscape`,
-      portrait: `data:,${title} portrait`,
-    },
+    // A data URL, so that displaying the background makes no request.
+    titleBackground: `data:,${title} background`,
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: [],
@@ -103,9 +100,8 @@ describe('EpisodeTitleScreenComponent', () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
 
-      expect(host.classList).toContain('screen');
-      expect(host.style.getPropertyValue('--screen-background')).toBe(
-        'url("data:,La disparition landscape")',
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,La disparition background")',
       );
     });
 
