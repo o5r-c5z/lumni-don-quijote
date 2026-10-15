@@ -62,10 +62,21 @@ dans un vrai navigateur (section 5).
       ce qui fait demander au navigateur un fichier `/undefined`. Un
       `titleBackground` vide donne `url("")`, dont le traitement dépend du
       navigateur. Piste : renvoyer `none` quand le chemin manque ou est vide
-- [ ] `--screen-background-portrait` est défini par les écrans titre, quiz,
-      vidéo et Bravo, mais aucune feuille de style ne le lit (`styles.scss`
-      n'utilise que `--screen-background-landscape`) : `titleBackground.portrait`
-      n'a donc aucun effet
+- [ ] Orientation portrait abandonnée : `--screen-background-portrait`,
+      défini par les écrans titre, quiz, vidéo et Bravo, n'était lu par
+      aucune feuille de style, et `titleBackground.portrait` n'avait donc
+      aucun effet. Supprimer le portrait et la notion de paysage :
+      `titleBackground` devient un simple chemin, `--screen-background-landscape`
+      devient `--screen-background`
+- [ ] Un `episode.json` sans `titleBackground` fait planter l'écran titre
+      (`TypeError` dans ses getters : seul `episode?.` est protégé). Piste :
+      `none`, comme pour un chemin vide
+- [ ] La touche `M` (couper/rétablir le son) est ignorée quand le focus est
+      sur un bouton radio, donc sur toutes les questions, où le focus est
+      toujours sur une réponse. Elle doit rester ignorée dans un champ
+      texte, un `textarea` et un `select`
+- [ ] `npm run build` avertit que `episode-quiz.component.scss` dépasse de
+      52 octets le budget de 4 kB : réduire la feuille sans changer le rendu
 
 ## 5. Tests e2e (Playwright)
 
