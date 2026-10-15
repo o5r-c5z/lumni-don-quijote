@@ -56,12 +56,10 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(host.children.length).toBe(0);
     });
 
-    it('points the background at an "undefined" image', async () => {
+    it('has no background image', async () => {
       const host = await showTitleScreen();
 
-      expect(host.style.getPropertyValue('--screen-background')).toBe(
-        'url("undefined")',
-      );
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
   });
 
