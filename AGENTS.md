@@ -14,12 +14,13 @@ npm start            # dev server on http://localhost:4200/
 npm run build        # production build (AOT, type-checks the templates)
 npm test             # unit tests in watch mode (Karma + Jasmine, Chrome)
 npm run test:ci      # unit tests once, headless Chrome
-npm run typecheck    # type check (application code and specs)
+npm run typecheck    # type check (application code, specs and e2e tests)
+npm run e2e          # end-to-end tests (Playwright: Chromium, Firefox, WebKit)
 ```
 
-Before pushing, `npm run typecheck`, `npm run test:ci` and `npm run build`
-must pass. The GitHub Actions CI runs all three on every pull request and on
-`main`. Of the three, only the build type-checks the templates: `tsc` skips
+Before pushing, `npm run typecheck`, `npm run test:ci`, `npm run build` and
+`npm run e2e` must pass. The GitHub Actions CI runs all four on every pull
+request and on `main`. Only the build type-checks the templates: `tsc` skips
 them and `ng test` compiles them in JIT mode.
 
 ## Tests
@@ -31,6 +32,11 @@ them and `ng test` compiles them in JIT mode.
   implementation details.
 - External dependencies (Vimeo player, `Audio`, `fetch`, `LiveAnnouncer`) are
   replaced by test doubles: no test plays a sound or hits the network.
+- End-to-end tests live in `e2e/`, outside the TDD cycles: they check the
+  assembled application with the keyboard and run axe on every screen.
+  `page.route` stubs `episode.json`, the Vimeo player, Google Fonts and the
+  sounds, and `e2e/fixtures.ts` fails any test whose requests leave the
+  local server.
 
 ## Test-driven development
 

@@ -63,12 +63,12 @@ dans un vrai navigateur (section 5).
 Hors des cycles TDD : ces tests vérifient l'application assemblée dans un
 vrai navigateur, une fois les fonctionnalités en place.
 
-- [ ] Parcours complet de l'épisode au clavier
-- [ ] Une mauvaise réponse bloque la progression
-- [ ] « Revoir la leçon de Rossinante » depuis une question
-- [ ] axe sur chaque écran, contrastes compris
-- [ ] Lecteur Vimeo et `episode.json` simulés avec `page.route`
-- [ ] Commande `npm run e2e`, lancée par la CI
+- [x] Parcours complet de l'épisode au clavier
+- [x] Une mauvaise réponse bloque la progression
+- [x] « Revoir la leçon de Rossinante » depuis une question
+- [x] axe sur chaque écran, contrastes compris
+- [x] Lecteur Vimeo et `episode.json` simulés avec `page.route`
+- [x] Commande `npm run e2e`, lancée par la CI
 
 ## 6. Assets
 
