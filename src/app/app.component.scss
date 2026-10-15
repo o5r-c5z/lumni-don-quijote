@@ -8,8 +8,8 @@
   font-family: "Golos Text", sans-serif;
   font-optical-sizing: auto;
   aspect-ratio: var(--screen-ratio);
-  max-width: var(--screen-landscape-max-width);
-  width: var(--screen-landscape-width);
+  max-width: var(--screen-max-width);
+  width: var(--screen-width);
 
   @supports (-webkit-touch-callout: none) {
     max-height: -webkit-fill-available;

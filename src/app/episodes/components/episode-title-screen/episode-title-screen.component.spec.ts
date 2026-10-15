@@ -62,10 +62,7 @@ describe('EpisodeTitleScreenComponent', () => {
     it('points the background at an "undefined" image', async () => {
       const host = await showTitleScreen();
 
-      expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("undefined")',
-      );
-      expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
+      expect(host.style.getPropertyValue('--screen-background')).toBe(
         'url("undefined")',
       );
     });
@@ -107,11 +104,8 @@ describe('EpisodeTitleScreenComponent', () => {
       const host = await showTitleScreen();
 
       expect(host.classList).toContain('screen');
-      expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
+      expect(host.style.getPropertyValue('--screen-background')).toBe(
         'url("data:,La disparition landscape")',
-      );
-      expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-        'url("data:,La disparition portrait")',
       );
     });
 

@@ -28,14 +28,9 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   protected goToEpisodeButton!: ElementRef<HTMLAnchorElement>;
 
   @HostBinding('class.screen')
-  @HostBinding('style.--screen-background-landscape')
-  get backgroundImageLandscape() {
+  @HostBinding('style.--screen-background')
+  get backgroundImage() {
     return `url("${this.episode?.titleBackground.landscape}")`;
-  }
-
-  @HostBinding('style.--screen-background-portrait')
-  get backgroundImagePortrait() {
-    return `url("${this.episode?.titleBackground.portrait}")`;
   }
 
   ngOnInit() {

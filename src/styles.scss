@@ -27,8 +27,8 @@ html {
   --default-text-color: var(--white-color);
   
   --screen-ratio: 16 / 9;
-  --screen-landscape-max-width: calc(100vh * calc(var(--screen-ratio)));
-  --screen-landscape-width: min(100%, var(--screen-landscape-max-width));
+  --screen-max-width: calc(100vh * calc(var(--screen-ratio)));
+  --screen-width: min(100%, var(--screen-max-width));
   
   --default-line-height: 1.15;
   --spacer: 1rem;
@@ -97,7 +97,7 @@ body {
     z-index: -10;
     position: absolute;
     inset: 0;
-    background-image: var(--screen-background-landscape);
+    background-image: var(--screen-background);
     background-position: center top;
     background-repeat: no-repeat;
     background-size: cover;

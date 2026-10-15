@@ -11,7 +11,7 @@
   right: 0;
   bottom: 0;
   padding: 6rem 2rem 0rem 5rem;
-  width: min(45%, var(--screen-landscape-max-width) * 0.45);
+  width: min(45%, var(--screen-max-width) * 0.45);
   aspect-ratio: var(--panel-ratio);
   font-size: figma.figma-font-size-to-rem(37);
 

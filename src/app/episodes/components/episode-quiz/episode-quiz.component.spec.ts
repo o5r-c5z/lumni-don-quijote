@@ -307,12 +307,9 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
 
       expect(host().classList).toContain('screen');
-      expect(
-        host().style.getPropertyValue('--screen-background-landscape'),
-      ).toBe('url("/images/Parchemin_questions.jpg")');
-      expect(
-        host().style.getPropertyValue('--screen-background-portrait'),
-      ).toBe('url("/images/Parchemin_questions.jpg")');
+      expect(host().style.getPropertyValue('--screen-background')).toBe(
+        'url("/images/Parchemin_questions.jpg")',
+      );
       expect(
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');

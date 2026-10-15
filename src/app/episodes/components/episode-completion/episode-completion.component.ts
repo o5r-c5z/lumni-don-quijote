@@ -23,13 +23,8 @@ export class EpisodeCompletionComponent implements AfterViewInit {
   protected resetQuizButton!: ElementRef<HTMLAnchorElement>;
 
   @HostBinding('class.screen')
-  @HostBinding('style.--screen-background-landscape')
-  get backgroundImageLandscape() {
-    return PARCHMENT_BACKGROUND;
-  }
-
-  @HostBinding('style.--screen-background-portrait')
-  get backgroundImagePortrait() {
+  @HostBinding('style.--screen-background')
+  get backgroundImage() {
     return PARCHMENT_BACKGROUND;
   }
 
