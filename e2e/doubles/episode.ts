@@ -11,7 +11,7 @@ export const EPISODE_NUMBER = 1;
  */
 export const EPISODE: Episode = {
   title: 'Épisode factice e2e',
-  titleBackground: '/e2e/titre-factice-paysage.jpg',
+  titleBackground: '/e2e/titre-factice.jpg',
   introduction: {
     url: 'https://vimeo.com/1',
     title: 'Introduction factice',
