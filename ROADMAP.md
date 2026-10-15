@@ -57,9 +57,9 @@ dans un vrai navigateur (section 5).
       musique du quiz sur les questions, silence pendant les vidéos
 - [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
       paysage comme en portrait (il n'existe qu'en paysage)
-- [ ] Écran titre avant le chargement d'`episode.json` : ses variables de
-      fond valent `url("undefined")`, ce qui peut faire demander au
-      navigateur un fichier `/undefined`
+- [ ] Écran titre avant le chargement d'`episode.json`, ou si ce
+      chargement échoue : ses variables de fond valent `url("undefined")`,
+      ce qui fait demander au navigateur un fichier `/undefined`
 
 ## 5. Tests e2e (Playwright)
 
@@ -90,8 +90,9 @@ vrai navigateur, une fois les fonctionnalités en place.
 ## 7. Données de l'épisode 1
 
 Comme dans Biggle, les contenus des épisodes vivent dans `uploads/`,
-gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
-`angular.json`. L'image de titre y sera aussi, via `titleBackground`.
+gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par la
+configuration `development` d'`angular.json` (`npm start`) ; le build de
+production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`.
 
 - [x] `uploads/episodes/1/episode.json` avec les liens Vimeo complets
       (`https://player.vimeo.com/video/<id>?h=<hash>`)
@@ -100,7 +101,8 @@ gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
       n'affiche pas
 
 En attendant l'image de titre (section 6), `titleBackground.landscape` et
-`titleBackground.portrait` valent `""` : aucun fichier n'est demandé.
+`titleBackground.portrait` valent `""` : Chromium ne demande alors aucun
+fichier ; les autres navigateurs n'ont pas été vérifiés.
 
 ## 8. Documentation
 
