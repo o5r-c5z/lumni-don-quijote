@@ -37,7 +37,11 @@ export class EpisodeComponent implements OnInit, OnDestroy {
 
     if (!this.isVideoScreen(this.router.url)) {
       this.audioService.play();
-      this.audioService.playBackgroundMusic(EPISODE_BACKGROUND_TRACK);
+      this.audioService.playBackgroundMusic(
+        this.isQuizScreen(this.router.url)
+          ? QUIZ_BACKGROUND_TRACK
+          : EPISODE_BACKGROUND_TRACK,
+      );
     }
 
     this.subscriptions.add(
