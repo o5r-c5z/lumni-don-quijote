@@ -390,6 +390,12 @@ describe('EpisodeVideoComponent', () => {
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/completion']]);
     });
 
+    it('offers to skip an answer without a question number for the quiz', async () => {
+      const host = await showVideo('?videoType=answer');
+
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
+    });
+
     it('has no axe violation during the answer to the last question', async () => {
       episodeService.setEpisode(episodeWithQuestionCount(5));
       const host = await showVideo('?videoType=answer&question=4');
