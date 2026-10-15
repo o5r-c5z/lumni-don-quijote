@@ -165,13 +165,13 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   private pathAfterAnswer(): string {
-    return this.isBeforeLastQuestion() ? QUIZ_PATH : COMPLETION_PATH;
+    return this.isLastQuestion() ? COMPLETION_PATH : QUIZ_PATH;
   }
 
-  private isBeforeLastQuestion(): boolean {
+  private isLastQuestion(): boolean {
     const questionIndex = Number(this.route.snapshot.queryParams['question']);
     const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
-    return Number.isNaN(questionIndex) || questionIndex < lastQuestionIndex;
+    return questionIndex === lastQuestionIndex;
   }
 
   private destroyPlayer() {
