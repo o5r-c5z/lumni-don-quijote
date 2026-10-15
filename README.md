@@ -69,8 +69,9 @@ npm run typecheck    # vérification des types (code de l'application et specs)
 
 - `npm test` lance Karma en watch dans Chrome : la suite repasse à chaque modification.
 - `npm run test:ci` lance la suite une seule fois dans Chrome headless.
-- `npm run typecheck` lance `tsc --noEmit` sur `tsconfig.app.json` puis sur `tsconfig.spec.json`, donc vérifie aussi les specs. Il ne vérifie pas les templates HTML : `ng test` les compile en JIT, sans vérification de types ; `npm run build` et `npm start` (via `ng serve`) les vérifient, car ils compilent en AOT avec `strictTemplates`.
-- Avant de pousser, `npm run typecheck`, `npm run test:ci` et `npm run build` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les trois sur chaque pull request et sur `main`. Des trois, seul le build vérifie les types des templates ; il n'a pas besoin du dossier `uploads/`.
+- `npm run typecheck` lance `tsc --noEmit` sur `tsconfig.app.json`, `tsconfig.spec.json` puis `e2e/tsconfig.json`, donc vérifie aussi les specs et les tests e2e. Il ne vérifie pas les templates HTML : `ng test` les compile en JIT, sans vérification de types ; `npm run build` et `npm start` (via `ng serve`) les vérifient, car ils compilent en AOT avec `strictTemplates`.
+- `npm run e2e` lance les tests de bout en bout Playwright (`e2e/`) dans Chromium, Firefox et WebKit, sur un `ng serve` de production lancé sur le port 4300. La première fois, installez les navigateurs avec `npx playwright install`. Pour un seul navigateur : `npm run e2e -- --project=firefox`. En cas d'échec, `npx playwright show-report` ouvre le rapport HTML.
+- Avant de pousser, `npm run typecheck`, `npm run test:ci`, `npm run build` et `npm run e2e` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les quatre sur chaque pull request et sur `main`, et joint le rapport Playwright quand les tests e2e échouent. Seul le build vérifie les types des templates ; ni lui ni les tests e2e n'ont besoin du dossier `uploads/`.
 
 Chaque fichier testé a son spec à côté de lui (`episode.service.ts` → `episode.service.spec.ts`). Les tests vérifient le comportement observable (DOM rendu, navigation, valeurs émises) et non les détails d'implémentation.
 
@@ -81,6 +82,12 @@ Les dépendances externes sont remplacées par des doublures, si bien qu'aucun t
 - `LiveAnnouncer` : remplacé par un espion dans `announcement.service.spec.ts` ;
 - Vimeo : dans `episode-video.component.spec.ts`, les méthodes `on()`, `play()` et `destroy()` de `Player` sont espionnées et `XMLHttpRequest` est remplacé par une requête qui ne répond jamais, si bien que le lecteur n'intègre aucune iframe et ne contacte pas Vimeo ;
 - les composants reçoivent `AudioService` et `AnnouncementService` sous forme d'espions ; le spec des routes remplace chaque écran par un composant minimal.
+
+### Tests e2e
+
+Les tests Playwright vérifient l'application assemblée, au clavier : le parcours complet de l'épisode, du titre à l'écran Bravo (en regardant chaque vidéo jusqu'au bout, puis en la passant), le blocage sur une mauvaise réponse et « Revoir la leçon de Rossinante » depuis une question. `e2e/accessibility.spec.ts` lance axe-core sur chaque écran ; les contrastes qu'axe ne sait pas évaluer (texte sur image ou dégradé) sont mesurés sur une capture d'écran, contre le pixel de fond le moins favorable. Le contraste du contour de focus n'est pas vérifié.
+
+Aucun test n'appelle le réseau ni ne dépend du dossier `uploads/` ou des assets : `e2e/fixtures.ts` fait échouer tout test dont une requête quitte le serveur local. Avec `page.route`, `episode.json` est remplacé par un épisode factice (`e2e/doubles/episode.ts`), le lecteur Vimeo par une page factice qui imite son protocole `postMessage` (`e2e/doubles/vimeo.ts`), Google Fonts par une feuille vide, et les sons par des réponses 404.
 
 ### Développer en TDD
 
