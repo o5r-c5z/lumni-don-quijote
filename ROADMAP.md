@@ -77,8 +77,8 @@ vrai navigateur, une fois les fonctionnalités en place.
 - [ ] Fond sonore du titre et de l'écran Bravo :
       `public/audio/Entertainment_FOND_SONORE.mp3`
 - [ ] Fond sonore du quiz : `public/audio/Guitar Background Mini_QUIZ.mp3`
-- [ ] Sons de réponse conservés : `App Negative.mp3`, `Win 3.mp3`
-- [ ] Images de Biggle supprimées (`public/images/` ne contient plus que le
+- [x] Sons de réponse conservés : `App Negative.mp3`, `Win 3.mp3`
+- [x] Images de Biggle supprimées (`public/images/` ne contient plus que le
       parchemin), dans la même PR que le remplacement de leurs références
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
