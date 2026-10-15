@@ -169,6 +169,12 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected get isIntroduction(): boolean {
+    return (
+      this.videoType !== VideoType.Lesson && this.videoType !== VideoType.Answer
+    );
+  }
+
   protected get exitLink(): string {
     return this.videoType === VideoType.Answer
       ? this.pathAfterAnswer()
