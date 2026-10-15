@@ -31,15 +31,22 @@ export const test = base.extend<{ unexpectedRequests: string[] }>({
     { auto: true },
   ],
 
-  page: async ({ page }, use) => {
+  page: async ({ page, baseURL }, use) => {
+    // Local paths only: a page route takes precedence over the context
+    // route, which must still catch the requests leaving the local server.
+    const localOrigin = new URL(baseURL!).origin;
     await page.route('https://fonts.googleapis.com/**', (route) =>
       route.fulfill({ contentType: 'text/css', body: '' }),
     );
     // Silences the sound effects of the quiz: no test listens to them.
-    await page.route('**/audio/**', (route) => route.fulfill({ status: 404 }));
+    await page.route(`${localOrigin}/audio/**`, (route) =>
+      route.fulfill({ status: 404 }),
+    );
     // Hides the parchment background, so that the contrasts measured on a
     // screenshot are the same whether public/images/ holds it or not.
-    await page.route('**/images/**', (route) => route.fulfill({ status: 404 }));
+    await page.route(`${localOrigin}/images/**`, (route) =>
+      route.fulfill({ status: 404 }),
+    );
     await stubEpisode(page);
     await stubVimeo(page);
     await use(page);
