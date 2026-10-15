@@ -31,13 +31,8 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   protected episode?: Episode;
 
   ngOnInit() {
-    this.audioService.initBackgroundMusic(
-      '/audio/Dark Comedy Ident - Main.mp3',
-    );
-
     const startupTrack = this.backgroundTrackFor(this.router.url);
     if (startupTrack) {
-      this.audioService.play();
       this.audioService.playBackgroundMusic(startupTrack);
     }
 
