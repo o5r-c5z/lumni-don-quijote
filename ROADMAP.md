@@ -57,6 +57,9 @@ dans un vrai navigateur (section 5).
       musique du quiz sur les questions, silence pendant les vidéos
 - [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
       paysage comme en portrait (il n'existe qu'en paysage)
+- [ ] Écran titre avant le chargement d'`episode.json` : ses variables de
+      fond valent `url("undefined")`, ce qui peut faire demander au
+      navigateur un fichier `/undefined`
 
 ## 5. Tests e2e (Playwright)
 
@@ -90,9 +93,14 @@ Comme dans Biggle, les contenus des épisodes vivent dans `uploads/`,
 gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
 `angular.json`. L'image de titre y sera aussi, via `titleBackground`.
 
-- [ ] `uploads/episodes/1/episode.json` avec les liens Vimeo complets
-      (`?h=…`, à fournir)
-- [ ] Questions du QUIZZ.docx (bonnes réponses : A, B, B)
+- [x] `uploads/episodes/1/episode.json` avec les liens Vimeo complets
+      (`https://player.vimeo.com/video/<id>?h=<hash>`)
+- [x] Questions du QUIZZ.docx (bonnes réponses : A, B, B), sans le préfixe
+      « Question N / » ni les lettres des réponses, que l'application
+      n'affiche pas
+
+En attendant l'image de titre (section 6), `titleBackground.landscape` et
+`titleBackground.portrait` valent `""` : aucun fichier n'est demandé.
 
 ## 8. Documentation
 
@@ -102,15 +110,17 @@ gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par
 
 ### Vidéos Vimeo de l'épisode 1
 
-| Vidéo                   | Écran                         |
+| Vidéo (nom sur Vimeo)   | Écran                         |
 | ----------------------- | ----------------------------- |
 | EPISODE_01_Introduction | après le titre                |
-| Rossinante              | leçon, revisitable            |
-| Reponse_Q1              | après une bonne réponse à Q1  |
-| Reponse_Q2_1            | après une bonne réponse à Q2  |
-| Reponse_Q3              | après Q3, puis écran Bravo    |
+| EPISODE_01_Rossinante   | leçon, revisitable            |
+| EPISODE_01_Reponse_Q1   | après une bonne réponse à Q1  |
+| EPISODE_01_Reponse_Q2_1 | après une bonne réponse à Q2  |
+| EPISODE_01_Reponse_Q3   | après Q3, puis écran Bravo    |
 
-Les liens complets (avec `?h=…`) restent à fournir.
+Le `_1` de `Reponse_Q2_1` vient seulement du nom donné lors de l'upload :
+il n'y a qu'une vidéo de réponse par question. Les liens complets (avec
+`?h=…`) sont dans `uploads/episodes/1/episode.json`.
 
 ### Musique selon l'écran
 
