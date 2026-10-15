@@ -114,7 +114,6 @@
 
     &::before {
       background-color: var(--black-color);
-      box-shadow: 0 0 0 1px var(--black-color);
     }
   }
 
@@ -123,7 +122,6 @@
     border-color: var(--danger-color);
 
     &::before {
-      border-color: var(--light-danger-color);
       background-color: var(--danger-color);
       box-shadow: 0 0 0 1px var(--danger-color);
     }
@@ -134,7 +132,6 @@
     border-color: var(--success-color);
 
     &::before {
-      border-color: var(--light-success-color);
       background-color: var(--success-color);
       box-shadow: 0 0 0 1px var(--success-color);
     }
