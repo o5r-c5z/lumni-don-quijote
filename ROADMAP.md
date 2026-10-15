@@ -59,7 +59,13 @@ dans un vrai navigateur (section 5).
       paysage comme en portrait (il n'existe qu'en paysage)
 - [ ] Écran titre avant le chargement d'`episode.json`, ou si ce
       chargement échoue : ses variables de fond valent `url("undefined")`,
-      ce qui fait demander au navigateur un fichier `/undefined`
+      ce qui fait demander au navigateur un fichier `/undefined`. Un
+      `titleBackground` vide donne `url("")`, dont le traitement dépend du
+      navigateur. Piste : renvoyer `none` quand le chemin manque ou est vide
+- [ ] `--screen-background-portrait` est défini par les écrans titre, quiz,
+      vidéo et Bravo, mais aucune feuille de style ne le lit (`styles.scss`
+      n'utilise que `--screen-background-landscape`) : `titleBackground.portrait`
+      n'a donc aucun effet
 
 ## 5. Tests e2e (Playwright)
 
