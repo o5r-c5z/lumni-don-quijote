@@ -64,6 +64,9 @@ const noVisibleQuestion =
 @Component({ template: '<p>Video</p>' })
 class VideoStubComponent {}
 
+@Component({ template: '<p>Completion</p>' })
+class CompletionStubComponent {}
+
 describe('EpisodeQuizComponent', () => {
   let harness: RouterTestingHarness;
   let episodeService: EpisodeService;
@@ -83,6 +86,7 @@ describe('EpisodeQuizComponent', () => {
             children: [
               { path: 'quiz', component: EpisodeQuizComponent },
               { path: 'video', component: VideoStubComponent },
+              { path: 'completion', component: CompletionStubComponent },
             ],
           },
         ]),
@@ -340,17 +344,18 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()).toEqual([]);
       expect(tickErrors(100)).toEqual(reportedTwice(noVisibleQuestion));
     }));
+  });
 
-    it('shows no question and throws a TypeError once the quiz is complete', fakeAsync(() => {
+  describe('once every question is answered', () => {
+    it('goes to the completion screen', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       episodeService.incrementQuizStep();
       episodeService.incrementQuizStep();
+
       showQuiz();
 
-      expect(fieldsets().length).toBe(2);
-      expect(visibleFieldsets()).toEqual([]);
-      expect(host().querySelector('nav')).not.toBeNull();
-      expect(tickErrors(100)).toEqual(reportedTwice(noVisibleQuestion));
+      expect(url()).toBe('/3/completion');
+      expect(host().textContent).toBe('Completion');
     }));
   });
 
