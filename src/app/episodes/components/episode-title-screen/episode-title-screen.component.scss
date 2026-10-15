@@ -13,10 +13,6 @@
   padding: 6rem 2rem 0rem 5rem;
   width: min(45%, var(--screen-landscape-max-width) * 0.45);
   aspect-ratio: var(--image-ratio);
-  background-image: url("/images/Fiche_01_UI_assets 1.png");
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
   font-size: figma.figma-font-size-to-rem(37);
 
   .btn {
