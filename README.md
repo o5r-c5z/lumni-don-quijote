@@ -1,79 +1,116 @@
-# Détective Biggle — enquêtes éducatives
+# Don Quijote
 
-Application web d'épisodes d'enquête à visée pédagogique. Chaque épisode
-enchaîne des vidéos (l'enquête menée par le détective Biggle, un cours du
-professeur Owliver, des indices), un quiz à choix multiples avec correction
-immédiate, puis une vidéo de résolution et un écran de fin. L'interface est
-en français et conçue pour être utilisable au clavier et avec un lecteur
-d'écran. Projet commandé par Lumni, produit par Big Company.
+Application web d'épisodes pédagogiques. Chaque épisode enchaîne des vidéos
+(une introduction, la leçon de Rossinante, une vidéo-réponse par question) et
+un quiz à choix multiples avec correction immédiate, jusqu'à un écran de fin.
+L'interface est en français et conçue pour être utilisable au clavier et avec
+un lecteur d'écran. Projet commandé par Lumni, produit par Big Company.
 
-**Année de réalisation : 2025.**
+Le projet est dérivé de Détective Biggle (dépôt
+`o5r-c5z/lumni-detective-biggle`), dont il a repris le
+code, les tests et la CI.
+
+**Année de réalisation : 2026.**
+
+## Déroulé d'un épisode
+
+Un épisode s'ouvre à l'URL `/<n>`, où `<n>` est son numéro (`/1` pour le
+premier) :
+
+1. **Titre** — l'image de titre de l'épisode et le lien « Accès à l'épisode ».
+2. **Introduction** — vidéo d'introduction.
+3. **Leçon de Rossinante** — vidéo de la leçon.
+4. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une
+   mauvaise réponse est signalée (« Mauvaise réponse ! ») et ne fait pas
+   avancer : il faut trouver la bonne. Après une bonne réponse
+   (« Bonne réponse ! »), la vidéo-réponse de la question se lance, puis
+   vient la question suivante. Le lien « Revoir la leçon de Rossinante »
+   reste accessible depuis chaque question.
+5. **Bravo** — après la vidéo-réponse de la dernière question, l'écran
+   « Bravo ! » propose de retourner au début de l'épisode.
+
+Chaque vidéo peut être passée (« Passer la vidéo ») ; à la fin d'une vidéo,
+l'écran suivant s'affiche seul. Le fond sonore accompagne le titre et l'écran
+Bravo, une autre musique accompagne les questions, et aucune musique ne joue
+pendant les vidéos. Tant que la musique joue, un bouton de son la coupe et la
+rétablit ; la touche `M` fait de même, sauf quand le focus est sur un champ de
+formulaire, comme les réponses d'une question.
+
+Une URL sans numéro d'épisode, ou un épisode dont l'`episode.json` ne se
+charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 
 ## Contenu
 
 - `src/index.html` — page hôte ; charge la police « Golos Text » (Google Fonts).
 - `src/main.ts`, `src/app/app.config.ts` — amorçage Angular (composants standalone, routeur).
-- `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran-titre ; toute autre URL affiche `not-found`.
-- `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType`.
-- `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et pilote la musique de fond.
-- `src/app/episodes/components/episode-title-screen/` — écran-titre avec accès à l'épisode (vidéo d'introduction).
-- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → quiz, vidéo-réponse → question suivante ou écran de fin) et lien « Passer la vidéo ».
-- `src/app/episodes/components/episode-quiz/` — quiz QCM : validation, correction affichée, effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
-- `src/app/episodes/components/episode-completion/` — écran de fin (« Bravo ! ») et retour au début de l'épisode.
+- `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran titre ; les URL hors de la route d'épisode (comme `/`) affichent `not-found`.
+- `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType` : le format d'`episode.json`.
+- `src/app/episodes/screen-backgrounds.ts` — fond parchemin commun à tous les écrans sauf le titre.
+- `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et choisit la musique selon l'écran.
+- `src/app/episodes/components/episode-title-screen/` — écran titre, avec l'image de titre de l'épisode et l'accès à la vidéo d'introduction.
+- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → question, vidéo-réponse → question suivante ou écran Bravo) et lien « Passer la vidéo ».
+- `src/app/episodes/components/episode-quiz/` — questions à choix multiples : validation, correction affichée, effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
+- `src/app/episodes/components/episode-completion/` — écran Bravo et retour au début de l'épisode.
 - `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`).
 - `src/app/episodes/services/episode.service.ts` — état courant de l'épisode et étape du quiz (`BehaviorSubject`).
 - `src/app/episodes/services/audio.service.ts` — musique de fond en boucle, effets sonores ponctuels, volumes séparés.
 - `src/app/episodes/services/announcement.service.ts` — annonces aux lecteurs d'écran via `LiveAnnouncer` (Angular CDK).
 - `src/app/shared/components/not-found/` — message « numéro d'épisode valide ».
-- `src/styles.scss` — styles globaux, variables CSS (couleurs, ratio d'écran 16/9), classes `.btn`, `.screen`.
+- `src/styles.scss` — styles globaux, variables CSS (couleurs, ratio d'écran 16/9, fond d'écran), classes `.btn`, `.screen`.
 - `src/styles/_reset.scss`, `_a11y.scss`, `_figma.scss` — mixins et fonctions (reset de `fieldset`, contour de focus, conversion des valeurs Figma en `rem`).
-- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre, dont l'image vient de l'`episode.json`), `favicon.ico`.
-- `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
+- `src/testing/` — utilitaires des tests unitaires (axe-core, minuteries).
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
-- `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, tests et build de production sur chaque pull request et sur `main`.
+- `e2e/`, `playwright.config.ts` — tests de bout en bout Playwright et leurs doublures (`e2e/doubles/`).
+- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre), `favicon.ico`.
+- `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
+- `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, build de production, tests unitaires et e2e sur chaque pull request et sur `main`.
 - `AGENTS.md` — instructions pour les agents de code (en anglais) : commandes, conventions de test, TDD.
-- `ROADMAP.md` — feuille de route de Don Quijote (reprise des tests de Biggle, renommage, fonctionnalités, assets).
+- `ROADMAP.md` — feuille de route : travail fait et à faire.
 - `angular.json`, `tsconfig*.json`, `.editorconfig`, `.vscode/` — configuration du projet et de l'éditeur.
-- `uploads/` — **non versionné** (`.gitignore`) ; contient les données des épisodes (`episodes/<n>/episode.json`), servies uniquement en configuration de développement.
+- `uploads/` — **non versionné** (`.gitignore`) : données des épisodes, voir [Données des épisodes](#données-des-épisodes-uploads).
 
 ## Stack technique
 
 - Application monopage Angular 19 (composants standalone, routeur, détection de changement zone.js avec `eventCoalescing`).
 - Build et serveur de développement via Angular CLI (`@angular-devkit/build-angular:application`).
 - Styles en SCSS ; `normalize.css` ; variables CSS natives ; police « Golos Text » chargée depuis Google Fonts.
-- `@vimeo/player` pour la lecture des vidéos d'épisode (iframes Vimeo, titres et `aria-label` injectés).
+- `@vimeo/player` pour la lecture des vidéos (iframes Vimeo, titres et `aria-label` injectés).
 - `@angular/cdk` : `LiveAnnouncer` (annonces lecteur d'écran) et utilitaire `cdk-visually-hidden`.
-- `@fortawesome/angular-fontawesome` avec `free-solid-svg-icons` (icônes de volume, de redémarrage).
+- `@fortawesome/angular-fontawesome` avec `free-solid-svg-icons` (icônes de volume).
 - `rxjs` pour la gestion d'état et l'orchestration des transitions (timers, `takeUntilDestroyed`).
 - Audio HTML5 (`Audio`) : musique de fond en boucle, effets sonores ponctuels, gestion de l'autoplay bloqué (reprise à la première interaction).
 - Données d'épisode chargées en `fetch` JSON au runtime, pas de back-end applicatif.
-- Cadrage fixe 16/9, orientation paysage (la prise en charge du portrait a été retirée).
-- Tests unitaires avec Karma + Jasmine : un `*.spec.ts` à côté de chaque fichier testé, que `ng generate` crée par défaut.
+- Cadrage fixe 16/9.
+- Tests unitaires avec Karma + Jasmine, tests d'accessibilité avec axe-core, tests de bout en bout avec Playwright (Chromium, Firefox, WebKit).
 - Gestion des dépendances : npm (`package-lock.json`).
 
 ## Développement
 
-Prérequis : Node.js et npm (versions compatibles avec Angular 19 / Angular CLI 19). Angular CLI peut être utilisé via `npx` ou installé globalement. Les tests unitaires demandent en plus Google Chrome (ou Chromium, désigné par la variable `CHROME_BIN`).
+Prérequis : Node.js et npm (versions compatibles avec Angular 19 / Angular CLI 19 ; la CI utilise Node.js 22). Angular CLI peut être utilisé via `npx` ou `npm run ng`. Les tests unitaires demandent en plus Google Chrome (ou Chromium, désigné par la variable `CHROME_BIN`), les tests e2e les navigateurs de Playwright (`npx playwright install`).
 
 ```sh
 npm install
-npm start            # serveur de développement sur http://localhost:4200/
+npm start            # serveur de développement sur http://localhost:4200/ (épisode 1 : /1)
 npm run build        # build de production dans dist/lumni-don-quijote/
 npm run watch        # build de développement en watch
 npm test             # tests unitaires en watch (Karma/Jasmine, Chrome)
 npm run test:ci      # tests unitaires en une passe, Chrome headless
-npm run typecheck    # vérification des types (code de l'application et specs)
+npm run typecheck    # vérification des types (application, specs et tests e2e)
+npm run e2e          # tests de bout en bout (Playwright)
+npm run ng -- <cmd>  # Angular CLI du projet (ng generate, etc.)
 ```
+
+`npm start` a besoin du dossier `uploads/` pour afficher un épisode ; les tests et le build n'en ont pas besoin.
 
 ### Tests et types
 
 - `npm test` lance Karma en watch dans Chrome : la suite repasse à chaque modification.
 - `npm run test:ci` lance la suite une seule fois dans Chrome headless.
 - `npm run typecheck` lance `tsc --noEmit` sur `tsconfig.app.json`, `tsconfig.spec.json` puis `e2e/tsconfig.json`, donc vérifie aussi les specs et les tests e2e. Il ne vérifie pas les templates HTML : `ng test` les compile en JIT, sans vérification de types ; `npm run build` et `npm start` (via `ng serve`) les vérifient, car ils compilent en AOT avec `strictTemplates`.
-- `npm run e2e` lance les tests de bout en bout Playwright (`e2e/`) dans Chromium, Firefox et WebKit, sur un `ng serve` lancé sur le port 4300 avec la configuration `e2e` : celle de production, sans l'intégration des polices Google Fonts, qui les téléchargerait à la compilation. La première fois, installez les navigateurs avec `npx playwright install`. Pour un seul navigateur : `npm run e2e -- --project=firefox`. En cas d'échec, `npx playwright show-report` ouvre le rapport HTML.
-- Avant de pousser, `npm run typecheck`, `npm run test:ci`, `npm run build` et `npm run e2e` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les quatre sur chaque pull request et sur `main`, et joint le rapport Playwright quand les tests e2e échouent. Seul le build vérifie les types des templates ; ni lui ni les tests e2e n'ont besoin du dossier `uploads/`.
+- `npm run e2e` lance les tests de bout en bout Playwright (`e2e/`) dans Chromium, Firefox et WebKit, sur un `ng serve` lancé sur le port 4300 avec la configuration `e2e` : celle de production, sans l'intégration des polices Google Fonts, qui les téléchargerait à la compilation. Pour un seul navigateur : `npm run e2e -- --project=firefox`. En cas d'échec, `npx playwright show-report` ouvre le rapport HTML.
+- Avant de pousser, `npm run typecheck`, `npm run test:ci`, `npm run build` et `npm run e2e` doivent passer : la CI GitHub Actions (`.github/workflows/ci.yml`) lance les quatre sur chaque pull request et sur `main`, et joint le rapport Playwright quand les tests e2e échouent. Seul le build vérifie les types des templates.
 
-Chaque fichier testé a son spec à côté de lui (`episode.service.ts` → `episode.service.spec.ts`). Les tests vérifient le comportement observable (DOM rendu, navigation, valeurs émises) et non les détails d'implémentation.
+Chaque fichier testé a son spec à côté de lui (`episode.service.ts` → `episode.service.spec.ts`). Les tests vérifient le comportement observable (DOM rendu, navigation, valeurs émises) et non les détails d'implémentation. Les tests d'accessibilité lancent axe-core sur les écrans titre, question, vidéo et Bravo, et sur le contrôle audio.
 
 Les dépendances externes sont remplacées par des doublures, si bien qu'aucun test ne joue de son ni n'appelle le réseau :
 
@@ -97,14 +134,45 @@ Le TDD est obligatoire : toute nouvelle fonctionnalité et toute correction se d
 2. **Vert** — écrire l'implémentation minimale qui le fait passer.
 3. **Refactorisation** — améliorer la structure du code, la suite restant verte.
 
-Le code existant est couvert par des tests de caractérisation (sauf l'amorçage, `main.ts` et `app.config.ts`) : ils figent le comportement actuel, défauts compris. Avant de modifier du code encore sans test, écrire d'abord de tels tests. Pour corriger un comportement figé par l'un d'eux, modifier d'abord ce test pour qu'il décrive le comportement attendu, le voir échouer, puis changer le code. Les issues [#15](https://github.com/o5r-c5z/lumni-detective-biggle/issues/15) (nettoyage sans effet visible) et [#19](https://github.com/o5r-c5z/lumni-detective-biggle/issues/19) (défauts visibles, surtout d'accessibilité) du dépôt de Biggle listent les défauts relevés pendant l'écriture de ces tests et, le cas échéant, le test qui fige chacun d'eux.
+Le code existant est couvert par des tests de caractérisation (sauf l'amorçage, `main.ts` et `app.config.ts`) : ils figent le comportement actuel, défauts compris. Avant de modifier du code encore sans test, écrire d'abord de tels tests. Pour corriger un comportement figé par l'un d'eux, modifier d'abord ce test pour qu'il décrive le comportement attendu, le voir échouer, puis changer le code.
+
+### Données des épisodes (`uploads/`)
+
+Le contenu des épisodes ne fait pas partie du code : chaque épisode est décrit par un fichier `uploads/episodes/<n>/episode.json`, que l'application charge au runtime à cette même URL.
+
+- `uploads/` est **gitignoré** (`/uploads/` dans `.gitignore`) : il faut le fournir pour faire tourner l'application avec `npm start`.
+- La configuration `development` d'`angular.json` (celle de `npm start` et `npm run watch`) copie `uploads/` vers `/uploads`. La configuration de production (`npm run build`) ne le copie pas.
+
+Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
+
+| Champ | Contenu |
+| --- | --- |
+| `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
+| `titleBackground.landscape`, `titleBackground.portrait` | chemins de l'image de titre, en paysage et en portrait (le portrait est pour l'instant sans effet, voir plus bas) |
+| `introduction` | vidéo d'introduction : `{ "url", "title" }` |
+| `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
+| `questions[]` | questions, dans l'ordre de l'épisode |
+| `questions[].label` | texte de la question, sans numéro (l'application affiche « 1 / 3 ») |
+| `questions[].answers` | réponses proposées, sans lettre |
+| `questions[].correctAnswer` | indice de la bonne réponse dans `answers`, à partir de 0 |
+| `questions[].answerVideo` | vidéo-réponse : `{ "url", "title" }` |
+
+Le `title` de chaque vidéo devient le titre de l'iframe Vimeo, et son `aria-label` précédé de « Vidéo: » ; il figure aussi dans les annonces aux lecteurs d'écran (« Lecture de la vidéo: … », « Fin de la vidéo: … »).
+
+Le `url` de chaque vidéo est le lien complet du lecteur Vimeo, paramètre `h` compris : `https://player.vimeo.com/video/<id>?h=<hash>`.
+
+Limites actuelles, listées dans la section 4 de `ROADMAP.md` : `titleBackground.portrait` n'a pas d'effet, aucune feuille de style ne lisant la variable CSS qu'il alimente ; un chemin vide dans `titleBackground` produit `url("")`, et l'écran titre affiché avant le chargement d'`episode.json`, ou si ce chargement échoue, produit `url("undefined")`, au lieu d'une absence d'image. Le champ `titleBackground` lui-même est obligatoire.
+
+### Déploiement
+
+Le build de production (`npm run build`, fichiers du site dans `dist/lumni-don-quijote/browser/`) et le dossier `uploads/` sont déposés sur le FTP du serveur de production. Le build ne contenant pas `uploads/`, ce dossier y est déposé à part, de sorte que l'application le trouve sous `/uploads`.
+
+Le versionnement d'`uploads/`, un script de vérification des `episode.json` et la copie d'`uploads/` par la configuration de production ne sont pas encore faits : voir la section 9 de `ROADMAP.md`.
 
 ### Notes de configuration
 
-- L'application attend les données d'un épisode à l'URL `uploads/episodes/<n>/episode.json` (avec `<n>` le numéro d'épisode dans la route). En configuration `development`, `angular.json` copie le dossier local `uploads/` vers `/uploads`. Ce dossier n'est pas versionné : il faut le fournir pour faire tourner l'application. Un `episode.json` décrit le titre, les images de fond, les vidéos (URL Vimeo) et les questions du quiz — voir `src/app/episodes/models.ts`.
-- La configuration de production (`npm run build`) ne copie pas `uploads/` ; l'hébergement doit exposer ce chemin.
-- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse). Aucune musique pendant les vidéos.
-- Chemin de sortie du build : `dist/lumni-don-quijote/`.
+- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse).
+- Chemin de sortie du build : `dist/lumni-don-quijote/` ; les fichiers du site sont dans son sous-dossier `browser/`.
 
 ## Crédits
 
@@ -112,4 +180,4 @@ Le code existant est couvert par des tests de caractérisation (sauf l'amorçage
 - **Production** — Big Company
 - **Développement** — Olivier Charvoz
 
-Copyright © 2025 Big Company. Tous droits réservés.
+Copyright © 2026 Big Company. Tous droits réservés.
