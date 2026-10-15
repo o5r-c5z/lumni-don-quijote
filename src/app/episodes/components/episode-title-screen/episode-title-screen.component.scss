@@ -1,7 +1,7 @@
 @use "../../../../styles/figma";
 
 .episode-title-screen__links {
-  --image-ratio: 843 / 846;
+  --panel-ratio: 843 / 846;
 
   display: flex;
   flex-direction: column;
@@ -12,11 +12,7 @@
   bottom: 0;
   padding: 6rem 2rem 0rem 5rem;
   width: min(45%, var(--screen-landscape-max-width) * 0.45);
-  aspect-ratio: var(--image-ratio);
-  background-image: url("/images/Fiche_01_UI_assets 1.png");
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
+  aspect-ratio: var(--panel-ratio);
   font-size: figma.figma-font-size-to-rem(37);
 
   .btn {

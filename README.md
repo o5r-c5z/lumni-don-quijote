@@ -27,7 +27,7 @@ d'écran. Projet commandé par Lumni, produit par Big Company.
 - `src/app/shared/components/not-found/` — message « numéro d'épisode valide ».
 - `src/styles.scss` — styles globaux, variables CSS (couleurs, ratio d'écran 16/9), classes `.btn`, `.screen`.
 - `src/styles/_reset.scss`, `_a11y.scss`, `_figma.scss` — mixins et fonctions (reset de `fieldset`, contour de focus, conversion des valeurs Figma en `rem`).
-- `public/` — fichiers statiques copiés tels quels : `audio/` (musique et effets `.mp3`), `images/landscape/` et `images/portrait/` (décors), `images/` (personnages Biggle et Owliver), `favicon.ico`.
+- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre, dont l'image vient de l'`episode.json`), `favicon.ico`.
 - `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
 - `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, tests et build de production sur chaque pull request et sur `main`.
@@ -87,7 +87,7 @@ Les dépendances externes sont remplacées par des doublures, si bien qu'aucun t
 
 Les tests Playwright vérifient l'application assemblée, au clavier : le parcours complet de l'épisode, du titre à l'écran Bravo (en regardant chaque vidéo jusqu'au bout, puis en la passant), le blocage sur une mauvaise réponse et « Revoir la leçon de Rossinante » depuis une question. `e2e/accessibility.spec.ts` lance axe-core sur chaque écran ; les contrastes qu'axe ne sait pas évaluer (texte sur image ou dégradé) sont mesurés sur une capture d'écran, contre le pixel de fond le moins favorable. Le contraste du contour de focus n'est pas vérifié.
 
-Aucun test n'appelle le réseau ni ne dépend du dossier `uploads/` ou des assets : `e2e/fixtures.ts` fait échouer tout test dont une requête quitte le serveur local. Avec `page.route`, `episode.json` est remplacé par un épisode factice (`e2e/doubles/episode.ts`), le lecteur Vimeo par une page factice qui imite son protocole `postMessage` (`e2e/doubles/vimeo.ts`), Google Fonts par une feuille vide, et les sons par des réponses 404.
+Aucun test n'appelle le réseau ni ne dépend du dossier `uploads/` ou des assets : `e2e/fixtures.ts` fait échouer tout test dont une requête quitte le serveur local. Avec `page.route`, `episode.json` est remplacé par un épisode factice (`e2e/doubles/episode.ts`), le lecteur Vimeo par une page factice qui imite son protocole `postMessage` (`e2e/doubles/vimeo.ts`), Google Fonts par une feuille vide, et les sons comme les images de `public/images/` par des réponses 404 : les contrastes mesurés ne dépendent pas de la présence du parchemin.
 
 ### Développer en TDD
 

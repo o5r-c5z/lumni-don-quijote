@@ -34,9 +34,10 @@ them and `ng test` compiles them in JIT mode.
   replaced by test doubles: no test plays a sound or hits the network.
 - End-to-end tests live in `e2e/`, outside the TDD cycles: they check the
   assembled application with the keyboard and run axe on every screen.
-  `page.route` stubs `episode.json`, the Vimeo player, Google Fonts and the
-  sounds, and `e2e/fixtures.ts` fails any test whose requests leave the
-  local server.
+  `page.route` stubs `episode.json`, the Vimeo player and Google Fonts, and
+  answers the sounds and the images of `public/` with a 404, so that the
+  tests pass whether these assets are there or not; `e2e/fixtures.ts` fails
+  any test whose requests leave the local server.
 
 ## Test-driven development
 
