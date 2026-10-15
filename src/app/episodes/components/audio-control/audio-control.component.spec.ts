@@ -239,6 +239,12 @@ describe('AudioControlComponent', () => {
 
       afterEach(() => field?.remove());
 
+      function focusField(element: HTMLElement): void {
+        field = element;
+        document.body.appendChild(field);
+        field.focus();
+      }
+
       for (const [description, create] of [
         ['a text input', () => document.createElement('input')],
         ['a textarea', () => document.createElement('textarea')],
@@ -246,9 +252,7 @@ describe('AudioControlComponent', () => {
       ] as const) {
         it(`is ignored in ${description}`, () => {
           createComponent();
-          field = create();
-          document.body.appendChild(field);
-          field.focus();
+          focusField(create());
 
           const event = pressKey('m');
 
@@ -259,11 +263,9 @@ describe('AudioControlComponent', () => {
 
       it('toggles the sound on a radio button', () => {
         createComponent();
-        field = Object.assign(document.createElement('input'), {
-          type: 'radio',
-        });
-        document.body.appendChild(field);
-        field.focus();
+        focusField(
+          Object.assign(document.createElement('input'), { type: 'radio' }),
+        );
 
         const event = pressKey('m');
 
