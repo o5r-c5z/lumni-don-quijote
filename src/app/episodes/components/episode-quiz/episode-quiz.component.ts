@@ -65,13 +65,21 @@ export class EpisodeQuizComponent implements OnInit {
       )
       .subscribe((quizStep: number) => {
         this.quizStep = quizStep;
-        if (quizStep > 0 && quizStep >= (this.episode?.questions.length ?? 0)) {
-          this.router.navigate(['../completion'], { relativeTo: this.route });
+        if (this.isQuizComplete(quizStep)) {
+          this.showCompletion();
           return;
         }
         this.focusFirstInput();
         this.showNextQuestion();
       });
+  }
+
+  private isQuizComplete(quizStep: number): boolean {
+    return quizStep > 0 && quizStep >= (this.episode?.questions.length ?? 0);
+  }
+
+  private showCompletion(): void {
+    this.router.navigate(['../completion'], { relativeTo: this.route });
   }
 
   private focusFirstInput(): void {
