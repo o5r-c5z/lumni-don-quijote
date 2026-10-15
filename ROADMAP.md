@@ -72,11 +72,11 @@ vrai navigateur, une fois les fonctionnalités en place.
 
 ## 6. Assets
 
-- [ ] Fond commun à tous les écrans sauf le titre :
+- [x] Fond commun à tous les écrans sauf le titre :
       `public/images/Parchemin_questions.jpg`
-- [ ] Fond sonore du titre et de l'écran Bravo :
+- [x] Fond sonore du titre et de l'écran Bravo :
       `public/audio/Entertainment_FOND_SONORE.mp3`
-- [ ] Fond sonore du quiz : `public/audio/Guitar Background Mini_QUIZ.mp3`
+- [x] Fond sonore du quiz : `public/audio/Guitar Background Mini_QUIZ.mp3`
 - [x] Sons de réponse conservés : `App Negative.mp3`, `Win 3.mp3`
 - [x] Images de Biggle supprimées (`public/images/` ne contient plus que le
       parchemin), dans la même PR que le remplacement de leurs références
