@@ -21,6 +21,8 @@ export class AudioService implements OnDestroy {
       return;
     }
 
+    this.backgroundMusicSource = audioSource;
+
     if (!this.backgroundMusic) {
       this.backgroundMusic = new Audio(audioSource);
       this.backgroundMusic.loop = true;
@@ -57,7 +59,6 @@ export class AudioService implements OnDestroy {
       }
       return;
     }
-    this.backgroundMusicSource = audioSource;
     this.initBackgroundMusic(audioSource);
     this.play();
   }
