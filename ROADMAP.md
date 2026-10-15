@@ -112,7 +112,7 @@ fichier ; les autres navigateurs n'ont pas été vérifiés.
 
 ## 8. Documentation
 
-- [ ] README propre à Don Quijote
+- [x] README propre à Don Quijote
 
 ## 9. Contenu versionné et déploiement
 
