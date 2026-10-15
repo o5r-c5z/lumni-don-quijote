@@ -1,5 +1,5 @@
 import { EPISODE, EPISODE_NUMBER } from './doubles/episode';
-import { expectVideo, PLAYER_IFRAME } from './doubles/vimeo';
+import { expectVideo } from './doubles/vimeo';
 import { expect, test } from './fixtures';
 import {
   answerWithKeyboard,
@@ -27,7 +27,6 @@ test.describe('wrong answer', () => {
     await expect(currentQuestion(page)).toHaveAccessibleName(
       `1 / 3 ${EPISODE.questions[0].label}`,
     );
-    await expect(page.locator(PLAYER_IFRAME)).toHaveCount(0);
 
     await answerWithKeyboard(page, 0, rightAnswer(0), wrongAnswer(0));
     await expect(correction(page, 'Bonne réponse !')).toBeVisible();

@@ -76,7 +76,8 @@ export function rightAnswer(questionIndex: number): number {
 
 /** A wrong answer of the question at `questionIndex`. */
 export function wrongAnswer(questionIndex: number): number {
-  return (rightAnswer(questionIndex) + 1) % 3;
+  const { answers } = EPISODE.questions[questionIndex];
+  return (rightAnswer(questionIndex) + 1) % answers.length;
 }
 
 /** The correction shown under the checked answer once validated. */

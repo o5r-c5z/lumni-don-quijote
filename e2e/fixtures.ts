@@ -4,8 +4,8 @@ import { stubVimeo } from './doubles/vimeo';
 
 /**
  * The Playwright test, with every external dependency stubbed: episode.json,
- * the Vimeo player and Google Fonts, whose stylesheet the production build
- * inlines (the fallback font applies). Any other request leaving the local server is aborted and fails
+ * the Vimeo player, Google Fonts (the fallback font applies) and the sound
+ * effects. Any other request leaving the local server is aborted and fails
  * the test, so that no test hits the network.
  */
 export const test = base.extend<{ unexpectedRequests: string[] }>({
@@ -34,9 +34,6 @@ export const test = base.extend<{ unexpectedRequests: string[] }>({
   page: async ({ page }, use) => {
     await page.route('https://fonts.googleapis.com/**', (route) =>
       route.fulfill({ contentType: 'text/css', body: '' }),
-    );
-    await page.route('https://fonts.gstatic.com/**', (route) =>
-      route.fulfill({ status: 404 }),
     );
     // Silences the sound effects of the quiz: no test listens to them.
     await page.route('**/audio/**', (route) => route.fulfill({ status: 404 }));

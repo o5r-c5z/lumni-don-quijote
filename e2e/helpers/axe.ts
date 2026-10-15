@@ -54,25 +54,26 @@ async function runAxe(
   pausedClock: boolean,
   disabledRules: readonly string[],
 ): Promise<AxeResults> {
-  await page.evaluate((disabledRules) => {
-    delete window.axeResults;
-    void window.axe
-      .run(document, {
+  const run = page.evaluate(
+    (disabledRules) =>
+      window.axe.run(document, {
         iframes: false,
         resultTypes: ['violations', 'incomplete'],
         rules: Object.fromEntries(
           disabledRules.map((rule) => [rule, { enabled: false }]),
         ),
-      })
-      .then((results) => (window.axeResults = results));
-  }, disabledRules);
-  if (pausedClock) {
-    while (!(await page.evaluate(() => 'axeResults' in window))) {
-      await page.clock.runFor(1);
-    }
+      }),
+    disabledRules,
+  );
+  if (!pausedClock) {
+    return run;
   }
-  await page.waitForFunction(() => 'axeResults' in window);
-  return page.evaluate(() => window.axeResults!);
+  let done = false;
+  const settled = run.finally(() => (done = true));
+  while (!done) {
+    await page.clock.runFor(1);
+  }
+  return settled;
 }
 
 async function injectAxe(page: Page): Promise<void> {
@@ -82,7 +83,10 @@ async function injectAxe(page: Page): Promise<void> {
   await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
 }
 
-/** Waits until the animations with an end, such as the quiz fade-in, end. */
+/**
+ * Waits until the animations with an end, such as the quiz fade-in, end or
+ * are cancelled.
+ */
 async function waitForAnimations(page: Page): Promise<void> {
   await page.evaluate(() =>
     Promise.all(
@@ -91,7 +95,8 @@ async function waitForAnimations(page: Page): Promise<void> {
         .filter((animation) =>
           Number.isFinite(animation.effect?.getComputedTiming().endTime),
         )
-        .map((animation) => animation.finished),
+        // A cancelled animation rejects `finished`: it is over all the same.
+        .map((animation) => animation.finished.catch(() => undefined)),
     ),
   );
 }
@@ -115,8 +120,8 @@ async function measureIncompleteContrasts(
 }
 
 /**
- * Measures the contrast of the text of `node`: hides the text, takes a
- * screenshot of each line box and compares the text colour with each
+ * Measures the contrast of the own text of `node`: hides the text, takes a
+ * screenshot of each of its line boxes and compares the text colour with each
  * background pixel.
  */
 async function measureContrast(
@@ -134,9 +139,15 @@ async function measureContrast(
       const isBold = Number(style.fontWeight) >= 700;
       // WCAG large text: 18 pt, or 14 pt in bold (1 pt = 4/3 px).
       const isLarge = fontSize >= 24 || (isBold && fontSize >= 18.66);
-      const range = document.createRange();
-      range.selectNodeContents(target);
-      const rects = [...range.getClientRects()]
+      // Only the text of the element itself has its colour: axe checks the
+      // text of its descendants on those descendants.
+      const rects = [...target.childNodes]
+        .filter((child) => child.nodeType === Node.TEXT_NODE)
+        .flatMap((text) => {
+          const range = document.createRange();
+          range.selectNodeContents(text);
+          return [...range.getClientRects()];
+        })
         .filter((rect) => rect.width >= 1 && rect.height >= 1)
         .map(({ x, y, width, height }) => ({ x, y, width, height }));
       target.setAttribute(attribute, '');
@@ -152,6 +163,10 @@ async function measureContrast(
       large: LARGE_TEXT_RATIO,
     },
   );
+
+  if (rects.length === 0) {
+    throw new Error(`No text to measure the contrast of in ${node.html}`);
+  }
 
   const hideText = await page.addStyleTag({
     content: `[${MEASURED_ATTRIBUTE}], [${MEASURED_ATTRIBUTE}] * {
@@ -232,6 +247,5 @@ async function lowestContrast({
 declare global {
   interface Window {
     axe: typeof import('axe-core');
-    axeResults?: AxeResults;
   }
 }

@@ -43,10 +43,11 @@ export default defineConfig({
     },
   ],
 
-  /* The production build, which needs no uploads/ folder: the tests stub
-     episode.json. */
+  /* The production build, which needs no uploads/ folder since the tests
+     stub episode.json, without font inlining, which would fetch the Google
+     Fonts stylesheet at build time: the tests stub it in the browser. */
   webServer: {
-    command: `ng serve --configuration production --port ${PORT} --no-live-reload --no-watch`,
+    command: `ng serve --configuration e2e --port ${PORT} --no-live-reload --no-watch`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env['CI'],
     timeout: 180_000,
