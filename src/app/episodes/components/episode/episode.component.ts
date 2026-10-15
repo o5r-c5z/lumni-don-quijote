@@ -12,6 +12,7 @@ import { EpisodeService } from '../../services/episode.service';
 import { AudioControlComponent } from '../audio-control/audio-control.component';
 
 const EPISODE_BACKGROUND_TRACK = '/audio/Entertainment_FOND_SONORE.mp3';
+const QUIZ_BACKGROUND_TRACK = '/audio/Guitar Background Mini_QUIZ.mp3';
 
 @Component({
   selector: 'app-episode',
@@ -44,9 +45,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: any) => {
           if (this.isQuizScreen(event.url)) {
-            this.audioService.playBackgroundMusic(
-              '/audio/Guitar Background Mini_QUIZ.mp3',
-            );
+            this.audioService.playBackgroundMusic(QUIZ_BACKGROUND_TRACK);
           }
           if (
             this.isCompletionScreen(event.url) ||

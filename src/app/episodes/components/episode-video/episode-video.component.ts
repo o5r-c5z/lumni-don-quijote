@@ -8,8 +8,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import Player from '@vimeo/player';
 import { mergeMap, Subscription, tap } from 'rxjs';
 import { Episode, Video, VideoType } from '../../models';
@@ -23,7 +21,7 @@ const COMPLETION_PATH = '../completion';
 
 @Component({
   selector: 'app-episode-video',
-  imports: [RouterLink, FontAwesomeModule],
+  imports: [RouterLink],
   templateUrl: './episode-video.component.html',
   styleUrl: './episode-video.component.scss',
 })
@@ -39,30 +37,24 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   protected episode?: Episode;
   protected video?: Video;
   protected videoType?: VideoType;
-  protected videoEnded = false;
   protected VideoType = VideoType;
-  protected faArrowRotateLeft = faArrowRotateLeft;
 
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
 
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return !this.videoEnded
-      ? PARCHMENT_BACKGROUND
-      : `url("/images/landscape/Decors_Bureau 1.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return !this.videoEnded
-      ? PARCHMENT_BACKGROUND
-      : `url("/images/portrait/decor_bureau.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
-    return this.videoEnded ? 0.45 : 0.8;
+    return 0.8;
   }
 
   ngOnInit() {
@@ -82,8 +74,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
         }),
         mergeMap(() => this.route.queryParams),
         tap((params) => {
-          this.videoEnded = false;
-
           this.videoType = params['videoType'];
           switch (this.videoType) {
             case VideoType.Lesson:
@@ -152,7 +142,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private onVideoEnded() {
     switch (this.videoType) {
       case VideoType.Lesson:
-        this.goToQuiz();
+        this.navigateTo(QUIZ_PATH);
         break;
       case VideoType.Answer:
         this.navigateTo(this.pathAfterAnswer());
@@ -187,10 +177,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     return questionIndex < lastQuestionIndex;
   }
 
-  private goToQuiz() {
-    this.navigateTo(QUIZ_PATH);
-  }
-
   private navigateTo(path: string) {
     this.router.navigate([path], { relativeTo: this.route });
   }
@@ -198,13 +184,5 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private destroyPlayer() {
     this.player?.destroy();
     this.player = undefined;
-  }
-
-  protected restartVideo() {
-    this.videoEnded = false;
-    this.initializePlayer();
-    this.audioService.pause();
-    this.announcementService.announce('Redémarrage de la vidéo');
-    this.player?.play();
   }
 }

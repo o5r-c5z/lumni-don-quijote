@@ -27,25 +27,8 @@
   padding: 1rem 2rem;
 }
 
-.episode-video__nav {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: calc(var(--spacer) * 2);
-  width: 30rem;
-}
-
-#episode-video__go-to-quiz-btn {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
 .btn {
   border-radius: figma.figma-radius-to-rem(40);
   padding-top: 2rem;
   padding-bottom: 2rem;
-
-  fa-icon {
-    margin-right: 1rem;
-  }
 }

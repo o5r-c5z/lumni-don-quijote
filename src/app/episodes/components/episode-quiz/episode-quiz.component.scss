@@ -170,7 +170,7 @@
   background-color: var(--ultramarine-blue-color);
 }
 
-.episode-quiz__clues {
+.episode-quiz__links {
   --gap: var(--spacer);
   display: flex;
   flex-wrap: wrap;
@@ -183,26 +183,10 @@
   .btn {
     border-radius: figma.figma-radius-to-rem(30);
     padding: 1rem;
+    background-color: var(--green-color);
     color: var(--text-color);
     width: calc(25% - var(--gap) * 3 / 4);
     font-size: figma.figma-font-size-to-rem(25);
-
-
-    &:nth-child(1) {
-      background-color: var(--green-color);
-    }
-
-    &:nth-child(2) {
-      background-color: var(--pink-color);
-    }
-
-    &:nth-child(3) {
-      background-color: var(--sky-blue-color);
-    }
-
-    &:nth-child(4) {
-      background-color: var(--royal-blue-color);
-    }
   }
 }
 

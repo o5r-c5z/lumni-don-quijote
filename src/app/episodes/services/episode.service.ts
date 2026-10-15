@@ -30,10 +30,6 @@ export class EpisodeService {
     this.quizStepSubject.next(this.quizStep + 1);
   }
 
-  isQuizComplete() {
-    return this.quizStep >= (this.getEpisode()?.questions.length ?? Infinity);
-  }
-
   resetQuiz() {
     this.quizStepSubject.next(0);
   }
