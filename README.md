@@ -7,7 +7,7 @@ L'interface est en français et conçue pour être utilisable au clavier et avec
 un lecteur d'écran. Projet commandé par Lumni, produit par Big Company.
 
 Le projet est dérivé de Détective Biggle (dépôt
-`o5r-c5z/lumni-detective-biggle`, remote git `upstream`), dont il a repris le
+`o5r-c5z/lumni-detective-biggle`), dont il a repris le
 code, les tests et la CI.
 
 **Année de réalisation : 2026.**
@@ -32,8 +32,9 @@ premier) :
 Chaque vidéo peut être passée (« Passer la vidéo ») ; à la fin d'une vidéo,
 l'écran suivant s'affiche seul. Le fond sonore accompagne le titre et l'écran
 Bravo, une autre musique accompagne les questions, et aucune musique ne joue
-pendant les vidéos. Le bouton de son, ou la touche `M`, coupe et rétablit la
-musique.
+pendant les vidéos. Tant que la musique joue, un bouton de son la coupe et la
+rétablit ; la touche `M` fait de même, sauf quand le focus est sur un champ de
+formulaire, comme les réponses d'une question.
 
 Une URL sans numéro d'épisode, ou un épisode dont l'`episode.json` ne se
 charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
@@ -42,7 +43,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 
 - `src/index.html` — page hôte ; charge la police « Golos Text » (Google Fonts).
 - `src/main.ts`, `src/app/app.config.ts` — amorçage Angular (composants standalone, routeur).
-- `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran titre ; toute autre URL affiche `not-found`.
+- `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran titre ; les URL hors de la route d'épisode (comme `/`) affichent `not-found`.
 - `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType` : le format d'`episode.json`.
 - `src/app/episodes/screen-backgrounds.ts` — fond parchemin commun à tous les écrans sauf le titre.
 - `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et choisit la musique selon l'écran.
@@ -137,7 +138,7 @@ Le code existant est couvert par des tests de caractérisation (sauf l'amorçage
 
 ### Données des épisodes (`uploads/`)
 
-Le contenu des épisodes ne fait pas partie du code : chaque épisode est décrit par un fichier `uploads/episodes/<n>/episode.json`, que l'application charge au runtime à l'URL `uploads/episodes/<n>/episode.json`.
+Le contenu des épisodes ne fait pas partie du code : chaque épisode est décrit par un fichier `uploads/episodes/<n>/episode.json`, que l'application charge au runtime à cette même URL.
 
 - `uploads/` est **gitignoré** (`/uploads/` dans `.gitignore`) : il faut le fournir pour faire tourner l'application avec `npm start`.
 - La configuration `development` d'`angular.json` (celle de `npm start` et `npm run watch`) copie `uploads/` vers `/uploads`. La configuration de production (`npm run build`) ne le copie pas.
@@ -147,7 +148,7 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | Champ | Contenu |
 | --- | --- |
 | `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
-| `titleBackground.landscape`, `titleBackground.portrait` | chemins de l'image de titre, en paysage et en portrait |
+| `titleBackground.landscape`, `titleBackground.portrait` | chemins de l'image de titre, en paysage et en portrait (le portrait est pour l'instant sans effet, voir plus bas) |
 | `introduction` | vidéo d'introduction : `{ "url", "title" }` |
 | `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
@@ -156,11 +157,11 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | `questions[].correctAnswer` | indice de la bonne réponse dans `answers`, à partir de 0 |
 | `questions[].answerVideo` | vidéo-réponse : `{ "url", "title" }` |
 
-Le `title` de chaque vidéo devient le titre et l'`aria-label` de l'iframe Vimeo et figure dans les annonces aux lecteurs d'écran.
+Le `title` de chaque vidéo devient le titre de l'iframe Vimeo, et son `aria-label` précédé de « Vidéo: » ; il figure aussi dans les annonces aux lecteurs d'écran (« Lecture de la vidéo: … », « Fin de la vidéo: … »).
 
 Le `url` de chaque vidéo est le lien complet du lecteur Vimeo, paramètre `h` compris : `https://player.vimeo.com/video/<id>?h=<hash>`.
 
-Limites actuelles, listées dans la section 4 de `ROADMAP.md` : `titleBackground.portrait` n'a pas d'effet, aucune feuille de style ne lisant la variable CSS qu'il alimente ; un `titleBackground` vide ou absent produit `url("")` ou `url("undefined")` au lieu d'une absence d'image.
+Limites actuelles, listées dans la section 4 de `ROADMAP.md` : `titleBackground.portrait` n'a pas d'effet, aucune feuille de style ne lisant la variable CSS qu'il alimente ; un chemin vide dans `titleBackground` produit `url("")`, et l'écran titre affiché avant le chargement d'`episode.json`, ou si ce chargement échoue, produit `url("undefined")`, au lieu d'une absence d'image. Le champ `titleBackground` lui-même est obligatoire.
 
 ### Déploiement
 
