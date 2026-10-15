@@ -110,10 +110,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       });
   }
 
-  protected restartBackgroundMusic(): void {
-    this.audioService.play(true);
-  }
-
   private initializePlayer() {
     if (!this.video) {
       return;
