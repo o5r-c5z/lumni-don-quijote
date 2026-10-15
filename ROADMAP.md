@@ -78,10 +78,10 @@ vrai navigateur, une fois les fonctionnalités en place.
       `public/audio/Entertainment_FOND_SONORE.mp3`
 - [ ] Fond sonore du quiz : `public/audio/Guitar Background Mini_QUIZ.mp3`
 - [ ] Sons de réponse conservés : `App Negative.mp3`, `Win 3.mp3`
-- [ ] Images et musique de Biggle supprimées (`public/images/` ne contient
-      plus que le parchemin, `Dark Comedy Ident - Main.mp3` retiré), dans la
-      même PR que le remplacement de leurs références dans `src/` et le
-      README, pour que l'app ne charge aucun fichier manquant
+- [ ] Images de Biggle supprimées (`public/images/` ne contient plus que le
+      parchemin), dans la même PR que le remplacement de leurs références
+      dans `src/` et le README, pour que l'app ne charge aucun fichier
+      manquant
 - [ ] À recevoir : image de l'écran titre, personnages éventuels
 
 ## 7. Données de l'épisode 1
