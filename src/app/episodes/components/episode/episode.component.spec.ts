@@ -133,6 +133,17 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
+    it('plays the quiz music when going to the quiz with "/video" in a query parameter', async () => {
+      await navigate('/3');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3/quiz?from=/video');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
+    });
+
     it('plays the quiz music, not the background track, when the episode opens on the quiz', async () => {
       await navigate('/3/quiz');
 
