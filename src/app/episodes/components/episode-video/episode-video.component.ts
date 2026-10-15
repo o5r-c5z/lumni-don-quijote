@@ -106,12 +106,16 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       });
   }
 
+  private get videoTitle(): string {
+    return this.video?.title || '';
+  }
+
   private initializePlayer() {
     if (!this.video) {
       return;
     }
 
-    const videoTitle = this.video?.title || '';
+    const videoTitle = this.videoTitle;
 
     this.audioService.pause();
 
@@ -146,9 +150,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   private onVideoEnded() {
-    this.announcementService.announce(
-      `Fin de la vidéo: ${this.video?.title || ''}`,
-    );
+    this.announcementService.announce(`Fin de la vidéo: ${this.videoTitle}`);
     const { path, queryParams } = this.nextDestination;
     this.router.navigate([path], { relativeTo: this.route, queryParams });
   }
