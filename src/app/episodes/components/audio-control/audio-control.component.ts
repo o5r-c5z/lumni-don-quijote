@@ -70,12 +70,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (
-      (document.activeElement instanceof HTMLInputElement &&
-        document.activeElement.type !== 'radio') ||
-      document.activeElement instanceof HTMLTextAreaElement ||
-      document.activeElement instanceof HTMLSelectElement
-    ) {
+    if (this.isLetterKeyUsedByFocusedField()) {
       return;
     }
 
@@ -85,6 +80,15 @@ export class AudioControlComponent implements OnInit, OnDestroy {
         event.preventDefault();
         break;
     }
+  }
+
+  private isLetterKeyUsedByFocusedField(): boolean {
+    const focused = document.activeElement;
+    return (
+      (focused instanceof HTMLInputElement && focused.type !== 'radio') ||
+      focused instanceof HTMLTextAreaElement ||
+      focused instanceof HTMLSelectElement
+    );
   }
 
   protected toggleAudio(): void {
