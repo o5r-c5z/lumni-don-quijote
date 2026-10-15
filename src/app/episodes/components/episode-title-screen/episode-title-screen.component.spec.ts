@@ -113,6 +113,16 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
 
+    it('renders without a background image when the episode lacks the field', async () => {
+      // An episode.json may omit the field, whatever the Episode type says.
+      const { titleBackground, ...episode } = createEpisode('La disparition');
+      episodeService.setEpisode(episode as Episode);
+      const host = await showTitleScreen();
+
+      expect(host.querySelector('h1')?.textContent).toBe('La disparition');
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
+    });
+
     it('shows no background image behind the links', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
