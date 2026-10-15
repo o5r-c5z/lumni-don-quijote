@@ -55,26 +55,21 @@ dans un vrai navigateur (section 5).
 - [x] Musique selon l'écran : fond sonore sur le titre et l'écran Bravo,
       musique du quiz sur les questions, silence pendant les vidéos
 - [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre
-- [x] Écran titre avant le chargement d'`episode.json`, ou si ce
-      chargement échoue : ses variables de fond valent `url("undefined")`,
-      ce qui fait demander au navigateur un fichier `/undefined`. Un
-      `titleBackground` vide donne `url("")`, dont le traitement dépend du
-      navigateur. Piste : renvoyer `none` quand le chemin manque ou est vide
-- [x] Orientation portrait abandonnée : `--screen-background-portrait`,
-      défini par les écrans titre, quiz, vidéo et Bravo, n'était lu par
-      aucune feuille de style, et `titleBackground.portrait` n'avait donc
-      aucun effet. Supprimer le portrait et la notion de paysage :
-      `titleBackground` devient un simple chemin, `--screen-background-landscape`
-      devient `--screen-background`
-- [x] Un `episode.json` sans `titleBackground` fait planter l'écran titre
-      (`TypeError` dans ses getters : seul `episode?.` est protégé). Piste :
-      `none`, comme pour un chemin vide
-- [x] La touche `M` (couper/rétablir le son) est ignorée quand le focus est
-      sur un bouton radio, donc sur toutes les questions, où le focus est
-      toujours sur une réponse. Elle doit rester ignorée dans un champ
-      texte, un `textarea` et un `select`
-- [x] `npm run build` avertit que `episode-quiz.component.scss` dépasse de
-      52 octets le budget de 4 kB : réduire la feuille sans changer le rendu
+- [x] Écran titre sans image de fond (`none`) tant qu'`episode.json` n'est
+      pas chargé, si son chargement échoue, ou si `titleBackground` est vide
+      (auparavant `url("undefined")`, qui faisait demander un fichier
+      `/undefined`, ou `url("")`)
+- [x] Orientation portrait abandonnée : `--screen-background-portrait`
+      n'était lu par aucune feuille de style. Le portrait et la notion de
+      paysage sont supprimés : `titleBackground` est un simple chemin, et
+      `--screen-background-landscape` devient `--screen-background`
+- [x] Un `episode.json` sans `titleBackground` affiche l'écran titre sans
+      image de fond, au lieu de le faire planter
+- [x] La touche `M` (couper/rétablir le son) fonctionne quand le focus est
+      sur un bouton radio, donc sur les réponses des questions ; elle reste
+      ignorée dans un champ texte, un `textarea` et un `select`
+- [x] `episode-quiz.component.scss` tient dans son budget de 4 kB : trois
+      déclarations redondantes retirées, sans changer le rendu
 
 ## 5. Tests e2e (Playwright)
 
