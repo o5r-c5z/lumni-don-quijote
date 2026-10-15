@@ -30,7 +30,7 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background')
   get backgroundImage() {
-    return `url("${this.episode?.titleBackground}")`;
+    return this.episode ? `url("${this.episode.titleBackground}")` : 'none';
   }
 
   ngOnInit() {
