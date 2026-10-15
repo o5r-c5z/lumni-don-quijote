@@ -123,6 +123,19 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
 
+    it('accepts an episode typed without a background field', async () => {
+      const episode: Episode = {
+        title: 'La disparition',
+        introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+        lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
+        questions: [],
+      };
+      episodeService.setEpisode(episode);
+      const host = await showTitleScreen();
+
+      expect(host.querySelector('h1')?.textContent).toBe('La disparition');
+    });
+
     it('shows no background image behind the links', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
