@@ -35,6 +35,12 @@ const episode: Episode = {
   ],
 };
 
+/** The episode, with its first question repeated `count` times. */
+function episodeWithQuestionCount(count: number): Episode {
+  const [question] = episode.questions;
+  return { ...episode, questions: Array(count).fill(question) };
+}
+
 @Component({ template: '<p>Quiz</p>' })
 class QuizStubComponent {}
 
@@ -379,22 +385,14 @@ describe('EpisodeVideoComponent', () => {
     });
 
     it('offers to skip the answer to the last question for the completion screen', async () => {
-      const [question] = episode.questions;
-      episodeService.setEpisode({
-        ...episode,
-        questions: [question, question, question, question, question],
-      });
+      episodeService.setEpisode(episodeWithQuestionCount(5));
       const host = await showVideo('?videoType=answer&question=4');
 
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/completion']]);
     });
 
     it('has no axe violation during the answer to the last question', async () => {
-      const [question] = episode.questions;
-      episodeService.setEpisode({
-        ...episode,
-        questions: [question, question, question, question, question],
-      });
+      episodeService.setEpisode(episodeWithQuestionCount(5));
       const host = await showVideo('?videoType=answer&question=4');
 
       expect(await axeViolations(host)).toEqual([]);
@@ -414,11 +412,7 @@ describe('EpisodeVideoComponent', () => {
     });
 
     it('goes to the completion screen after the answer to the last question', async () => {
-      const [question] = episode.questions;
-      episodeService.setEpisode({
-        ...episode,
-        questions: [question, question, question, question],
-      });
+      episodeService.setEpisode(episodeWithQuestionCount(4));
       await showVideo('?videoType=answer&question=3');
 
       emit('ended');
