@@ -146,6 +146,9 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   private onVideoEnded() {
+    this.announcementService.announce(
+      `Fin de la vidéo: ${this.video?.title || ''}`,
+    );
     const { path, queryParams } = this.nextDestination;
     this.router.navigate([path], { relativeTo: this.route, queryParams });
   }
