@@ -45,17 +45,17 @@ dans un vrai navigateur (section 5).
 
 ## 4. Fonctionnalités (TDD)
 
-- [ ] Modèle d'épisode : introduction, leçon, questions avec leur
+- [x] Modèle d'épisode : introduction, leçon, questions avec leur
       vidéo-réponse (`answerVideo`) ; plus d'indices, donc plus de liens
       « Revoir indice N » sur les questions
-- [ ] Titre → Introduction → leçon → première question (plus d'accès direct
+- [x] Titre → Introduction → leçon → première question (plus d'accès direct
       au quiz)
-- [ ] Bonne réponse → vidéo-réponse → question suivante, ou écran de fin
+- [x] Bonne réponse → vidéo-réponse → question suivante, ou écran de fin
       après la dernière
-- [ ] « Revoir la leçon de Rossinante » depuis les questions
-- [ ] Musique selon l'écran : fond sonore sur le titre et l'écran Bravo,
+- [x] « Revoir la leçon de Rossinante » depuis les questions
+- [x] Musique selon l'écran : fond sonore sur le titre et l'écran Bravo,
       musique du quiz sur les questions, silence pendant les vidéos
-- [ ] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
+- [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
       paysage comme en portrait (il n'existe qu'en paysage)
 
 ## 5. Tests e2e (Playwright)
