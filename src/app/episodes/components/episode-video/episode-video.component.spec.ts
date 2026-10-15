@@ -351,6 +351,15 @@ describe('EpisodeVideoComponent', () => {
       expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
+    it('starts no music when skipping the lesson', async () => {
+      const host = await showVideo('?videoType=lesson');
+
+      controlNamed(host, 'Passer la vidéo').click();
+      await harness.fixture.whenStable();
+
+      expect(audioService.play).not.toHaveBeenCalled();
+    });
+
     it('has no axe violation during the lesson', async () => {
       const host = await showVideo('?videoType=lesson');
 
