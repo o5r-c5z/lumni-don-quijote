@@ -48,7 +48,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
               '/audio/Guitar Background Mini_QUIZ.mp3',
             );
           }
-          if (this.isCompletionScreen(event.url)) {
+          if (
+            this.isCompletionScreen(event.url) ||
+            this.isTitleScreen(event.url)
+          ) {
             this.audioService.playBackgroundMusic(EPISODE_BACKGROUND_TRACK);
           }
           if (!this.isVideoScreen(event.url)) {
@@ -84,6 +87,14 @@ export class EpisodeComponent implements OnInit, OnDestroy {
 
   private isCompletionScreen(url: string): boolean {
     return url.includes('/completion');
+  }
+
+  private isTitleScreen(url: string): boolean {
+    return (
+      !this.isVideoScreen(url) &&
+      !this.isQuizScreen(url) &&
+      !this.isCompletionScreen(url)
+    );
   }
 
   private loadEpisode(episodeNumber: number) {
