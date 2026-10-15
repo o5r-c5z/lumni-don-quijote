@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import Player from '@vimeo/player';
 import { mergeMap, Subscription, tap } from 'rxjs';
 import { Episode, Video, VideoType } from '../../models';
@@ -16,8 +16,15 @@ import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
+const VIDEO_PATH = '../video';
 const QUIZ_PATH = '../quiz';
 const COMPLETION_PATH = '../completion';
+
+/** Where the screen leads once the video is over or skipped. */
+interface Destination {
+  path: string;
+  queryParams?: Params;
+}
 
 @Component({
   selector: 'app-episode-video',
@@ -37,7 +44,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   protected episode?: Episode;
   protected video?: Video;
   protected videoType?: VideoType;
-  protected VideoType = VideoType;
 
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
 
@@ -140,31 +146,22 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   private onVideoEnded() {
+    const { path, queryParams } = this.nextDestination;
+    this.router.navigate([path], { relativeTo: this.route, queryParams });
+  }
+
+  protected get nextDestination(): Destination {
     switch (this.videoType) {
       case VideoType.Lesson:
-        this.navigateTo(QUIZ_PATH);
-        break;
+        return { path: QUIZ_PATH };
       case VideoType.Answer:
-        this.navigateTo(this.pathAfterAnswer());
-        break;
+        return { path: this.pathAfterAnswer() };
       default:
-        this.router.navigate([], {
-          relativeTo: this.route,
+        return {
+          path: VIDEO_PATH,
           queryParams: { videoType: VideoType.Lesson },
-        });
+        };
     }
-  }
-
-  protected get isIntroduction(): boolean {
-    return (
-      this.videoType !== VideoType.Lesson && this.videoType !== VideoType.Answer
-    );
-  }
-
-  protected get exitLink(): string {
-    return this.videoType === VideoType.Answer
-      ? this.pathAfterAnswer()
-      : QUIZ_PATH;
   }
 
   private pathAfterAnswer(): string {
@@ -175,10 +172,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
     const questionIndex = Number(this.route.snapshot.queryParams['question']);
     const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
     return questionIndex < lastQuestionIndex;
-  }
-
-  private navigateTo(path: string) {
-    this.router.navigate([path], { relativeTo: this.route });
   }
 
   private destroyPlayer() {

@@ -1,19 +1,11 @@
 <div #playerContainer id="episode-video__player-container"></div>
-@if (isIntroduction) {
-  <a
-    class="btn btn-plain"
-    [routerLink]="['../video']"
-    [queryParams]="{ videoType: VideoType.Lesson }"
-  >
-    Passer la vidéo
-  </a>
-} @else {
-  <a
-    id="episode-video__exit-btn"
-    class="btn btn-plain"
-    [routerLink]="[exitLink]"
-    tabindex="0"
-  >
-    Passer la vidéo
-  </a>
-}
+@let destination = nextDestination;
+<a
+  id="episode-video__exit-btn"
+  class="btn btn-plain"
+  [routerLink]="[destination.path]"
+  [queryParams]="destination.queryParams"
+  tabindex="0"
+>
+  Passer la vidéo
+</a>
