@@ -5,7 +5,7 @@ import { EpisodeService } from './episode.service';
 function createEpisode(questionCount: number): Episode {
   return {
     title: 'Episode',
-    titleBackground: { landscape: 'landscape.jpg', portrait: 'portrait.jpg' },
+    titleBackground: 'background.jpg',
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: Array.from({ length: questionCount }, (_, index) => ({

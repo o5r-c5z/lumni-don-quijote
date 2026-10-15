@@ -10,11 +10,8 @@ import { EpisodeTitleScreenComponent } from './episode-title-screen.component';
 function createEpisode(title: string): Episode {
   return {
     title,
-    // Data URLs, so that displaying the background makes no request.
-    titleBackground: {
-      landscape: `data:,${title} landscape`,
-      portrait: `data:,${title} portrait`,
-    },
+    // A data URL, so that displaying the background makes no request.
+    titleBackground: `data:,${title} background`,
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: [],
@@ -59,15 +56,10 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(host.children.length).toBe(0);
     });
 
-    it('points the background at an "undefined" image', async () => {
+    it('has no background image', async () => {
       const host = await showTitleScreen();
 
-      expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("undefined")',
-      );
-      expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-        'url("undefined")',
-      );
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
   });
 
@@ -106,13 +98,29 @@ describe('EpisodeTitleScreenComponent', () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
 
-      expect(host.classList).toContain('screen');
-      expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("data:,La disparition landscape")',
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,La disparition background")',
       );
-      expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-        'url("data:,La disparition portrait")',
-      );
+    });
+
+    it('has no background image when the episode has none', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: '',
+      });
+      const host = await showTitleScreen();
+
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
+    });
+
+    it('renders without a background image when the episode lacks the field', async () => {
+      // An episode.json may omit the field, whatever the Episode type says.
+      const { titleBackground, ...episode } = createEpisode('La disparition');
+      episodeService.setEpisode(episode as Episode);
+      const host = await showTitleScreen();
+
+      expect(host.querySelector('h1')?.textContent).toBe('La disparition');
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
 
     it('shows no background image behind the links', async () => {

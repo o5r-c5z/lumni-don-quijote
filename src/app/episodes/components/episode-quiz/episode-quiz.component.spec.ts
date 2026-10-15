@@ -27,7 +27,7 @@ const questions: QuizQuestion[] = [
 function createEpisode(quiz = questions): Episode {
   return {
     title: 'La disparition',
-    titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+    titleBackground: 'background.png',
     introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: quiz,
@@ -307,12 +307,9 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
 
       expect(host().classList).toContain('screen');
-      expect(
-        host().style.getPropertyValue('--screen-background-landscape'),
-      ).toBe('url("/images/Parchemin_questions.jpg")');
-      expect(
-        host().style.getPropertyValue('--screen-background-portrait'),
-      ).toBe('url("/images/Parchemin_questions.jpg")');
+      expect(host().style.getPropertyValue('--screen-background')).toBe(
+        'url("/images/Parchemin_questions.jpg")',
+      );
       expect(
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');

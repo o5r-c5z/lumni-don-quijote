@@ -24,9 +24,8 @@ Rossinante » reste accessible depuis les questions.
 - [x] `<title>` de `src/index.html` (`Don Quijote`) et `title` de
       `AppComponent` (`lumni-don-quijote`)
 - [x] Plus aucune mention de Biggle, d'Owliver ni d'« enquête » dans les
-      textes de l'application ; restent le README (section 8), les noms de
-      fichiers des assets (section 6) et les liens « Revoir indice N »
-      (section 4)
+      textes de l'application ; le README ne cite Détective Biggle que comme
+      projet d'origine
 
 ## 3. Tests d'accessibilité (axe-core)
 
@@ -55,17 +54,22 @@ dans un vrai navigateur (section 5).
 - [x] « Revoir la leçon de Rossinante » depuis les questions
 - [x] Musique selon l'écran : fond sonore sur le titre et l'écran Bravo,
       musique du quiz sur les questions, silence pendant les vidéos
-- [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre, en
-      paysage comme en portrait (il n'existe qu'en paysage)
-- [ ] Écran titre avant le chargement d'`episode.json`, ou si ce
-      chargement échoue : ses variables de fond valent `url("undefined")`,
-      ce qui fait demander au navigateur un fichier `/undefined`. Un
-      `titleBackground` vide donne `url("")`, dont le traitement dépend du
-      navigateur. Piste : renvoyer `none` quand le chemin manque ou est vide
-- [ ] `--screen-background-portrait` est défini par les écrans titre, quiz,
-      vidéo et Bravo, mais aucune feuille de style ne le lit (`styles.scss`
-      n'utilise que `--screen-background-landscape`) : `titleBackground.portrait`
-      n'a donc aucun effet
+- [x] Fond `Parchemin_questions.jpg` sur tous les écrans sauf le titre
+- [x] Écran titre sans image de fond (`none`) tant qu'`episode.json` n'est
+      pas chargé, si son chargement échoue, ou si `titleBackground` est vide
+      (auparavant `url("undefined")`, qui faisait demander un fichier
+      `/undefined`, ou `url("")`)
+- [x] Orientation portrait abandonnée : `--screen-background-portrait`
+      n'était lu par aucune feuille de style. Le portrait et la notion de
+      paysage sont supprimés : `titleBackground` est un simple chemin, et
+      `--screen-background-landscape` devient `--screen-background`
+- [x] Un `episode.json` sans `titleBackground` affiche l'écran titre sans
+      image de fond, au lieu de le faire planter
+- [x] La touche `M` (couper/rétablir le son) fonctionne quand le focus est
+      sur un bouton radio, donc sur les réponses des questions ; elle reste
+      ignorée dans un champ texte, un `textarea` et un `select`
+- [x] `episode-quiz.component.scss` tient dans son budget de 4 kB : trois
+      déclarations redondantes retirées, sans changer le rendu
 
 ## 5. Tests e2e (Playwright)
 
@@ -106,9 +110,8 @@ production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
 
-En attendant l'image de titre (section 6), `titleBackground.landscape` et
-`titleBackground.portrait` valent `""` : Chromium ne demande alors aucun
-fichier ; les autres navigateurs n'ont pas été vérifiés.
+En attendant l'image de titre (section 6), `titleBackground` vaut `""` :
+l'écran titre n'a alors pas d'image de fond.
 
 ## 8. Documentation
 

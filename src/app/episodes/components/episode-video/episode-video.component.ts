@@ -48,13 +48,8 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
 
   @HostBinding('class.screen')
-  @HostBinding('style.--screen-background-landscape')
-  get backgroundImageLandscape() {
-    return PARCHMENT_BACKGROUND;
-  }
-
-  @HostBinding('style.--screen-background-portrait')
-  get backgroundImagePortrait() {
+  @HostBinding('style.--screen-background')
+  get backgroundImage() {
     return PARCHMENT_BACKGROUND;
   }
 

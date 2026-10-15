@@ -239,21 +239,20 @@ describe('AudioControlComponent', () => {
 
       afterEach(() => field?.remove());
 
+      function focusField(element: HTMLElement): void {
+        field = element;
+        document.body.appendChild(field);
+        field.focus();
+      }
+
       for (const [description, create] of [
         ['a text input', () => document.createElement('input')],
-        [
-          'a radio button',
-          () =>
-            Object.assign(document.createElement('input'), { type: 'radio' }),
-        ],
         ['a textarea', () => document.createElement('textarea')],
         ['a select', () => document.createElement('select')],
       ] as const) {
         it(`is ignored in ${description}`, () => {
           createComponent();
-          field = create();
-          document.body.appendChild(field);
-          field.focus();
+          focusField(create());
 
           const event = pressKey('m');
 
@@ -261,6 +260,18 @@ describe('AudioControlComponent', () => {
           expect(audioService.mute).not.toHaveBeenCalled();
         });
       }
+
+      it('toggles the sound on a radio button', () => {
+        createComponent();
+        focusField(
+          Object.assign(document.createElement('input'), { type: 'radio' }),
+        );
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
     });
   });
 

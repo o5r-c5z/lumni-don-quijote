@@ -17,7 +17,7 @@ function video(id: number, title: string) {
 
 const episode: Episode = {
   title: 'La disparition',
-  titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
+  titleBackground: 'background.png',
   introduction: video(500, 'Introduction'),
   lesson: video(600, 'Leçon'),
   questions: [
@@ -332,10 +332,7 @@ describe('EpisodeVideoComponent', () => {
 
     it('displays the parchment as a background', () => {
       expect(host.classList).toContain('screen');
-      expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("/images/Parchemin_questions.jpg")',
-      );
-      expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
+      expect(host.style.getPropertyValue('--screen-background')).toBe(
         'url("/images/Parchemin_questions.jpg")',
       );
       expect(
