@@ -35,32 +35,19 @@ export class EpisodeComponent implements OnInit, OnDestroy {
       '/audio/Dark Comedy Ident - Main.mp3',
     );
 
-    if (!this.isVideoScreen(this.router.url)) {
+    const startupTrack = this.backgroundTrackFor(this.router.url);
+    if (startupTrack) {
       this.audioService.play();
-      this.audioService.playBackgroundMusic(
-        this.isQuizScreen(this.router.url)
-          ? QUIZ_BACKGROUND_TRACK
-          : EPISODE_BACKGROUND_TRACK,
-      );
+      this.audioService.playBackgroundMusic(startupTrack);
     }
 
     this.subscriptions.add(
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe((event: any) => {
-          if (this.isQuizScreen(event.url)) {
-            this.audioService.playBackgroundMusic(QUIZ_BACKGROUND_TRACK);
-          }
-          if (
-            this.isCompletionScreen(event.url) ||
-            this.isTitleScreen(event.url)
-          ) {
-            this.audioService.playBackgroundMusic(EPISODE_BACKGROUND_TRACK);
-          }
-          if (!this.isVideoScreen(event.url)) {
-            if (!this.audioService.isPlaying()) {
-              this.audioService.play(false);
-            }
+          const track = this.backgroundTrackFor(event.url);
+          if (track) {
+            this.audioService.playBackgroundMusic(track);
           }
         }),
     );
@@ -80,24 +67,21 @@ export class EpisodeComponent implements OnInit, OnDestroy {
     this.audioService.pause();
   }
 
+  private backgroundTrackFor(url: string): string | undefined {
+    if (this.isVideoScreen(url)) {
+      return undefined;
+    }
+    return this.isQuizScreen(url)
+      ? QUIZ_BACKGROUND_TRACK
+      : EPISODE_BACKGROUND_TRACK;
+  }
+
   private isVideoScreen(url: string): boolean {
     return url.includes('/video');
   }
 
   private isQuizScreen(url: string): boolean {
     return url.includes('/quiz');
-  }
-
-  private isCompletionScreen(url: string): boolean {
-    return url.includes('/completion');
-  }
-
-  private isTitleScreen(url: string): boolean {
-    return (
-      !this.isVideoScreen(url) &&
-      !this.isQuizScreen(url) &&
-      !this.isCompletionScreen(url)
-    );
   }
 
   private loadEpisode(episodeNumber: number) {
