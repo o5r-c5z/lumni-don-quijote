@@ -96,7 +96,7 @@ Le code existant est couvert par des tests de caractérisation (sauf l'amorçage
 
 - L'application attend les données d'un épisode à l'URL `uploads/episodes/<n>/episode.json` (avec `<n>` le numéro d'épisode dans la route). En configuration `development`, `angular.json` copie le dossier local `uploads/` vers `/uploads`. Ce dossier n'est pas versionné : il faut le fournir pour faire tourner l'application. Un `episode.json` décrit le titre, les images de fond, les vidéos (URL Vimeo) et les questions du quiz — voir `src/app/episodes/models.ts`.
 - La configuration de production (`npm run build`) ne copie pas `uploads/` ; l'hébergement doit exposer ce chemin.
-- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse). `Dark Comedy Ident - Main.mp3` est encore chargé à l'ouverture de l'épisode. Aucune musique pendant les vidéos.
+- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse). Aucune musique pendant les vidéos.
 - Chemin de sortie du build : `dist/lumni-don-quijote/`.
 
 ## Crédits
