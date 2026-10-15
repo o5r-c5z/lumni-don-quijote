@@ -1,9 +1,6 @@
 export interface Episode {
   title: string;
-  titleBackground: {
-    landscape: string;
-    portrait: string;
-  };
+  titleBackground: string;
   introduction: Video;
   lesson: Video;
   questions: QuizQuestion[];
