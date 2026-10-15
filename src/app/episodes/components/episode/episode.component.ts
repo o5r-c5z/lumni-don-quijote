@@ -31,20 +31,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   protected episode?: Episode;
 
   ngOnInit() {
-    const startupTrack = this.backgroundTrackFor(this.router.url);
-    if (startupTrack) {
-      this.audioService.playBackgroundMusic(startupTrack);
-    }
+    this.playBackgroundMusicFor(this.router.url);
 
     this.subscriptions.add(
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe((event: any) => {
-          const track = this.backgroundTrackFor(event.url);
-          if (track) {
-            this.audioService.playBackgroundMusic(track);
-          }
-        }),
+        .subscribe((event: any) => this.playBackgroundMusicFor(event.url)),
     );
 
     this.subscriptions.add(
@@ -60,6 +52,13 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     this.audioService.pause();
+  }
+
+  private playBackgroundMusicFor(url: string): void {
+    const track = this.backgroundTrackFor(url);
+    if (track) {
+      this.audioService.playBackgroundMusic(track);
+    }
   }
 
   private backgroundTrackFor(url: string): string | undefined {
