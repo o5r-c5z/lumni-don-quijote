@@ -124,6 +124,14 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
+    it('plays the quiz music, not the background track, when the episode opens on the quiz', async () => {
+      await navigate('/3/quiz');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
+    });
+
     it('plays the background track again when going from the quiz to the completion screen', async () => {
       await navigate('/3/quiz');
       audioService.playBackgroundMusic.calls.reset();
