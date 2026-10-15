@@ -14,23 +14,22 @@ const questions: QuizQuestion[] = [
     label: 'Qui a volé le tableau ?',
     answers: ['Le chat', 'Le jardinier', 'Le majordome'],
     correctAnswer: 2,
+    answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
   },
   {
     label: 'Où était-il caché ?',
     answers: ['Au grenier', 'À la cave'],
     correctAnswer: 0,
+    answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
   },
 ];
 
 function createEpisode(quiz = questions): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title: 'La disparition',
     titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [{ ...video }, { ...video }],
-    resolution: video,
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: quiz,
   };
 }
@@ -65,6 +64,9 @@ const noVisibleQuestion =
 @Component({ template: '<p>Video</p>' })
 class VideoStubComponent {}
 
+@Component({ template: '<p>Completion</p>' })
+class CompletionStubComponent {}
+
 describe('EpisodeQuizComponent', () => {
   let harness: RouterTestingHarness;
   let episodeService: EpisodeService;
@@ -84,6 +86,7 @@ describe('EpisodeQuizComponent', () => {
             children: [
               { path: 'quiz', component: EpisodeQuizComponent },
               { path: 'video', component: VideoStubComponent },
+              { path: 'completion', component: CompletionStubComponent },
             ],
           },
         ]),
@@ -279,7 +282,7 @@ describe('EpisodeQuizComponent', () => {
       expect(document.activeElement).toBe(radios(first)[0]);
     }));
 
-    it('links to the lesson and to each clue video', fakeAsync(() => {
+    it('links only to the lesson of Rossinante', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
@@ -294,32 +297,22 @@ describe('EpisodeQuizComponent', () => {
         [
           'Revoir la leçon de Rossinante',
           null,
-          '/3/video?videoType=pedagogicalConcept',
-        ],
-        [
-          'Revoir indice 1',
-          'Revoir indice 1',
-          '/3/video?videoType=clue&clue=0',
-        ],
-        [
-          'Revoir indice 2',
-          'Revoir indice 2',
-          '/3/video?videoType=clue&clue=1',
+          '/3/video?videoType=lesson',
         ],
       ]);
     }));
 
-    it('displays the screen background', fakeAsync(() => {
+    it('displays the parchment as a background', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
       expect(host().classList).toContain('screen');
       expect(
         host().style.getPropertyValue('--screen-background-landscape'),
-      ).toBe('url("/images/landscape/Ecran_UI.jpg")');
+      ).toBe('url("/images/Parchemin_questions.jpg")');
       expect(
         host().style.getPropertyValue('--screen-background-portrait'),
-      ).toBe('url("/images/portrait/Ecran_UI.jpg")');
+      ).toBe('url("/images/Parchemin_questions.jpg")');
       expect(
         host().style.getPropertyValue('--screen-background-overlay-opacity'),
       ).toBe('0.8');
@@ -351,17 +344,18 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()).toEqual([]);
       expect(tickErrors(100)).toEqual(reportedTwice(noVisibleQuestion));
     }));
+  });
 
-    it('shows no question and throws a TypeError once the quiz is complete', fakeAsync(() => {
+  describe('once every question is answered', () => {
+    it('goes to the completion screen', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       episodeService.incrementQuizStep();
       episodeService.incrementQuizStep();
+
       showQuiz();
 
-      expect(fieldsets().length).toBe(2);
-      expect(visibleFieldsets()).toEqual([]);
-      expect(host().querySelector('nav')).not.toBeNull();
-      expect(tickErrors(100)).toEqual(reportedTwice(noVisibleQuestion));
+      expect(url()).toBe('/3/completion');
+      expect(host().textContent).toBe('Completion');
     }));
   });
 
@@ -508,11 +502,11 @@ describe('EpisodeQuizComponent', () => {
       expect(await axeViolations(host())).toEqual([]);
     });
 
-    it('slides the question out after 2 seconds, then shows the next one', fakeAsync(() => {
+    it('slides the question out after 2 seconds, then plays its answer video', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
-      const [first, second] = fieldsets();
+      const [first] = fieldsets();
 
       answer(2);
       tick(1999);
@@ -523,33 +517,42 @@ describe('EpisodeQuizComponent', () => {
       expect(episodeService.quizStep).toBe(0);
 
       tick(300);
-      harness.detectChanges();
-      expect(first.classList).not.toContain('hiding');
+      tick();
       expect(episodeService.quizStep).toBe(1);
-      expect(visibleFieldsets()).toEqual([second]);
-      expect(second.classList).toContain('hidden');
-
-      tick(100);
-      expect(second.classList).not.toContain('hidden');
-      expect(document.activeElement).toBe(radios(second)[0]);
+      expect(url()).toBe('/3/video?videoType=answer&question=0');
+      expect(host().textContent).toBe('Video');
     }));
 
-    it('plays the resolution video after the last question', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
+    it('plays the answer video of the last question', fakeAsync(() => {
+      episodeService.setEpisode(
+        createEpisode([
+          ...questions,
+          {
+            label: 'Quand a-t-il été volé ?',
+            answers: ['La nuit', 'Le jour'],
+            correctAnswer: 1,
+            answerVideo: { url: 'https://vimeo.com/12', title: 'Réponse 3' },
+          },
+          {
+            label: 'Pourquoi ?',
+            answers: ['Par jalousie', 'Par cupidité', 'Par erreur'],
+            correctAnswer: 1,
+            answerVideo: { url: 'https://vimeo.com/13', title: 'Réponse 4' },
+          },
+        ]),
+      );
+      episodeService.incrementQuizStep();
+      episodeService.incrementQuizStep();
+      episodeService.incrementQuizStep();
       showQuiz();
       tick(100);
 
-      answer(2);
-      tick(2300);
-      harness.detectChanges();
-      tick(100);
-      answer(0);
-      tick(2300);
+      answer(1);
+      tick(2000);
+      tick(300);
       tick();
 
-      expect(episodeService.quizStep).toBe(2);
-      expect(url()).toBe('/3/video?videoType=resolution');
-      expect(host().textContent).toBe('Video');
+      expect(url()).toBe('/3/video?videoType=answer&question=3');
     }));
 
     it('goes on even when the sound cannot be played', fakeAsync(() => {
@@ -596,8 +599,7 @@ describe('EpisodeQuizComponent', () => {
 
       // Each episode emission adds a subscription to the quiz step.
       const secondFocus = spyOn(radios(second)[0], 'focus');
-      answer(2);
-      tick(2300);
+      episodeService.incrementQuizStep();
       harness.detectChanges();
       tick(100);
       expect(secondFocus).toHaveBeenCalledTimes(2);

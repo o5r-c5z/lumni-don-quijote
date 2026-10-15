@@ -1,29 +1,38 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   HostBinding,
   inject,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import Player from '@vimeo/player';
-import { mergeMap, Subscription, tap } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
 import { Episode, Video, VideoType } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
+import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
+
+const VIDEO_PATH = '../video';
+const QUIZ_PATH = '../quiz';
+const COMPLETION_PATH = '../completion';
+
+/** Where the screen leads once the video is over or skipped. */
+interface Destination {
+  path: string;
+  queryParams?: Params;
+}
 
 @Component({
   selector: 'app-episode-video',
-  imports: [RouterLink, FontAwesomeModule],
+  imports: [RouterLink],
   templateUrl: './episode-video.component.html',
   styleUrl: './episode-video.component.scss',
 })
-export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
+export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -35,33 +44,26 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
   protected episode?: Episode;
   protected video?: Video;
   protected videoType?: VideoType;
-  protected videoEnded = false;
-  protected VideoType = VideoType;
-  protected faArrowRotateLeft = faArrowRotateLeft;
 
-  @ViewChild('playerContainer') playerContainer!: ElementRef;
+  @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
 
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return !this.videoEnded
-      ? `url("/images/landscape/Tableau_UI.jpg")`
-      : `url("/images/landscape/Decors_Bureau 1.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return !this.videoEnded
-      ? `url("/images/portrait/Tableau_UI.jpg")`
-      : `url("/images/portrait/decor_bureau.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
-    return this.videoEnded ? 0.45 : 0.8;
+    return 0.8;
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.setupSubscriptions();
   }
 
@@ -76,27 +78,20 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
         tap((episode?: Episode) => {
           this.episode = episode;
         }),
-        mergeMap(() => this.route.queryParams),
+        switchMap(() => this.route.queryParams),
         tap((params) => {
-          this.videoEnded = false;
-
           this.videoType = params['videoType'];
           switch (this.videoType) {
-            case VideoType.PedagogicalConcept:
-              this.video = this.episode?.pedagogicalConcept;
+            case VideoType.Lesson:
+              this.video = this.episode?.lesson;
               break;
-            case VideoType.Clue:
-              const clueNumber = params['clue'];
-              if (clueNumber) {
-                this.video = this.episode?.clues[clueNumber];
-              }
+            case VideoType.Answer:
+              this.video =
+                this.episode?.questions[params['question']]?.answerVideo ??
+                this.video;
               break;
-            case VideoType.Resolution:
-              this.video = this.episode?.resolution;
-              break;
-            case VideoType.Investigation:
             default:
-              this.video = this.episode?.investigation;
+              this.video = this.episode?.introduction;
               break;
           }
 
@@ -111,8 +106,8 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  protected restartBackgroundMusic(): void {
-    this.audioService.play(true);
+  private get videoTitle(): string {
+    return this.video?.title || '';
   }
 
   private initializePlayer() {
@@ -120,7 +115,7 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const videoTitle = this.video?.title || '';
+    const videoTitle = this.videoTitle;
 
     this.audioService.pause();
 
@@ -155,50 +150,37 @@ export class EpisodeVideoComponent implements AfterViewInit, OnDestroy {
   }
 
   private onVideoEnded() {
+    this.announcementService.announce(`Fin de la vidéo: ${this.videoTitle}`);
+    const { path, queryParams } = this.nextDestination;
+    this.router.navigate([path], { relativeTo: this.route, queryParams });
+  }
+
+  protected get nextDestination(): Destination {
     switch (this.videoType) {
-      case VideoType.Clue:
-        this.router.navigate(['../quiz'], { relativeTo: this.route });
-        break;
-      case VideoType.Resolution:
-        this.router.navigate(['../completion'], { relativeTo: this.route });
-        break;
+      case VideoType.Lesson:
+        return { path: QUIZ_PATH };
+      case VideoType.Answer:
+        return { path: this.pathAfterAnswer() };
       default:
-        this.videoEnded = true;
-        this.destroyPlayer();
-
-        this.restartBackgroundMusic();
-        this.announcementService.announce('Vidéo terminée');
-
-        setTimeout(() => {
-          const firstButton = document.getElementById(
-            'episode-video__go-to-quiz-btn',
-          );
-          if (firstButton) {
-            firstButton.focus();
-          }
-        }, 100);
+        return {
+          path: VIDEO_PATH,
+          queryParams: { videoType: VideoType.Lesson },
+        };
     }
+  }
+
+  private pathAfterAnswer(): string {
+    return this.isLastQuestion() ? COMPLETION_PATH : QUIZ_PATH;
+  }
+
+  private isLastQuestion(): boolean {
+    const questionIndex = Number(this.route.snapshot.queryParams['question']);
+    const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
+    return questionIndex === lastQuestionIndex;
   }
 
   private destroyPlayer() {
     this.player?.destroy();
     this.player = undefined;
-  }
-
-  protected restartVideo() {
-    this.videoEnded = false;
-    this.initializePlayer();
-    this.audioService.pause();
-    this.announcementService.announce('Redémarrage de la vidéo');
-    this.player?.play();
-  }
-
-  protected goToPedagogicalConcept() {
-    this.videoEnded = false;
-    this.audioService.pause();
-    this.announcementService.announce(
-      'Changement vers la vidéo du concept pédagogique',
-    );
-    this.player?.play();
   }
 }

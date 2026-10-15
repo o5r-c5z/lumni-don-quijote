@@ -10,14 +10,11 @@ import { AudioControlComponent } from '../audio-control/audio-control.component'
 import { EpisodeComponent } from './episode.component';
 
 function createEpisode(title: string): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title,
     titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [video],
-    resolution: video,
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: [],
   };
 }
@@ -44,6 +41,7 @@ describe('EpisodeComponent', () => {
   beforeEach(async () => {
     audioService = jasmine.createSpyObj<AudioService>('AudioService', [
       'initBackgroundMusic',
+      'playBackgroundMusic',
       'play',
       'pause',
       'isPlaying',
@@ -61,6 +59,8 @@ describe('EpisodeComponent', () => {
             component: EpisodeComponent,
             children: [
               { path: 'video', component: ScreenStubComponent },
+              { path: 'quiz', component: ScreenStubComponent },
+              { path: 'completion', component: ScreenStubComponent },
               { path: '**', component: ScreenStubComponent },
             ],
           },
@@ -98,59 +98,92 @@ describe('EpisodeComponent', () => {
   });
 
   describe('background music', () => {
-    it('starts the main theme when the episode opens', async () => {
-      await navigate('/3');
-
-      expect(audioService.initBackgroundMusic).toHaveBeenCalledOnceWith(
-        '/audio/Dark Comedy Ident - Main.mp3',
-      );
-      expect(audioService.initBackgroundMusic).toHaveBeenCalledBefore(
-        audioService.play,
-      );
-    });
-
-    it('asks to play it once when the episode opens', async () => {
+    it('plays the background track once when the episode opens on the title screen', async () => {
       // The NavigationEnd subscription starts in ngOnInit, which runs after
       // the initial navigation has ended.
       await navigate('/3');
 
-      expect(audioService.play.calls.allArgs()).toEqual([[]]);
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
     });
 
-    it('asks to play it even when the episode opens on the video', async () => {
-      await navigate('/3/video');
-
-      expect(audioService.play.calls.allArgs()).toEqual([[]]);
-    });
-
-    it('resumes it without rewinding on each screen but the video', async () => {
+    it('loads and starts no track other than the screen music when the episode opens', async () => {
       await navigate('/3');
-      audioService.play.calls.reset();
 
-      await navigate('/3/video');
-      expect(audioService.play).not.toHaveBeenCalled();
-
-      await navigate('/3/quiz');
-      expect(audioService.play.calls.allArgs()).toEqual([[false]]);
-    });
-
-    it('leaves it alone on a screen change while it is playing', async () => {
-      await navigate('/3');
-      audioService.play.calls.reset();
-      audioService.isPlaying.and.returnValue(true);
-
-      await navigate('/3/quiz');
-
+      expect(audioService.initBackgroundMusic).not.toHaveBeenCalled();
       expect(audioService.play).not.toHaveBeenCalled();
     });
 
-    it('looks for "/video" anywhere in the URL', async () => {
-      await navigate('/3');
-      audioService.play.calls.reset();
+    it('plays no music when the episode opens on the video', async () => {
+      await navigate('/3/video');
 
+      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
+      expect(audioService.play).not.toHaveBeenCalled();
+    });
+
+    it('plays the quiz music when going to the quiz', async () => {
+      await navigate('/3');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3/quiz');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
+    });
+
+    it('plays the quiz music when going to the quiz with "/video" in a query parameter', async () => {
+      await navigate('/3');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3/quiz?from=/video');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
+    });
+
+    it('plays the quiz music, not the background track, when the episode opens on the quiz', async () => {
+      await navigate('/3/quiz');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Guitar Background Mini_QUIZ.mp3'],
+      ]);
+    });
+
+    it('plays the background track again when going from the quiz to the completion screen', async () => {
+      await navigate('/3/quiz');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3/completion');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
+    });
+
+    it('plays the background track again when going back from the quiz to the title screen', async () => {
+      await navigate('/3/quiz');
+      audioService.playBackgroundMusic.calls.reset();
+
+      await navigate('/3');
+
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
+    });
+
+    it('plays the background track when going to a title screen whose URL merely contains "/video"', async () => {
+      await navigate('/3/quiz');
+      audioService.playBackgroundMusic.calls.reset();
+
+      // Not the video screen: the wildcard route shows the title screen.
       await navigate('/3/video/extra');
 
-      expect(audioService.play).not.toHaveBeenCalled();
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
     });
 
     it('pauses it when the episode closes', async () => {
@@ -165,11 +198,11 @@ describe('EpisodeComponent', () => {
     it('stops following the navigation once the episode is closed', async () => {
       await navigate('/3');
       await navigate('/');
-      audioService.play.calls.reset();
+      audioService.playBackgroundMusic.calls.reset();
 
       await navigate('/?query=1');
 
-      expect(audioService.play).not.toHaveBeenCalled();
+      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
     });
   });
 

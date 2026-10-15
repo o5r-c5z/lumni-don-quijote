@@ -64,25 +64,14 @@
     }
   </form>
 
-  <nav class="episode-quiz__clues">
+  <nav class="episode-quiz__links">
     <a
       class="btn btn-plain"
       [routerLink]="['../video']"
-      [queryParams]="{ videoType: 'pedagogicalConcept' }"
+      [queryParams]="{ videoType: VideoType.Lesson }"
       tabindex="0"
     >
       Revoir la leçon de Rossinante
     </a>
-    @for (clue of episode.clues; track clue; let cIndex = $index) {
-      <a
-        class="btn btn-plain"
-        [routerLink]="['../video']"
-        [queryParams]="{ videoType: 'clue', clue: cIndex }"
-        [attr.aria-label]="'Revoir indice ' + (cIndex + 1)"
-        tabindex="0"
-      >
-        Revoir indice {{ cIndex + 1 }}
-      </a>
-    }
   </nav>
 }

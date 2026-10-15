@@ -1,46 +1,11 @@
 <div #playerContainer id="episode-video__player-container"></div>
-@if (!videoEnded) {
-  @if (videoType !== VideoType.Resolution) {
-    <a
-      id="episode-video__exit-btn"
-      class="btn btn-plain"
-      (click)="restartBackgroundMusic()"
-      [routerLink]="['../quiz']"
-      tabindex="0"
-    >
-      @if (videoType === VideoType.Clue) {
-        Retourner au quiz
-      } @else {
-        Quitter la vidéo et lancer le quiz
-      }
-    </a>
-  }
-} @else {
-  <nav class="episode-video__nav" aria-label="Options après la vidéo">
-    <a
-      id="episode-video__go-to-quiz-btn"
-      class="btn btn-plain"
-      [routerLink]="['../quiz']"
-    >
-      Lancer le quiz !
-    </a>
-    <button
-      type="button"
-      class="btn btn-plain"
-      (click)="restartVideo()"
-    >
-      <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
-      Revoir toute la vidéo
-    </button>
-    @if (videoType !== VideoType.PedagogicalConcept) {
-      <a
-        class="btn btn-plain"
-        [routerLink]="['../video']"
-        [queryParams]="{ videoType: VideoType.PedagogicalConcept }"
-      >
-        <fa-icon [icon]="faArrowRotateLeft" aria-hidden="true"></fa-icon>
-        Revoir la leçon de Rossinante
-      </a>
-    }
-  </nav>
-}
+@let destination = nextDestination;
+<a
+  id="episode-video__exit-btn"
+  class="btn btn-plain"
+  [routerLink]="[destination.path]"
+  [queryParams]="destination.queryParams"
+  tabindex="0"
+>
+  Passer la vidéo
+</a>

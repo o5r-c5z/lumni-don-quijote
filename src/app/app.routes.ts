@@ -11,11 +11,7 @@ export const routes: Routes = [
     path: ':episodeNumber',
     component: EpisodeComponent,
     children: [
-      {
-        path: 'video',
-        component: EpisodeVideoComponent,
-        data: { queryParams: ['videoType', 'clue'] },
-      },
+      { path: 'video', component: EpisodeVideoComponent },
       { path: 'quiz', component: EpisodeQuizComponent },
       { path: 'completion', component: EpisodeCompletionComponent },
       { path: '**', component: EpisodeTitleScreenComponent },

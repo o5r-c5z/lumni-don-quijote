@@ -11,6 +11,9 @@ import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioControlComponent } from '../audio-control/audio-control.component';
 
+const EPISODE_BACKGROUND_TRACK = '/audio/Entertainment_FOND_SONORE.mp3';
+const QUIZ_BACKGROUND_TRACK = '/audio/Guitar Background Mini_QUIZ.mp3';
+
 @Component({
   selector: 'app-episode',
   imports: [RouterOutlet, AudioControlComponent],
@@ -28,25 +31,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   protected episode?: Episode;
 
   ngOnInit() {
-    this.audioService.initBackgroundMusic(
-      '/audio/Dark Comedy Ident - Main.mp3',
-    );
-
-    this.audioService.play();
+    this.playBackgroundMusicFor(this.router.url);
 
     this.subscriptions.add(
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe((event: any) => {
-          const url = event.url;
-          const isVideoScreen = url.includes('/video');
-
-          if (!isVideoScreen) {
-            if (!this.audioService.isPlaying()) {
-              this.audioService.play(false);
-            }
-          }
-        }),
+        .subscribe((event: any) => this.playBackgroundMusicFor(event.url)),
     );
 
     this.subscriptions.add(
@@ -62,6 +52,35 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     this.audioService.pause();
+  }
+
+  private playBackgroundMusicFor(url: string): void {
+    const track = this.backgroundTrackFor(url);
+    if (track) {
+      this.audioService.playBackgroundMusic(track);
+    }
+  }
+
+  private backgroundTrackFor(url: string): string | undefined {
+    if (this.isVideoScreen(url)) {
+      return undefined;
+    }
+    return this.isQuizScreen(url)
+      ? QUIZ_BACKGROUND_TRACK
+      : EPISODE_BACKGROUND_TRACK;
+  }
+
+  private isVideoScreen(url: string): boolean {
+    return this.pathOf(url).endsWith('/video');
+  }
+
+  private pathOf(url: string): string {
+    const [path] = url.split(/[?#]/);
+    return path;
+  }
+
+  private isQuizScreen(url: string): boolean {
+    return url.includes('/quiz');
   }
 
   private loadEpisode(episodeNumber: number) {

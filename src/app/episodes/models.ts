@@ -4,10 +4,8 @@ export interface Episode {
     landscape: string;
     portrait: string;
   };
-  investigation: Video;
-  pedagogicalConcept: Video;
-  clues: Video[];
-  resolution: Video;
+  introduction: Video;
+  lesson: Video;
   questions: QuizQuestion[];
 }
 
@@ -20,11 +18,10 @@ export interface QuizQuestion {
   label: string;
   answers: string[];
   correctAnswer: number;
+  answerVideo: Video;
 }
 
 export enum VideoType {
-  Investigation = 'investigation',
-  PedagogicalConcept = 'pedagogicalConcept',
-  Clue = 'clue',
-  Resolution = 'resolution',
+  Lesson = 'lesson',
+  Answer = 'answer',
 }

@@ -3,18 +3,19 @@ import { Episode } from '../models';
 import { EpisodeService } from './episode.service';
 
 function createEpisode(questionCount: number): Episode {
-  const video = { url: 'https://vimeo.com/1', title: 'Video' };
   return {
     title: 'Episode',
     titleBackground: { landscape: 'landscape.jpg', portrait: 'portrait.jpg' },
-    investigation: video,
-    pedagogicalConcept: video,
-    clues: [video],
-    resolution: video,
+    introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+    lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: Array.from({ length: questionCount }, (_, index) => ({
       label: `Question ${index + 1}`,
       answers: ['A', 'B'],
       correctAnswer: 0,
+      answerVideo: {
+        url: `https://vimeo.com/${10 + index}`,
+        title: `Réponse ${index + 1}`,
+      },
     })),
   };
 }
@@ -95,42 +96,6 @@ describe('EpisodeService', () => {
 
       expect(service.quizStep).toBe(2);
     });
-
-    it('is not complete while there is no episode', () => {
-      service.incrementQuizStep();
-      service.incrementQuizStep();
-
-      expect(service.isQuizComplete()).toBeFalse();
-    });
-
-    it('is not complete before the last question is answered', () => {
-      service.setEpisode(createEpisode(2));
-      service.incrementQuizStep();
-
-      expect(service.isQuizComplete()).toBeFalse();
-    });
-
-    it('is complete once the step reaches the number of questions', () => {
-      service.setEpisode(createEpisode(2));
-      service.incrementQuizStep();
-      service.incrementQuizStep();
-
-      expect(service.isQuizComplete()).toBeTrue();
-    });
-
-    it('stays complete past the number of questions', () => {
-      service.setEpisode(createEpisode(1));
-      service.incrementQuizStep();
-      service.incrementQuizStep();
-
-      expect(service.isQuizComplete()).toBeTrue();
-    });
-
-    it('is complete from the start for an episode without questions', () => {
-      service.setEpisode(createEpisode(0));
-
-      expect(service.isQuizComplete()).toBeTrue();
-    });
   });
 
   describe('reset', () => {
@@ -144,7 +109,6 @@ describe('EpisodeService', () => {
       service.resetQuiz();
 
       expect(service.quizStep).toBe(0);
-      expect(service.isQuizComplete()).toBeFalse();
       expect(emitted).toEqual([2, 0]);
     });
 

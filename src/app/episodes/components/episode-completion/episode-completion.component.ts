@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 import { EpisodeService } from '../../services/episode.service';
 
 @Component({
@@ -24,12 +25,12 @@ export class EpisodeCompletionComponent implements AfterViewInit {
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return `url("/images/landscape/Table_enquete_UI.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return `url("/images/portrait/Table_enquete_UI.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { NavigationStart, provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import Player from '@vimeo/player';
+import { filter } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
 import { Episode } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
@@ -17,12 +18,29 @@ function video(id: number, title: string) {
 const episode: Episode = {
   title: 'La disparition',
   titleBackground: { landscape: 'landscape.png', portrait: 'portrait.png' },
-  investigation: video(100, 'Enquête'),
-  pedagogicalConcept: video(200, 'Cours'),
-  clues: [video(300, 'Indice 0'), video(301, 'Indice 1')],
-  resolution: video(400, 'Résolution'),
-  questions: [],
+  introduction: video(500, 'Introduction'),
+  lesson: video(600, 'Leçon'),
+  questions: [
+    {
+      label: 'Question 0',
+      answers: ['Oui', 'Non'],
+      correctAnswer: 0,
+      answerVideo: video(700, 'Réponse 0'),
+    },
+    {
+      label: 'Question 1',
+      answers: ['Oui', 'Non'],
+      correctAnswer: 1,
+      answerVideo: video(701, 'Réponse 1'),
+    },
+  ],
 };
+
+/** The episode, with its first question repeated `count` times. */
+function episodeWithQuestionCount(count: number): Episode {
+  const [question] = episode.questions;
+  return { ...episode, questions: Array(count).fill(question) };
+}
 
 @Component({ template: '<p>Quiz</p>' })
 class QuizStubComponent {}
@@ -83,20 +101,11 @@ describe('EpisodeVideoComponent', () => {
   });
 
   /**
-   * Shows the video screen. The video type is read in ngAfterViewInit,
-   * after the view was checked, so for a clue or the resolution the
-   * development mode reports NG0100 (pinned in its own tests). The screen is
-   * then rendered again, as the next change detection would.
+   * Shows the video screen. The screen is then rendered again, as the next
+   * change detection would.
    */
   async function showVideo(query = ''): Promise<HTMLElement> {
-    await harness.navigateByUrl(`/3/video${query}`).catch((error) => {
-      if (
-        !/videoType=(clue|resolution)/.test(query) ||
-        !String(error).includes('NG0100')
-      ) {
-        throw error;
-      }
-    });
+    await harness.navigateByUrl(`/3/video${query}`);
     harness.detectChanges();
     return harness.routeNativeElement!;
   }
@@ -146,13 +155,12 @@ describe('EpisodeVideoComponent', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
     for (const [query, expected] of [
-      ['', 'https://vimeo.com/100'],
-      ['?videoType=investigation', 'https://vimeo.com/100'],
-      ['?videoType=unknown', 'https://vimeo.com/100'],
-      ['?videoType=pedagogicalConcept', 'https://vimeo.com/200'],
-      ['?videoType=clue&clue=0', 'https://vimeo.com/300'],
-      ['?videoType=clue&clue=1', 'https://vimeo.com/301'],
-      ['?videoType=resolution', 'https://vimeo.com/400'],
+      ['', 'https://vimeo.com/500'],
+      ['?videoType=unknown', 'https://vimeo.com/500'],
+      ['?videoType=introduction', 'https://vimeo.com/500'],
+      ['?videoType=lesson', 'https://vimeo.com/600'],
+      ['?videoType=answer&question=0', 'https://vimeo.com/700'],
+      ['?videoType=answer&question=1', 'https://vimeo.com/701'],
     ]) {
       it(`plays ${expected} for "${query}"`, async () => {
         await showVideo(query);
@@ -169,38 +177,38 @@ describe('EpisodeVideoComponent', () => {
       expect(new URL(url).searchParams.get('responsive')).toBe('true');
     });
 
-    it('plays nothing for a clue without a number', async () => {
-      await showVideo('?videoType=clue');
+    it('plays nothing for an answer without a question number', async () => {
+      await showVideo('?videoType=answer');
 
       expect(requestedVideos()).toEqual([]);
     });
 
-    it('plays nothing for a clue number out of range', async () => {
-      await showVideo('?videoType=clue&clue=5');
+    it('plays nothing for an answer question number out of range', async () => {
+      await showVideo('?videoType=answer&question=5');
 
       expect(requestedVideos()).toEqual([]);
     });
 
     it('replaces the player when the query changes', async () => {
-      await showVideo('?videoType=clue&clue=0');
+      await showVideo('?videoType=answer&question=0');
 
-      await harness.navigateByUrl('/3/video?videoType=clue&clue=1');
+      await harness.navigateByUrl('/3/video?videoType=answer&question=1');
 
       expect(requestedVideos()).toEqual([
-        'https://vimeo.com/300',
-        'https://vimeo.com/301',
+        'https://vimeo.com/700',
+        'https://vimeo.com/701',
       ]);
       expect(playerDestroy).toHaveBeenCalledTimes(1);
     });
 
-    it('replays the previous video for a clue without a number', async () => {
-      await showVideo('?videoType=clue&clue=1');
+    it('replays the previous video for an answer without a question number', async () => {
+      await showVideo('?videoType=answer&question=1');
 
-      await harness.navigateByUrl('/3/video?videoType=clue');
+      await harness.navigateByUrl('/3/video?videoType=answer');
 
       expect(requestedVideos()).toEqual([
-        'https://vimeo.com/301',
-        'https://vimeo.com/301',
+        'https://vimeo.com/701',
+        'https://vimeo.com/701',
       ]);
     });
   });
@@ -209,18 +217,10 @@ describe('EpisodeVideoComponent', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
     for (const query of [
-      '?videoType=clue',
-      '?videoType=clue&clue=0',
-      '?videoType=resolution',
+      '',
+      '?videoType=lesson',
+      '?videoType=answer&question=0',
     ]) {
-      it(`reports a view changed after it was checked for "${query}"`, async () => {
-        await expectAsync(
-          harness.navigateByUrl(`/3/video${query}`),
-        ).toBeRejectedWithError(/NG0100/);
-      });
-    }
-
-    for (const query of ['', '?videoType=pedagogicalConcept']) {
       it(`reports nothing for "${query}"`, async () => {
         await expectAsync(
           harness.navigateByUrl(`/3/video${query}`),
@@ -236,22 +236,21 @@ describe('EpisodeVideoComponent', () => {
 
       episodeService.setEpisode(episode);
 
-      expect(requestedVideos()).toEqual(['https://vimeo.com/100']);
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
-    it('then creates the player twice on each query change', async () => {
+    it('then creates a single player for the lesson when the introduction ends', async () => {
       await showVideo();
       episodeService.setEpisode(episode);
 
-      // Each episode emission adds a subscription to the query parameters.
-      await harness.navigateByUrl('/3/video?videoType=pedagogicalConcept');
+      emit('ended');
+      await harness.fixture.whenStable();
 
+      expect(currentUrl()).toBe('/3/video?videoType=lesson');
       expect(requestedVideos()).toEqual([
-        'https://vimeo.com/100',
-        'https://vimeo.com/200',
-        'https://vimeo.com/200',
+        'https://vimeo.com/500',
+        'https://vimeo.com/600',
       ]);
-      expect(playerDestroy).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -275,8 +274,8 @@ describe('EpisodeVideoComponent', () => {
 
       emit('loaded');
 
-      expect(iframe.getAttribute('title')).toBe('Enquête');
-      expect(iframe.getAttribute('aria-label')).toBe('Vidéo: Enquête');
+      expect(iframe.getAttribute('title')).toBe('Introduction');
+      expect(iframe.getAttribute('aria-label')).toBe('Vidéo: Introduction');
       expect(document.activeElement).toBe(iframe);
     });
 
@@ -296,24 +295,26 @@ describe('EpisodeVideoComponent', () => {
 
       expect(audioService.pause).toHaveBeenCalledTimes(1);
       expect(announcementService.announce.calls.allArgs()).toEqual([
-        ['Lecture de la vidéo: Enquête'],
+        ['Lecture de la vidéo: Introduction'],
         ['Mise en pause de la vidéo'],
       ]);
     });
 
-    it('offers to leave the video for the quiz', () => {
+    it('offers to skip the introduction for the lesson', () => {
       expect(controls(host)).toEqual([
-        ['Quitter la vidéo et lancer le quiz', '/3/quiz'],
+        ['Passer la vidéo', '/3/video?videoType=lesson'],
       ]);
     });
 
-    it('restarts the background music when leaving for the quiz', async () => {
-      controlNamed(host, 'Quitter la vidéo et lancer le quiz').click();
-      await harness.fixture.whenStable();
+    for (const query of ['?videoType=introduction', '?videoType=unknown']) {
+      it(`offers to skip the introduction for the lesson for "${query}"`, async () => {
+        host = await showVideo(query);
 
-      expect(audioService.play).toHaveBeenCalledOnceWith(true);
-      expect(currentUrl()).toBe('/3/quiz');
-    });
+        expect(controls(host)).toEqual([
+          ['Passer la vidéo', '/3/video?videoType=lesson'],
+        ]);
+      });
+    }
 
     it('destroys the player when leaving the screen', async () => {
       await harness.navigateByUrl('/3/quiz');
@@ -326,16 +327,16 @@ describe('EpisodeVideoComponent', () => {
 
       episodeService.setEpisode({ ...episode });
 
-      expect(requestedVideos()).toEqual(['https://vimeo.com/100']);
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
-    it('displays the board as a background', () => {
+    it('displays the parchment as a background', () => {
       expect(host.classList).toContain('screen');
       expect(host.style.getPropertyValue('--screen-background-landscape')).toBe(
-        'url("/images/landscape/Tableau_UI.jpg")',
+        'url("/images/Parchemin_questions.jpg")',
       );
       expect(host.style.getPropertyValue('--screen-background-portrait')).toBe(
-        'url("/images/portrait/Tableau_UI.jpg")',
+        'url("/images/Parchemin_questions.jpg")',
       );
       expect(
         host.style.getPropertyValue('--screen-background-overlay-opacity'),
@@ -350,26 +351,61 @@ describe('EpisodeVideoComponent', () => {
   describe('exit link', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
-    it('goes back to the quiz during a clue', async () => {
-      const host = await showVideo('?videoType=clue&clue=0');
+    it('offers to skip the lesson for the quiz', async () => {
+      const host = await showVideo('?videoType=lesson');
 
-      expect(controls(host)).toEqual([['Retourner au quiz', '/3/quiz']]);
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
-    it('has no axe violation during a clue', async () => {
-      const host = await showVideo('?videoType=clue&clue=0');
+    it('starts no music when skipping the lesson', async () => {
+      const host = await showVideo('?videoType=lesson');
+
+      controlNamed(host, 'Passer la vidéo').click();
+      await harness.fixture.whenStable();
+
+      expect(audioService.play).not.toHaveBeenCalled();
+    });
+
+    it('has no axe violation during the lesson', async () => {
+      const host = await showVideo('?videoType=lesson');
 
       expect(await axeViolations(host)).toEqual([]);
     });
 
-    it('is absent during the resolution', async () => {
-      const host = await showVideo('?videoType=resolution');
+    it('offers to skip the answer to a question before the last for the quiz', async () => {
+      const host = await showVideo('?videoType=answer&question=0');
 
-      expect(controls(host)).toEqual([]);
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
-    it('has no axe violation during the resolution', async () => {
-      const host = await showVideo('?videoType=resolution');
+    it('has no axe violation during the answer to a question before the last', async () => {
+      const host = await showVideo('?videoType=answer&question=0');
+
+      expect(await axeViolations(host)).toEqual([]);
+    });
+
+    it('offers to skip the answer to the last question for the completion screen', async () => {
+      episodeService.setEpisode(episodeWithQuestionCount(5));
+      const host = await showVideo('?videoType=answer&question=4');
+
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/completion']]);
+    });
+
+    it('offers to skip an answer without a question number for the quiz', async () => {
+      const host = await showVideo('?videoType=answer');
+
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
+    });
+
+    it('offers to skip an answer with a question number out of range for the quiz', async () => {
+      const host = await showVideo('?videoType=answer&question=5');
+
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
+    });
+
+    it('has no axe violation during the answer to the last question', async () => {
+      episodeService.setEpisode(episodeWithQuestionCount(5));
+      const host = await showVideo('?videoType=answer&question=4');
 
       expect(await axeViolations(host)).toEqual([]);
     });
@@ -378,30 +414,8 @@ describe('EpisodeVideoComponent', () => {
   describe('at the end of the video', () => {
     beforeEach(() => episodeService.setEpisode(episode));
 
-    /**
-     * Ends the investigation or the lesson. The end of the video schedules
-     * the focus with setTimeout: the mock clock keeps that timer from firing
-     * during a later test.
-     */
-    function endVideo(): void {
-      jasmine.clock().install();
-      emit('ended');
-    }
-
-    /**
-     * Ends the video, lets its 100 ms focus timer fire, then gives the real
-     * timers back, which axe relies on.
-     */
-    function endVideoWithRealTimers(): void {
-      endVideo();
-      jasmine.clock().tick(100);
-      jasmine.clock().uninstall();
-    }
-
-    afterEach(() => jasmine.clock().uninstall());
-
-    it('goes back to the quiz after a clue', async () => {
-      await showVideo('?videoType=clue&clue=0');
+    it('goes to the quiz after the lesson', async () => {
+      await showVideo('?videoType=lesson');
 
       emit('ended');
       await harness.fixture.whenStable();
@@ -409,8 +423,9 @@ describe('EpisodeVideoComponent', () => {
       expect(currentUrl()).toBe('/3/quiz');
     });
 
-    it('goes to the completion screen after the resolution', async () => {
-      await showVideo('?videoType=resolution');
+    it('goes to the completion screen after the answer to the last question', async () => {
+      episodeService.setEpisode(episodeWithQuestionCount(4));
+      await showVideo('?videoType=answer&question=3');
 
       emit('ended');
       await harness.fixture.whenStable();
@@ -418,169 +433,58 @@ describe('EpisodeVideoComponent', () => {
       expect(currentUrl()).toBe('/3/completion');
     });
 
-    for (const query of ['', '?videoType=pedagogicalConcept']) {
-      describe(`of "${query}"`, () => {
-        let host: HTMLElement;
+    it('goes to the quiz after the answer to a question before the last', async () => {
+      await showVideo('?videoType=answer&question=0');
 
-        beforeEach(async () => {
-          host = await showVideo(query);
-          endVideo();
-        });
+      emit('ended');
+      await harness.fixture.whenStable();
 
-        it('stays on the screen and destroys the player', () => {
-          expect(currentUrl()).toBe(`/3/video${query}`);
-          expect(playerDestroy).toHaveBeenCalledTimes(1);
-        });
+      expect(currentUrl()).toBe('/3/quiz');
+    });
 
-        it('restarts the background music and announces the end', () => {
-          expect(audioService.play).toHaveBeenCalledOnceWith(true);
-          expect(announcementService.announce).toHaveBeenCalledOnceWith(
-            'Vidéo terminée',
-          );
-        });
+    it('plays the lesson after the introduction', async () => {
+      await showVideo();
 
-        const isLesson = query === '?videoType=pedagogicalConcept';
-        const lessonOffer = isLesson ? '' : ' and the lesson';
+      emit('ended');
+      await harness.fixture.whenStable();
 
-        it(`offers the quiz, the video again${lessonOffer}`, () => {
-          const nav = host.querySelector('nav');
-          expect(nav?.getAttribute('aria-label')).toBe(
-            'Options après la vidéo',
-          );
-          expect(controls(host)).toEqual([
-            ['Lancer le quiz !', '/3/quiz'],
-            ['Revoir toute la vidéo', null],
-            ...(isLesson
-              ? []
-              : [
-                  [
-                    'Revoir la leçon de Rossinante',
-                    '/3/video?videoType=pedagogicalConcept',
-                  ],
-                ]),
-          ]);
-        });
+      expect(currentUrl()).toBe('/3/video?videoType=lesson');
+      expect(requestedVideos()).toEqual([
+        'https://vimeo.com/500',
+        'https://vimeo.com/600',
+      ]);
+      expect(playerPlay).toHaveBeenCalledTimes(2);
+    });
 
-        it('focuses the link to the quiz after 100 ms', () => {
-          const quizLink = controlNamed(host, 'Lancer le quiz !');
+    for (const query of ['?videoType=introduction', '?videoType=unknown']) {
+      it(`plays the lesson after the introduction for "${query}"`, async () => {
+        await showVideo(query);
 
-          jasmine.clock().tick(99);
-          expect(document.activeElement).not.toBe(quizLink);
+        emit('ended');
+        await harness.fixture.whenStable();
 
-          jasmine.clock().tick(1);
-          expect(document.activeElement).toBe(quizLink);
-        });
-
-        it('lets the keyboard focus the button to replay the video', () => {
-          const replayButton = controlNamed(host, 'Revoir toute la vidéo');
-
-          replayButton.focus();
-
-          expect(replayButton.tagName).toBe('BUTTON');
-          expect(replayButton.getAttribute('type')).toBe('button');
-          expect(document.activeElement).toBe(replayButton);
-        });
-
-        it('displays the office as a background', () => {
-          expect(
-            host.style.getPropertyValue('--screen-background-landscape'),
-          ).toBe('url("/images/landscape/Decors_Bureau 1.jpg")');
-          expect(
-            host.style.getPropertyValue('--screen-background-portrait'),
-          ).toBe('url("/images/portrait/decor_bureau.jpg")');
-          expect(
-            host.style.getPropertyValue('--screen-background-overlay-opacity'),
-          ).toBe('0.45');
-        });
-
-        it('replays the same video', () => {
-          audioService.pause.calls.reset();
-          announcementService.announce.calls.reset();
-          playerPlay.calls.reset();
-
-          controlNamed(host, 'Revoir toute la vidéo').click();
-          harness.detectChanges();
-
-          expect(requestedVideos().length).toBe(2);
-          expect(requestedVideos()[1]).toBe(requestedVideos()[0]);
-          // Both initializePlayer() and restartVideo() play the video and
-          // pause the music.
-          expect(playerPlay).toHaveBeenCalledTimes(2);
-          expect(audioService.pause).toHaveBeenCalledTimes(2);
-          expect(announcementService.announce).toHaveBeenCalledOnceWith(
-            'Redémarrage de la vidéo',
-          );
-          expect(host.querySelector('nav')).toBeNull();
-          expect(
-            host.style.getPropertyValue('--screen-background-overlay-opacity'),
-          ).toBe('0.8');
-        });
+        expect(currentUrl()).toBe('/3/video?videoType=lesson');
       });
     }
 
-    it('plays the lesson from the end of the investigation', async () => {
-      const host = await showVideo();
-      endVideo();
+    it('announces the end of the video before the next screen', async () => {
+      await showVideo('?videoType=lesson');
+      let announcedBeforeNavigation: readonly unknown[][] | undefined;
+      const subscription = TestBed.inject(Router)
+        .events.pipe(filter((event) => event instanceof NavigationStart))
+        .subscribe(() => {
+          announcedBeforeNavigation ??=
+            announcementService.announce.calls.allArgs();
+        });
 
-      controlNamed(host, 'Revoir la leçon de Rossinante').click();
+      emit('ended');
       await harness.fixture.whenStable();
+      subscription.unsubscribe();
 
-      expect(currentUrl()).toBe('/3/video?videoType=pedagogicalConcept');
-      expect(requestedVideos()).toEqual([
-        'https://vimeo.com/100',
-        'https://vimeo.com/200',
+      expect(currentUrl()).toBe('/3/quiz');
+      expect(announcedBeforeNavigation).toEqual([
+        ['Fin de la vidéo: Leçon'],
       ]);
-    });
-
-    it('names the link to the quiz as its visible text', async () => {
-      const host = await showVideo();
-      endVideo();
-
-      const quizLink = controlNamed(host, 'Lancer le quiz !');
-
-      expect(quizLink.getAttribute('aria-label')).toBeNull();
-    });
-
-    it('names the lesson link as its visible text', async () => {
-      const host = await showVideo();
-      endVideo();
-
-      const lessonLink = controlNamed(host, 'Revoir la leçon de Rossinante');
-
-      expect(lessonLink.getAttribute('aria-label')).toBeNull();
-    });
-
-    it('names the button to replay the video as its visible text', async () => {
-      const host = await showVideo();
-      endVideo();
-
-      const replayButton = controlNamed(host, 'Revoir toute la vidéo');
-
-      expect(replayButton.getAttribute('aria-label')).toBeNull();
-    });
-
-    it('offers no link to the lesson at the end of the lesson', async () => {
-      const host = await showVideo('?videoType=pedagogicalConcept');
-      endVideo();
-
-      expect(
-        controlNamed(host, 'Revoir la leçon de Rossinante'),
-      ).toBeUndefined();
-      expect(host.querySelector('a[href*="pedagogicalConcept"]')).toBeNull();
-    });
-
-    it('has no axe violation', async () => {
-      const host = await showVideo();
-      endVideoWithRealTimers();
-
-      expect(await axeViolations(host)).toEqual([]);
-    });
-
-    it('has no axe violation at the end of the lesson', async () => {
-      const host = await showVideo('?videoType=pedagogicalConcept');
-      endVideoWithRealTimers();
-
-      expect(await axeViolations(host)).toEqual([]);
     });
   });
 });

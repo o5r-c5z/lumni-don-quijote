@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AudioService implements OnDestroy {
   private backgroundMusic: HTMLAudioElement | null = null;
+  private backgroundMusicSource: string | null = null;
   private soundEffects: HTMLAudioElement[] = [];
   private backgroundMusicVolume = new BehaviorSubject<number>(0.05);
   private soundEffectsVolume = new BehaviorSubject<number>(0.5);
@@ -19,6 +20,8 @@ export class AudioService implements OnDestroy {
     if (!audioSource) {
       return;
     }
+
+    this.backgroundMusicSource = audioSource;
 
     if (!this.backgroundMusic) {
       this.backgroundMusic = new Audio(audioSource);
@@ -47,6 +50,17 @@ export class AudioService implements OnDestroy {
       this.backgroundMusic.src = audioSource;
       this.backgroundMusic.load();
     }
+  }
+
+  playBackgroundMusic(audioSource: string): void {
+    if (this.backgroundMusic && audioSource === this.backgroundMusicSource) {
+      if (!this.isPlayingSubject.value) {
+        this.play(false);
+      }
+      return;
+    }
+    this.initBackgroundMusic(audioSource);
+    this.play();
   }
 
   play(resetToBeginning: boolean = true): void {

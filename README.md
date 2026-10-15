@@ -16,9 +16,9 @@ d'écran. Projet commandé par Lumni, produit par Big Company.
 - `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran-titre ; toute autre URL affiche `not-found`.
 - `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType`.
 - `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et pilote la musique de fond.
-- `src/app/episodes/components/episode-title-screen/` — écran-titre avec accès à l'épisode ou au quiz.
-- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; navigation selon le type de vidéo (enquête, concept pédagogique, indice, résolution).
-- `src/app/episodes/components/episode-quiz/` — quiz QCM : validation, correction affichée, effet sonore selon la réponse, passage à la question suivante.
+- `src/app/episodes/components/episode-title-screen/` — écran-titre avec accès à l'épisode (vidéo d'introduction).
+- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → quiz, vidéo-réponse → question suivante ou écran de fin) et lien « Passer la vidéo ».
+- `src/app/episodes/components/episode-quiz/` — quiz QCM : validation, correction affichée, effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
 - `src/app/episodes/components/episode-completion/` — écran de fin (« Bravo ! ») et retour au début de l'épisode.
 - `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`).
 - `src/app/episodes/services/episode.service.ts` — état courant de l'épisode et étape du quiz (`BehaviorSubject`).
@@ -96,7 +96,7 @@ Le code existant est couvert par des tests de caractérisation (sauf l'amorçage
 
 - L'application attend les données d'un épisode à l'URL `uploads/episodes/<n>/episode.json` (avec `<n>` le numéro d'épisode dans la route). En configuration `development`, `angular.json` copie le dossier local `uploads/` vers `/uploads`. Ce dossier n'est pas versionné : il faut le fournir pour faire tourner l'application. Un `episode.json` décrit le titre, les images de fond, les vidéos (URL Vimeo) et les questions du quiz — voir `src/app/episodes/models.ts`.
 - La configuration de production (`npm run build`) ne copie pas `uploads/` ; l'hébergement doit exposer ce chemin.
-- Fichiers audio référencés en dur depuis `public/audio/` : `Dark Comedy Ident - Main.mp3` (musique de fond), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse).
+- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse). Aucune musique pendant les vidéos.
 - Chemin de sortie du build : `dist/lumni-don-quijote/`.
 
 ## Crédits

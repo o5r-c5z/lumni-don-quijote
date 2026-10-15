@@ -8,12 +8,13 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
-import { Episode } from '../../models';
+import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
+import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
 @Component({
   selector: 'app-episode-quiz',
@@ -35,16 +36,17 @@ export class EpisodeQuizComponent implements OnInit {
   protected quizStep: number = 0;
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
+  protected VideoType = VideoType;
 
   @HostBinding('class.screen')
   @HostBinding('style.--screen-background-landscape')
   get backgroundImageLandscape() {
-    return `url("/images/landscape/Ecran_UI.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-portrait')
   get backgroundImagePortrait() {
-    return `url("/images/portrait/Ecran_UI.jpg")`;
+    return PARCHMENT_BACKGROUND;
   }
 
   @HostBinding('style.--screen-background-overlay-opacity')
@@ -63,9 +65,21 @@ export class EpisodeQuizComponent implements OnInit {
       )
       .subscribe((quizStep: number) => {
         this.quizStep = quizStep;
+        if (this.isQuizComplete(quizStep)) {
+          this.showCompletion();
+          return;
+        }
         this.focusFirstInput();
         this.showNextQuestion();
       });
+  }
+
+  private isQuizComplete(quizStep: number): boolean {
+    return quizStep > 0 && quizStep >= (this.episode?.questions.length ?? 0);
+  }
+
+  private showCompletion(): void {
+    this.router.navigate(['../completion'], { relativeTo: this.route });
   }
 
   private focusFirstInput(): void {
@@ -140,13 +154,16 @@ export class EpisodeQuizComponent implements OnInit {
         fieldset.disabled = true;
       }
 
-      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement);
+      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
       this.handleIncorrectAnswer(correction);
     }
   }
 
-  private handleCorrectAnswer(fieldset: HTMLFieldSetElement): void {
+  private handleCorrectAnswer(
+    fieldset: HTMLFieldSetElement,
+    questionIndex: number,
+  ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
 
     timer(2000)
@@ -157,16 +174,21 @@ export class EpisodeQuizComponent implements OnInit {
           fieldset.classList.remove('hiding');
           this.episodeService.incrementQuizStep();
 
-          if (this.episodeService.isQuizComplete()) {
-            this.router.navigate(['../video'], {
-              queryParams: { videoType: 'resolution' },
-              relativeTo: this.route,
-            });
-          }
+          this.playVideo({
+            videoType: VideoType.Answer,
+            question: questionIndex,
+          });
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
+  }
+
+  private playVideo(queryParams: Params): void {
+    this.router.navigate(['../video'], {
+      queryParams,
+      relativeTo: this.route,
+    });
   }
 
   private handleIncorrectAnswer(correction: HTMLElement | null): void {
