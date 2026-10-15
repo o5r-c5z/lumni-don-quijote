@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { NavigationStart, provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import Player from '@vimeo/player';
+import { filter } from 'rxjs';
 import { axeViolations } from '../../../../testing/axe';
 import { Episode } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
@@ -465,5 +466,25 @@ describe('EpisodeVideoComponent', () => {
         expect(currentUrl()).toBe('/3/video?videoType=lesson');
       });
     }
+
+    it('announces the end of the video before the next screen', async () => {
+      await showVideo('?videoType=lesson');
+      let announcedBeforeNavigation: readonly unknown[][] | undefined;
+      const subscription = TestBed.inject(Router)
+        .events.pipe(filter((event) => event instanceof NavigationStart))
+        .subscribe(() => {
+          announcedBeforeNavigation ??=
+            announcementService.announce.calls.allArgs();
+        });
+
+      emit('ended');
+      await harness.fixture.whenStable();
+      subscription.unsubscribe();
+
+      expect(currentUrl()).toBe('/3/quiz');
+      expect(announcedBeforeNavigation).toEqual([
+        ['Fin de la vidéo: Leçon'],
+      ]);
+    });
   });
 });
