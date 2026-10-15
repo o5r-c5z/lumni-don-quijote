@@ -106,6 +106,13 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
+    it('loads and starts no track other than the screen music when the episode opens', async () => {
+      await navigate('/3');
+
+      expect(audioService.initBackgroundMusic).not.toHaveBeenCalled();
+      expect(audioService.play).not.toHaveBeenCalled();
+    });
+
     it('plays no music when the episode opens on the video', async () => {
       await navigate('/3/video');
 
