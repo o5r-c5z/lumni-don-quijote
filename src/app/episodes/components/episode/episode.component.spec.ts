@@ -59,6 +59,8 @@ describe('EpisodeComponent', () => {
             component: EpisodeComponent,
             children: [
               { path: 'video', component: ScreenStubComponent },
+              { path: 'quiz', component: ScreenStubComponent },
+              { path: 'completion', component: ScreenStubComponent },
               { path: '**', component: ScreenStubComponent },
             ],
           },
@@ -161,15 +163,16 @@ describe('EpisodeComponent', () => {
       ]);
     });
 
-    it('plays no music when going to a video, wherever "/video" is in the URL', async () => {
+    it('plays the background track when going to a title screen whose URL merely contains "/video"', async () => {
       await navigate('/3/quiz');
       audioService.playBackgroundMusic.calls.reset();
-      audioService.play.calls.reset();
 
+      // Not the video screen: the wildcard route shows the title screen.
       await navigate('/3/video/extra');
 
-      expect(audioService.playBackgroundMusic).not.toHaveBeenCalled();
-      expect(audioService.play).not.toHaveBeenCalled();
+      expect(audioService.playBackgroundMusic.calls.allArgs()).toEqual([
+        ['/audio/Entertainment_FOND_SONORE.mp3'],
+      ]);
     });
 
     it('pauses it when the episode closes', async () => {
