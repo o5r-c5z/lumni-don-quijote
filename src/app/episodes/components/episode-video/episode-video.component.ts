@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import Player from '@vimeo/player';
-import { mergeMap, Subscription, tap } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
 import { Episode, Video, VideoType } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
@@ -78,7 +78,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
         tap((episode?: Episode) => {
           this.episode = episode;
         }),
-        mergeMap(() => this.route.queryParams),
+        switchMap(() => this.route.queryParams),
         tap((params) => {
           this.videoType = params['videoType'];
           switch (this.videoType) {
