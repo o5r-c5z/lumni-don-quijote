@@ -114,6 +114,20 @@ fichier ; les autres navigateurs n'ont pas été vérifiés.
 
 - [ ] README propre à Don Quijote
 
+## 9. Contenu versionné et déploiement
+
+Le jeu est en accès libre sur le site de Lumni : le contenu d'`uploads/` n'a
+rien de confidentiel. Le build et `uploads/` sont déposés sur le FTP du
+serveur de production.
+
+- [ ] Versionner `uploads/` (le retirer du `.gitignore`) ; les tests
+      unitaires et e2e gardent leurs propres données et ne le lisent pas
+- [ ] Script de vérification des `episode.json` (champs du modèle `Episode`,
+      liens Vimeo complets avec `?h=`, indice de bonne réponse valide,
+      fichiers de `titleBackground` existants), lancé dans la CI
+- [ ] `uploads/` copié par la configuration de production d'`angular.json`,
+      pour que `dist/` soit le seul dossier à déposer sur le FTP
+
 ## Notes
 
 ### Vidéos Vimeo de l'épisode 1
