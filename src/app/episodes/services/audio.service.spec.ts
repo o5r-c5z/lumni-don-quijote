@@ -163,6 +163,24 @@ describe('AudioService', () => {
         expect(service.isPlaying()).toBeTrue();
       }));
 
+      it('switches back to its source after initBackgroundMusic loaded another track', fakeAsync(() => {
+        service.playBackgroundMusic('/audio/first.mp3');
+        flushMicrotasks();
+        const music = createdAudio[0];
+        service.initBackgroundMusic('/audio/second.mp3');
+        music.currentTime = 42;
+
+        service.playBackgroundMusic('/audio/first.mp3');
+        flushMicrotasks();
+
+        expect(audioConstructor).toHaveBeenCalledTimes(1);
+        expect(music.src).toBe('/audio/first.mp3');
+        expect(music.load).toHaveBeenCalledTimes(2);
+        expect(music.currentTime).toBe(0);
+        expect(music.play).toHaveBeenCalledTimes(2);
+        expect(service.isPlaying()).toBeTrue();
+      }));
+
       it('resumes the paused music of the same source without rewinding or reloading it', fakeAsync(() => {
         service.playBackgroundMusic('/audio/music.mp3');
         flushMicrotasks();
