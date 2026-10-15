@@ -94,20 +94,11 @@ describe('EpisodeVideoComponent', () => {
   });
 
   /**
-   * Shows the video screen. The video type is read in ngAfterViewInit,
-   * after the view was checked, so for a clue or the resolution the
-   * development mode reports NG0100 (pinned in its own tests). The screen is
-   * then rendered again, as the next change detection would.
+   * Shows the video screen. The screen is then rendered again, as the next
+   * change detection would.
    */
   async function showVideo(query = ''): Promise<HTMLElement> {
-    await harness.navigateByUrl(`/3/video${query}`).catch((error) => {
-      if (
-        !/videoType=(clue|resolution)/.test(query) ||
-        !String(error).includes('NG0100')
-      ) {
-        throw error;
-      }
-    });
+    await harness.navigateByUrl(`/3/video${query}`);
     harness.detectChanges();
     return harness.routeNativeElement!;
   }
@@ -220,10 +211,8 @@ describe('EpisodeVideoComponent', () => {
 
     for (const query of [
       '',
-      '?videoType=pedagogicalConcept',
-      '?videoType=clue',
-      '?videoType=clue&clue=0',
-      '?videoType=resolution',
+      '?videoType=lesson',
+      '?videoType=answer&question=0',
     ]) {
       it(`reports nothing for "${query}"`, async () => {
         await expectAsync(
@@ -441,5 +430,16 @@ describe('EpisodeVideoComponent', () => {
       ]);
       expect(playerPlay).toHaveBeenCalledTimes(2);
     });
+
+    for (const query of ['?videoType=introduction', '?videoType=unknown']) {
+      it(`plays the lesson after the introduction for "${query}"`, async () => {
+        await showVideo(query);
+
+        emit('ended');
+        await harness.fixture.whenStable();
+
+        expect(currentUrl()).toBe('/3/video?videoType=lesson');
+      });
+    }
   });
 });
