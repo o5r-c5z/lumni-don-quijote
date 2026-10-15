@@ -70,6 +70,28 @@ dans un vrai navigateur (section 5).
       ignorée dans un champ texte, un `textarea` et un `select`
 - [x] `episode-quiz.component.scss` tient dans son budget de 4 kB : trois
       déclarations redondantes retirées, sans changer le rendu
+- [ ] Un `titleBackground` qui n'est pas une chaîne (ancien format objet
+      `{ landscape, portrait }`) donne `none`, et non plus
+      `url("[object Object]")`
+- [ ] Le chemin de `titleBackground` est échappé dans `url("…")` : un
+      guillemet, un antislash ou un retour à la ligne donnent quand même une
+      déclaration valide qui désigne ce fichier
+- [ ] `titleBackground` est facultatif dans le type `Episode`
+      (`titleBackground?: string`), comme le README l'accepte
+- [ ] La touche `M` n'est ignorée que dans les champs où l'on tape du
+      texte (`input` de type text, search, email, url, tel, password et
+      number, `textarea`, `select`, élément `contenteditable`) ; elle
+      fonctionne partout ailleurs, y compris sur une case à cocher, un bouton
+      et un curseur, et le nom de la fonction de garde reflète cette règle
+- [ ] Raccourci `M` : Ctrl, Alt ou Cmd+M ne coupent plus le son, une touche
+      maintenue ne bascule le son qu'une fois, un `keydown` sans `key` ne
+      provoque pas d'erreur
+- [ ] Fond parchemin par défaut : valeur par défaut de `--screen-background`
+      sur `.screen` dans `styles.scss`, que l'écran titre surcharge, au lieu
+      d'un getter dupliqué dans les écrans quiz, vidéo et Bravo ; le rendu ne
+      change pas
+- [ ] Test de la touche `M` sur une vraie réponse du quiz, et non plus sur
+      un bouton radio isolé
 
 ## 5. Tests e2e (Playwright)
 
