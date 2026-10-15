@@ -4,9 +4,9 @@ import { stubVimeo } from './doubles/vimeo';
 
 /**
  * The Playwright test, with every external dependency stubbed: episode.json,
- * the Vimeo player, Google Fonts (the fallback font applies) and the sound
- * effects. Any other request leaving the local server is aborted and fails
- * the test, so that no test hits the network.
+ * the Vimeo player, Google Fonts (the fallback font applies), the sound
+ * effects and the background images. Any other request leaving the local
+ * server is aborted and fails the test, so that no test hits the network.
  */
 export const test = base.extend<{ unexpectedRequests: string[] }>({
   unexpectedRequests: [
@@ -37,6 +37,9 @@ export const test = base.extend<{ unexpectedRequests: string[] }>({
     );
     // Silences the sound effects of the quiz: no test listens to them.
     await page.route('**/audio/**', (route) => route.fulfill({ status: 404 }));
+    // Hides the parchment background, so that the contrasts measured on a
+    // screenshot are the same whether public/images/ holds it or not.
+    await page.route('**/images/**', (route) => route.fulfill({ status: 404 }));
     await stubEpisode(page);
     await stubVimeo(page);
     await use(page);
