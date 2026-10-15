@@ -171,7 +171,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private isBeforeLastQuestion(): boolean {
     const questionIndex = Number(this.route.snapshot.queryParams['question']);
     const lastQuestionIndex = (this.episode?.questions.length ?? 0) - 1;
-    return questionIndex < lastQuestionIndex;
+    return Number.isNaN(questionIndex) || questionIndex < lastQuestionIndex;
   }
 
   private destroyPlayer() {
