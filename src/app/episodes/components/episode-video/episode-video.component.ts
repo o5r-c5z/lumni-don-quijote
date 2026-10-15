@@ -161,14 +161,11 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       case VideoType.Answer:
         this.navigateTo(this.pathAfterAnswer());
         break;
-      case undefined:
+      default:
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: { videoType: VideoType.Lesson },
         });
-        break;
-      default:
-        this.endVideo();
     }
   }
 
