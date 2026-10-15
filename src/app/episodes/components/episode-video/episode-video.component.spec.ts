@@ -300,6 +300,16 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
+    for (const query of ['?videoType=introduction', '?videoType=unknown']) {
+      it(`offers to skip the introduction for the lesson for "${query}"`, async () => {
+        host = await showVideo(query);
+
+        expect(controls(host)).toEqual([
+          ['Passer la vidéo', '/3/video?videoType=lesson'],
+        ]);
+      });
+    }
+
     it('destroys the player when leaving the screen', async () => {
       await harness.navigateByUrl('/3/quiz');
 
