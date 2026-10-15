@@ -33,8 +33,8 @@ Chaque vidéo peut être passée (« Passer la vidéo ») ; à la fin d'une vid�
 l'écran suivant s'affiche seul. Le fond sonore accompagne le titre et l'écran
 Bravo, une autre musique accompagne les questions, et aucune musique ne joue
 pendant les vidéos. Tant que la musique joue, un bouton de son la coupe et la
-rétablit ; la touche `M` fait de même, sauf quand le focus est sur un champ de
-formulaire, comme les réponses d'une question.
+rétablit ; la touche `M` fait de même, y compris sur les réponses d'une
+question, mais pas dans un champ de texte, un `textarea` ou un `select`.
 
 Une URL sans numéro d'épisode, ou un épisode dont l'`episode.json` ne se
 charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
@@ -148,7 +148,7 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | Champ | Contenu |
 | --- | --- |
 | `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
-| `titleBackground.landscape`, `titleBackground.portrait` | chemins de l'image de titre, en paysage et en portrait (le portrait est pour l'instant sans effet, voir plus bas) |
+| `titleBackground` | chemin de l'image de titre ; absent ou vide, l'écran titre n'a pas d'image de fond |
 | `introduction` | vidéo d'introduction : `{ "url", "title" }` |
 | `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
@@ -160,8 +160,6 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 Le `title` de chaque vidéo devient le titre de l'iframe Vimeo, et son `aria-label` précédé de « Vidéo: » ; il figure aussi dans les annonces aux lecteurs d'écran (« Lecture de la vidéo: … », « Fin de la vidéo: … »).
 
 Le `url` de chaque vidéo est le lien complet du lecteur Vimeo, paramètre `h` compris : `https://player.vimeo.com/video/<id>?h=<hash>`.
-
-Limites actuelles, listées dans la section 4 de `ROADMAP.md` : `titleBackground.portrait` n'a pas d'effet, aucune feuille de style ne lisant la variable CSS qu'il alimente ; un chemin vide dans `titleBackground` produit `url("")`, et l'écran titre affiché avant le chargement d'`episode.json`, ou si ce chargement échoue, produit `url("undefined")`, au lieu d'une absence d'image. Le champ `titleBackground` lui-même est obligatoire.
 
 ### Déploiement
 
