@@ -71,7 +71,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   }
 
   private isVideoScreen(url: string): boolean {
-    return /\/video$/.test(url.split(/[?#]/)[0]);
+    return this.pathOf(url).endsWith('/video');
+  }
+
+  private pathOf(url: string): string {
+    const [path] = url.split(/[?#]/);
+    return path;
   }
 
   private isQuizScreen(url: string): boolean {
