@@ -282,6 +282,32 @@ describe('AudioControlComponent', () => {
         }
       });
 
+      it('is ignored in a contenteditable element and in its descendants', () => {
+        createComponent();
+        const editable = document.createElement('div');
+        editable.contentEditable = 'true';
+        const nested = document.createElement('span');
+        nested.tabIndex = -1;
+        nested.textContent = 'texte';
+        editable.appendChild(nested);
+        focusField(editable);
+
+        for (const [description, focused] of [
+          ['the editable host', editable],
+          ['a focusable descendant', nested],
+        ] as const) {
+          focused.focus();
+          expect(document.activeElement).withContext(description).toBe(focused);
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(description).toBeFalse();
+          expect(audioService.mute)
+            .withContext(description)
+            .not.toHaveBeenCalled();
+        }
+      });
+
       it('toggles the sound on a radio button', () => {
         createComponent();
         focusField(
