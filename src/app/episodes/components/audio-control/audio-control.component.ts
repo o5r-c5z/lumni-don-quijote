@@ -90,7 +90,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
       return;
     }
 
-    switch (event.key.toLowerCase()) {
+    switch (event.key?.toLowerCase()) {
       case 'm':
         this.toggleAudio();
         event.preventDefault();
