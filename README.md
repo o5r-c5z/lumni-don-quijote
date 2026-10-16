@@ -49,7 +49,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/main.ts`, `src/app/app.config.ts` — amorçage Angular (composants standalone, routeur).
 - `src/app/app.routes.ts` — routes : `/:episodeNumber` et ses sous-routes `video`, `quiz`, `completion`, sinon écran titre ; les URL hors de la route d'épisode (comme `/`) affichent `not-found`.
 - `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType` : le format d'`episode.json`.
-- `src/styles.scss`, variable `--screen-background` de `.screen` — fond parchemin par défaut de tous les écrans ; l'écran titre la surcharge avec l'image `titleBackground` de l'épisode, ou sans image si elle est absente.
+- `src/styles.scss`, variable `--screen-background` de `.screen` — fond parchemin par défaut des écrans d'épisode ; l'écran titre la surcharge avec l'image `titleBackground` de l'épisode (voir « Données des épisodes »).
 - `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et choisit la musique selon l'écran.
 - `src/app/episodes/components/episode-title-screen/` — écran titre, avec l'image de titre de l'épisode et l'accès à la vidéo d'introduction.
 - `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → question, vidéo-réponse → question suivante ou écran Bravo) et lien « Passer la vidéo ».
