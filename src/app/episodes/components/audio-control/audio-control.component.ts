@@ -98,7 +98,8 @@ export class AudioControlComponent implements OnInit, OnDestroy {
       (focused instanceof HTMLInputElement &&
         TEXT_ENTRY_INPUT_TYPES.includes(focused.type)) ||
       focused instanceof HTMLTextAreaElement ||
-      focused instanceof HTMLSelectElement
+      focused instanceof HTMLSelectElement ||
+      (focused instanceof HTMLElement && focused.isContentEditable)
     );
   }
 
