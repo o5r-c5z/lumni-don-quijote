@@ -222,6 +222,17 @@ describe('AudioControlComponent', () => {
       expect(audioService.isMuted()).toBeTrue();
     });
 
+    it('prevents the default action of each repeat while M is held down', () => {
+      createComponent();
+
+      pressKey('m');
+      const firstRepeat = pressKey('m', { repeat: true });
+      const secondRepeat = pressKey('m', { repeat: true });
+
+      expect(firstRepeat.defaultPrevented).toBeTrue();
+      expect(secondRepeat.defaultPrevented).toBeTrue();
+    });
+
     it('ignores Ctrl+M and leaves its default action', () => {
       createComponent();
 
