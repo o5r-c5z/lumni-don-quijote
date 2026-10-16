@@ -70,7 +70,7 @@ dans un vrai navigateur (section 5).
       ignorée dans un champ texte, un `textarea` et un `select`
 - [x] `episode-quiz.component.scss` tient dans son budget de 4 kB : trois
       déclarations redondantes retirées, sans changer le rendu
-- [ ] Un `titleBackground` qui n'est pas une chaîne (ancien format objet
+- [x] Un `titleBackground` qui n'est pas une chaîne (ancien format objet
       `{ landscape, portrait }`) donne `none`, et non plus
       `url("[object Object]")`
 - [ ] Le chemin de `titleBackground` est échappé dans `url("…")` : un
