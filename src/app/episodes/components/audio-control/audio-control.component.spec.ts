@@ -218,6 +218,15 @@ describe('AudioControlComponent', () => {
       expect(audioService.mute).not.toHaveBeenCalled();
     });
 
+    it('ignores Alt+M and leaves its default action', () => {
+      createComponent();
+
+      const event = pressKey('m', { altKey: true });
+
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
+    });
+
     it('ignores the other keys', () => {
       createComponent();
 
