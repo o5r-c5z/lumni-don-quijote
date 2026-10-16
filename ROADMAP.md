@@ -78,7 +78,7 @@ dans un vrai navigateur (section 5).
       déclaration valide qui désigne ce fichier
 - [x] `titleBackground` est facultatif dans le type `Episode`
       (`titleBackground?: string`), comme le README l'accepte
-- [ ] La touche `M` n'est ignorée que dans les champs où l'on tape du
+- [x] La touche `M` n'est ignorée que dans les champs où l'on tape du
       texte (`input` de type text, search, email, url, tel, password et
       number, `textarea`, `select`, élément `contenteditable`) ; elle
       fonctionne partout ailleurs, y compris sur une case à cocher, un bouton
