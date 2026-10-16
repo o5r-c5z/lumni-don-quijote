@@ -295,6 +295,10 @@ describe('AudioControlComponent', () => {
         field.focus();
       }
 
+      function createInput(type: string): HTMLInputElement {
+        return Object.assign(document.createElement('input'), { type });
+      }
+
       for (const [description, create] of [
         ['a text input', () => document.createElement('input')],
         ['a textarea', () => document.createElement('textarea')],
@@ -322,7 +326,7 @@ describe('AudioControlComponent', () => {
           'password',
           'number',
         ]) {
-          focusField(Object.assign(document.createElement('input'), { type }));
+          focusField(createInput(type));
 
           const event = pressKey('m');
 
@@ -360,9 +364,7 @@ describe('AudioControlComponent', () => {
 
       it('toggles the sound on a radio button', () => {
         createComponent();
-        focusField(
-          Object.assign(document.createElement('input'), { type: 'radio' }),
-        );
+        focusField(createInput('radio'));
 
         const event = pressKey('m');
 
@@ -372,9 +374,7 @@ describe('AudioControlComponent', () => {
 
       it('toggles the sound on a checkbox', () => {
         createComponent();
-        focusField(
-          Object.assign(document.createElement('input'), { type: 'checkbox' }),
-        );
+        focusField(createInput('checkbox'));
 
         const event = pressKey('m');
 
@@ -384,9 +384,7 @@ describe('AudioControlComponent', () => {
 
       it('toggles the sound on a slider', () => {
         createComponent();
-        focusField(
-          Object.assign(document.createElement('input'), { type: 'range' }),
-        );
+        focusField(createInput('range'));
 
         const event = pressKey('m');
 
@@ -398,7 +396,7 @@ describe('AudioControlComponent', () => {
         createComponent();
 
         for (const type of ['submit', 'color', 'date', 'file']) {
-          focusField(Object.assign(document.createElement('input'), { type }));
+          focusField(createInput(type));
           const wasMuted = audioService.isMuted();
 
           const event = pressKey('m');
@@ -421,7 +419,7 @@ describe('AudioControlComponent', () => {
           'week',
           'datetime-local',
         ]) {
-          focusField(Object.assign(document.createElement('input'), { type }));
+          focusField(createInput(type));
           const wasMuted = audioService.isMuted();
 
           const event = pressKey('m');
