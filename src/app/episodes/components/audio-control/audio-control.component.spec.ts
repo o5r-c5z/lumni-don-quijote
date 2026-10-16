@@ -1,3 +1,4 @@
+import { ErrorHandler } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -253,6 +254,24 @@ describe('AudioControlComponent', () => {
 
       const event = pressKey('n');
 
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
+    });
+
+    it('ignores a keydown without a key, as sent by autofill', () => {
+      createComponent();
+      const errorHandler = spyOn(
+        TestBed.inject(ErrorHandler),
+        'handleError',
+      ).and.stub();
+      // Chrome autofill dispatches a plain `Event`, not a `KeyboardEvent`:
+      // its `key` is undefined.
+      const event = new Event('keydown', { cancelable: true });
+
+      document.dispatchEvent(event);
+      fixture.detectChanges();
+
+      expect(errorHandler.calls.allArgs()).toEqual([]);
       expect(event.defaultPrevented).toBeFalse();
       expect(audioService.mute).not.toHaveBeenCalled();
     });
