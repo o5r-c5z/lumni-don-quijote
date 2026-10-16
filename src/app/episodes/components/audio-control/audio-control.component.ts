@@ -14,6 +14,8 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 
+const INPUT_TYPES_WITHOUT_LETTER_KEYS = ['radio', 'checkbox'];
+
 @Component({
   selector: 'app-audio-control',
   standalone: true,
@@ -85,8 +87,8 @@ export class AudioControlComponent implements OnInit, OnDestroy {
   private isLetterKeyUsedByFocusedField(): boolean {
     const focused = document.activeElement;
     return (
-      (focused instanceof HTMLInputElement && focused.type !== 'radio' &&
-        focused.type !== 'checkbox') ||
+      (focused instanceof HTMLInputElement &&
+        !INPUT_TYPES_WITHOUT_LETTER_KEYS.includes(focused.type)) ||
       focused instanceof HTMLTextAreaElement ||
       focused instanceof HTMLSelectElement
     );
