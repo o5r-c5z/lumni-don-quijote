@@ -29,6 +29,7 @@ function cssUrl(path: string): string {
   imports: [RouterLink],
   templateUrl: './episode-title-screen.component.html',
   styleUrl: './episode-title-screen.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
@@ -39,7 +40,6 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   @ViewChild('goToEpisodeButton')
   protected goToEpisodeButton!: ElementRef<HTMLAnchorElement>;
 
-  @HostBinding('class.screen')
   @HostBinding('style.--screen-background')
   get backgroundImage() {
     const background = this.episode?.titleBackground;

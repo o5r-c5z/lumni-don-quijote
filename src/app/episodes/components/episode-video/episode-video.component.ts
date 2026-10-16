@@ -30,6 +30,7 @@ interface Destination {
   imports: [RouterLink],
   templateUrl: './episode-video.component.html',
   styleUrl: './episode-video.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
@@ -45,9 +46,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   protected videoType?: VideoType;
 
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
-
-  @HostBinding('class.screen')
-  readonly isScreen = true;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {

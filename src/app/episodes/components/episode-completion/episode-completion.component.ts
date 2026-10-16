@@ -14,15 +14,13 @@ import { EpisodeService } from '../../services/episode.service';
   imports: [RouterLink],
   templateUrl: './episode-completion.component.html',
   styleUrl: './episode-completion.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeCompletionComponent implements AfterViewInit {
   private readonly episodeService = inject(EpisodeService);
 
   @ViewChild('resetQuizButton')
   protected resetQuizButton!: ElementRef<HTMLAnchorElement>;
-
-  @HostBinding('class.screen')
-  readonly isScreen = true;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {

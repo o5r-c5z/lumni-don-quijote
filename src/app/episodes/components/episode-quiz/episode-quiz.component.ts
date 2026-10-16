@@ -20,6 +20,7 @@ import { AudioService } from '../../services/audio.service';
   imports: [RouterLink],
   templateUrl: './episode-quiz.component.html',
   styleUrl: './episode-quiz.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
   private readonly audioService = inject(AudioService);
@@ -36,9 +37,6 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-
-  @HostBinding('class.screen')
-  readonly isScreen = true;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
