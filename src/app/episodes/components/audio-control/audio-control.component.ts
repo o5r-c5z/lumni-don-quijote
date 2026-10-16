@@ -80,20 +80,22 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (this.isModifiedOrRepeatedKey(event) || this.isTextEntryFieldFocused()) {
+    if (this.isModifiedKey(event) || this.isTextEntryFieldFocused()) {
       return;
     }
 
     switch (event.key?.toLowerCase()) {
       case 'm':
-        this.toggleAudio();
+        if (!event.repeat) {
+          this.toggleAudio();
+        }
         event.preventDefault();
         break;
     }
   }
 
-  private isModifiedOrRepeatedKey(event: KeyboardEvent): boolean {
-    return event.ctrlKey || event.altKey || event.metaKey || event.repeat;
+  private isModifiedKey(event: KeyboardEvent): boolean {
+    return event.ctrlKey || event.altKey || event.metaKey;
   }
 
   private isTextEntryFieldFocused(): boolean {
