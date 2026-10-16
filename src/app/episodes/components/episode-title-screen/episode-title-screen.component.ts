@@ -32,7 +32,7 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   get backgroundImage() {
     const background = this.episode?.titleBackground;
     return typeof background === 'string' && background
-      ? `url("${background}")`
+      ? `url("${background.replaceAll('"', '\\"')}")`
       : 'none';
   }
 
