@@ -76,7 +76,7 @@ dans un vrai navigateur (section 5).
 - [ ] Le chemin de `titleBackground` est échappé dans `url("…")` : un
       guillemet, un antislash ou un retour à la ligne donnent quand même une
       déclaration valide qui désigne ce fichier
-- [ ] `titleBackground` est facultatif dans le type `Episode`
+- [x] `titleBackground` est facultatif dans le type `Episode`
       (`titleBackground?: string`), comme le README l'accepte
 - [ ] La touche `M` n'est ignorée que dans les champs où l'on tape du
       texte (`input` de type text, search, email, url, tel, password et
