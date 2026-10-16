@@ -127,6 +127,19 @@ describe('EpisodeTitleScreenComponent', () => {
       );
     });
 
+    it('displays a title background whose path contains a line feed', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: 'data:,line\nfeed background',
+      });
+      const host = await showTitleScreen();
+
+      // The computed URL is resolved, so the line feed comes back percent-encoded.
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,line%0Afeed background")',
+      );
+    });
+
     it('has no background image when the episode has none', async () => {
       episodeService.setEpisode({
         ...createEpisode('La disparition'),
