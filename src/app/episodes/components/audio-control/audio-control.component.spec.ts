@@ -209,6 +209,18 @@ describe('AudioControlComponent', () => {
       });
     }
 
+    it('toggles the sound only once while M is held down', () => {
+      createComponent();
+
+      pressKey('m');
+      pressKey('m', { repeat: true });
+      pressKey('m', { repeat: true });
+
+      expect(audioService.mute).toHaveBeenCalledTimes(1);
+      expect(audioService.unmute).not.toHaveBeenCalled();
+      expect(audioService.isMuted()).toBeTrue();
+    });
+
     it('ignores Ctrl+M and leaves its default action', () => {
       createComponent();
 
