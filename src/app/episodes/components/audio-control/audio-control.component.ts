@@ -14,7 +14,11 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 
-const INPUT_TYPES_WITHOUT_LETTER_KEYS = ['radio', 'checkbox'];
+const INPUT_TYPES_WITHOUT_LETTER_KEYS = [
+  'radio',
+  'checkbox',
+  'range',
+];
 
 @Component({
   selector: 'app-audio-control',
