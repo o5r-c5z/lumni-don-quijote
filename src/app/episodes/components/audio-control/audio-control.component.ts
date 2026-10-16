@@ -80,7 +80,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (this.isTextEntryFieldFocused()) {
+    if (event.ctrlKey || this.isTextEntryFieldFocused()) {
       return;
     }
 
