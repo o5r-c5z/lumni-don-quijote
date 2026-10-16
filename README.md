@@ -33,8 +33,12 @@ Chaque vidéo peut être passée (« Passer la vidéo ») ; à la fin d'une vid�
 l'écran suivant s'affiche seul. Le fond sonore accompagne le titre et l'écran
 Bravo, une autre musique accompagne les questions, et aucune musique ne joue
 pendant les vidéos. Tant que la musique joue, un bouton de son la coupe et la
-rétablit ; la touche `M` fait de même, y compris sur les réponses d'une
-question, mais pas dans un champ de texte, un `textarea` ou un `select`.
+rétablit ; la touche `M` fait de même, partout sauf dans un champ où l'on
+tape du texte (`input` de type `text`, `search`, `email`, `url`, `tel`,
+`password` ou `number`, `textarea`, `select`, élément `contenteditable`) :
+elle fonctionne donc aussi sur les réponses d'une question, une case à
+cocher, un bouton ou un curseur. Avec Ctrl, Alt ou Cmd, elle est ignorée ;
+maintenue enfoncée, elle ne bascule le son qu'une fois.
 
 Une URL sans numéro d'épisode, ou un épisode dont l'`episode.json` ne se
 charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
@@ -51,7 +55,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → question, vidéo-réponse → question suivante ou écran Bravo) et lien « Passer la vidéo ».
 - `src/app/episodes/components/episode-quiz/` — questions à choix multiples : validation, correction affichée, effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
 - `src/app/episodes/components/episode-completion/` — écran Bravo et retour au début de l'épisode.
-- `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`).
+- `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`, sans modificateur, ignoré dans les champs de saisie de texte).
 - `src/app/episodes/services/episode.service.ts` — état courant de l'épisode et étape du quiz (`BehaviorSubject`).
 - `src/app/episodes/services/audio.service.ts` — musique de fond en boucle, effets sonores ponctuels, volumes séparés.
 - `src/app/episodes/services/announcement.service.ts` — annonces aux lecteurs d'écran via `LiveAnnouncer` (Angular CDK).
@@ -148,7 +152,7 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | Champ | Contenu |
 | --- | --- |
 | `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
-| `titleBackground` | chemin de l'image de titre ; absent ou vide, l'écran titre n'a pas d'image de fond |
+| `titleBackground` | facultatif : chemin de l'image de titre, une chaîne qui peut contenir n'importe quel caractère (guillemet, antislash, retour à la ligne) ; absent, vide ou autre chose qu'une chaîne, l'écran titre n'a pas d'image de fond |
 | `introduction` | vidéo d'introduction : `{ "url", "title" }` |
 | `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
