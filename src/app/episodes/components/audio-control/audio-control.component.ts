@@ -84,6 +84,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
       event.ctrlKey ||
       event.altKey ||
       event.metaKey ||
+      event.repeat ||
       this.isTextEntryFieldFocused()
     ) {
       return;
