@@ -115,6 +115,18 @@ describe('EpisodeTitleScreenComponent', () => {
       );
     });
 
+    it('displays a title background whose path contains a backslash', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: 'data:,back\\slash background',
+      });
+      const host = await showTitleScreen();
+
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,back\\\\slash background")',
+      );
+    });
+
     it('has no background image when the episode has none', async () => {
       episodeService.setEpisode({
         ...createEpisode('La disparition'),
