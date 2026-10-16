@@ -284,6 +284,18 @@ describe('AudioControlComponent', () => {
         expect(event.defaultPrevented).toBeTrue();
         expect(audioService.mute).toHaveBeenCalledTimes(1);
       });
+
+      it('toggles the sound on a slider', () => {
+        createComponent();
+        focusField(
+          Object.assign(document.createElement('input'), { type: 'range' }),
+        );
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
