@@ -12,6 +12,10 @@ import { Subscription } from 'rxjs';
 import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 
+function cssUrl(path: string): string {
+  return `url("${path.replaceAll('"', '\\"')}")`;
+}
+
 @Component({
   selector: 'app-episode-title-screen',
   imports: [RouterLink],
@@ -32,7 +36,7 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   get backgroundImage() {
     const background = this.episode?.titleBackground;
     return typeof background === 'string' && background
-      ? `url("${background.replaceAll('"', '\\"')}")`
+      ? cssUrl(background)
       : 'none';
   }
 
