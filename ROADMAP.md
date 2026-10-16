@@ -83,7 +83,7 @@ dans un vrai navigateur (section 5).
       number, `textarea`, `select`, élément `contenteditable`) ; elle
       fonctionne partout ailleurs, y compris sur une case à cocher, un bouton
       et un curseur, et le nom de la fonction de garde reflète cette règle
-- [ ] Raccourci `M` : Ctrl, Alt ou Cmd+M ne coupent plus le son, une touche
+- [x] Raccourci `M` : Ctrl, Alt ou Cmd+M ne coupent plus le son, une touche
       maintenue ne bascule le son qu'une fois, un `keydown` sans `key` ne
       provoque pas d'erreur
 - [ ] Fond parchemin par défaut : valeur par défaut de `--screen-background`
