@@ -333,6 +333,29 @@ describe('AudioControlComponent', () => {
         }
       });
 
+      it('toggles the sound in every other input without text entry', () => {
+        createComponent();
+
+        for (const type of [
+          'button',
+          'reset',
+          'image',
+          'time',
+          'month',
+          'week',
+          'datetime-local',
+        ]) {
+          focusField(Object.assign(document.createElement('input'), { type }));
+          const wasMuted = audioService.isMuted();
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeTrue();
+          expect(audioService.isMuted()).withContext(type).toBe(!wasMuted);
+          field.remove();
+        }
+      });
+
       it('toggles the sound on a button', () => {
         createComponent();
         focusField(document.createElement('button'));
