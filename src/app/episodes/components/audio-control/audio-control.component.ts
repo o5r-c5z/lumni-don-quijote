@@ -85,7 +85,8 @@ export class AudioControlComponent implements OnInit, OnDestroy {
   private isLetterKeyUsedByFocusedField(): boolean {
     const focused = document.activeElement;
     return (
-      (focused instanceof HTMLInputElement && focused.type !== 'radio') ||
+      (focused instanceof HTMLInputElement && focused.type !== 'radio' &&
+        focused.type !== 'checkbox') ||
       focused instanceof HTMLTextAreaElement ||
       focused instanceof HTMLSelectElement
     );
