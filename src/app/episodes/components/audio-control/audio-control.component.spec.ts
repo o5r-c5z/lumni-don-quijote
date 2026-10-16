@@ -261,6 +261,27 @@ describe('AudioControlComponent', () => {
         });
       }
 
+      it('is ignored in the other inputs that take letters', () => {
+        createComponent();
+
+        for (const type of [
+          'search',
+          'email',
+          'url',
+          'tel',
+          'password',
+          'number',
+        ]) {
+          focusField(Object.assign(document.createElement('input'), { type }));
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeFalse();
+          expect(audioService.mute).withContext(type).not.toHaveBeenCalled();
+          field.remove();
+        }
+      });
+
       it('toggles the sound on a radio button', () => {
         createComponent();
         focusField(
