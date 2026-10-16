@@ -65,7 +65,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/testing/` — utilitaires des tests unitaires (axe-core, minuteries).
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
 - `e2e/`, `playwright.config.ts` — tests de bout en bout Playwright et leurs doublures (`e2e/doubles/`).
-- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre), `favicon.ico`.
+- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre), `favicon.ico`, `.htaccess` (routes Angular servies par Apache, voir « Déploiement »).
 - `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
 - `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, build de production, tests unitaires et e2e sur chaque pull request et sur `main`.
 - `AGENTS.md` — instructions pour les agents de code (en anglais) : commandes, conventions de test, TDD.
@@ -168,6 +168,8 @@ Le `url` de chaque vidéo est le lien complet du lecteur Vimeo, paramètre `h` c
 ### Déploiement
 
 Le build de production (`npm run build`, fichiers du site dans `dist/lumni-don-quijote/browser/`) et le dossier `uploads/` sont déposés sur le FTP du serveur de production. Le build ne contenant pas `uploads/`, ce dossier y est déposé à part, de sorte que l'application le trouve sous `/uploads`.
+
+Le serveur de production est un Apache. Le build copie `public/.htaccess` dans `dist/lumni-don-quijote/browser/`, à déposer sur le FTP avec le reste du site (certains clients FTP masquent les fichiers commençant par un point). Ce fichier sert `index.html` pour les routes Angular (`/1`, `/1/quiz`…) : sans lui, charger ou recharger une de ces URL renvoie une 404 d'Apache. Les fichiers existants sont servis tels quels, et un fichier absent avec une extension (un asset, un `episode.json`) garde sa 404. Il faut `mod_rewrite` et un `AllowOverride` qui autorise les règles de réécriture (`FileInfo`).
 
 Le versionnement d'`uploads/`, un script de vérification des `episode.json` et la copie d'`uploads/` par la configuration de production ne sont pas encore faits : voir la section 9 de `ROADMAP.md`.
 

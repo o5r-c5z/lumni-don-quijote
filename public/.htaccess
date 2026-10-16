@@ -1,0 +1,11 @@
+# The Angular routes (/1, /1/video, /1/quiz...) are not files on the server:
+# serve index.html for them, so that loading or reloading such a URL starts
+# the application. Existing files are served as is, and a missing file with
+# an extension (an asset, an uploads/.../episode.json) keeps its 404.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !\.[^/]*$
+  RewriteRule ^ index.html [L]
+</IfModule>
