@@ -209,12 +209,13 @@ describe('AudioControlComponent', () => {
       });
     }
 
-    it('also reacts with a modifier key', () => {
+    it('ignores Ctrl+M and leaves its default action', () => {
       createComponent();
 
-      pressKey('m', { ctrlKey: true });
+      const event = pressKey('m', { ctrlKey: true });
 
-      expect(audioService.mute).toHaveBeenCalledTimes(1);
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
     });
 
     it('ignores the other keys', () => {
