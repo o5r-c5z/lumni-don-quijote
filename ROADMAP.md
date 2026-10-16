@@ -86,7 +86,7 @@ dans un vrai navigateur (section 5).
 - [x] Raccourci `M` : Ctrl, Alt ou Cmd+M ne coupent plus le son, une touche
       maintenue ne bascule le son qu'une fois, un `keydown` sans `key` ne
       provoque pas d'erreur
-- [ ] Fond parchemin par défaut : valeur par défaut de `--screen-background`
+- [x] Fond parchemin par défaut : valeur par défaut de `--screen-background`
       sur `.screen` dans `styles.scss`, que l'écran titre surcharge, au lieu
       d'un getter dupliqué dans les écrans quiz, vidéo et Bravo ; le rendu ne
       change pas
