@@ -90,7 +90,7 @@ dans un vrai navigateur (section 5).
       sur `.screen` dans `styles.scss`, que l'écran titre surcharge, au lieu
       d'un getter dupliqué dans les écrans quiz, vidéo et Bravo ; le rendu ne
       change pas
-- [ ] Test de la touche `M` sur une vraie réponse du quiz, et non plus sur
+- [x] Test de la touche `M` sur une vraie réponse du quiz, et non plus sur
       un bouton radio isolé
 
 ## 5. Tests e2e (Playwright)
