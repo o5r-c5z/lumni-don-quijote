@@ -123,6 +123,20 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(host.style.getPropertyValue('--screen-background')).toBe('none');
     });
 
+    it('has no background image when the background is in the old object format', async () => {
+      // An outdated episode.json may still hold one image per orientation.
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: {
+          landscape: 'data:,landscape background',
+          portrait: 'data:,portrait background',
+        },
+      } as unknown as Episode);
+      const host = await showTitleScreen();
+
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
+    });
+
     it('accepts an episode typed without a background field', async () => {
       const episode: Episode = {
         title: 'La disparition',
