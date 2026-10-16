@@ -80,13 +80,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (
-      event.ctrlKey ||
-      event.altKey ||
-      event.metaKey ||
-      event.repeat ||
-      this.isTextEntryFieldFocused()
-    ) {
+    if (this.isModifiedOrRepeatedKey(event) || this.isTextEntryFieldFocused()) {
       return;
     }
 
@@ -96,6 +90,10 @@ export class AudioControlComponent implements OnInit, OnDestroy {
         event.preventDefault();
         break;
     }
+  }
+
+  private isModifiedOrRepeatedKey(event: KeyboardEvent): boolean {
+    return event.ctrlKey || event.altKey || event.metaKey || event.repeat;
   }
 
   private isTextEntryFieldFocused(): boolean {
