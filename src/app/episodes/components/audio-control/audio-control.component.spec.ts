@@ -296,6 +296,16 @@ describe('AudioControlComponent', () => {
         expect(event.defaultPrevented).toBeTrue();
         expect(audioService.mute).toHaveBeenCalledTimes(1);
       });
+
+      it('toggles the sound on a button', () => {
+        createComponent();
+        focusField(document.createElement('button'));
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
