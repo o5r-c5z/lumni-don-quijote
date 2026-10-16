@@ -22,6 +22,13 @@ const INPUT_TYPES_WITHOUT_LETTER_KEYS = [
   'color',
   'date',
   'file',
+  'button',
+  'reset',
+  'image',
+  'time',
+  'month',
+  'week',
+  'datetime-local',
 ];
 
 @Component({
