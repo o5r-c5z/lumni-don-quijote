@@ -12,8 +12,16 @@ import { Subscription } from 'rxjs';
 import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 
+// A raw line feed ends a CSS string; its hex escape does not. The trailing
+// space terminates the escape and is not part of the value.
+const CSS_ESCAPED_LINE_FEED = '\\a ';
+
 function cssUrl(path: string): string {
-  return `url("${path.replaceAll('\\', '\\\\').replaceAll('"', '\\"').replaceAll('\n', '\\a ')}")`;
+  const escapedPath = path
+    .replaceAll('\\', '\\\\')
+    .replaceAll('"', '\\"')
+    .replaceAll('\n', CSS_ESCAPED_LINE_FEED);
+  return `url("${escapedPath}")`;
 }
 
 @Component({
