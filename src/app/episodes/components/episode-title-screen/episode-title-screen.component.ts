@@ -13,7 +13,7 @@ import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 
 function cssUrl(path: string): string {
-  return `url("${path.replaceAll('"', '\\"')}")`;
+  return `url("${path.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}")`;
 }
 
 @Component({
