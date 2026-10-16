@@ -14,21 +14,14 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 
-const INPUT_TYPES_WITHOUT_LETTER_KEYS = [
-  'radio',
-  'checkbox',
-  'range',
-  'submit',
-  'color',
-  'date',
-  'file',
-  'button',
-  'reset',
-  'image',
-  'time',
-  'month',
-  'week',
-  'datetime-local',
+const TEXT_ENTRY_INPUT_TYPES = [
+  'text',
+  'search',
+  'email',
+  'url',
+  'tel',
+  'password',
+  'number',
 ];
 
 @Component({
@@ -87,7 +80,7 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (this.isLetterKeyUsedByFocusedField()) {
+    if (this.isTextEntryFieldFocused()) {
       return;
     }
 
@@ -99,11 +92,11 @@ export class AudioControlComponent implements OnInit, OnDestroy {
     }
   }
 
-  private isLetterKeyUsedByFocusedField(): boolean {
+  private isTextEntryFieldFocused(): boolean {
     const focused = document.activeElement;
     return (
       (focused instanceof HTMLInputElement &&
-        !INPUT_TYPES_WITHOUT_LETTER_KEYS.includes(focused.type)) ||
+        TEXT_ENTRY_INPUT_TYPES.includes(focused.type)) ||
       focused instanceof HTMLTextAreaElement ||
       focused instanceof HTMLSelectElement
     );
