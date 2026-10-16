@@ -73,7 +73,7 @@ dans un vrai navigateur (section 5).
 - [x] Un `titleBackground` qui n'est pas une chaîne (ancien format objet
       `{ landscape, portrait }`) donne `none`, et non plus
       `url("[object Object]")`
-- [ ] Le chemin de `titleBackground` est échappé dans `url("…")` : un
+- [x] Le chemin de `titleBackground` est échappé dans `url("…")` : un
       guillemet, un antislash ou un retour à la ligne donnent quand même une
       déclaration valide qui désigne ce fichier
 - [x] `titleBackground` est facultatif dans le type `Episode`
