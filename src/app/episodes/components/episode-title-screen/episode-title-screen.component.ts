@@ -12,11 +12,24 @@ import { Subscription } from 'rxjs';
 import { Episode } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 
+// A raw line feed ends a CSS string; its hex escape does not. The trailing
+// space terminates the escape and is not part of the value.
+const CSS_ESCAPED_LINE_FEED = '\\a ';
+
+function cssUrl(path: string): string {
+  const escapedPath = path
+    .replaceAll('\\', '\\\\')
+    .replaceAll('"', '\\"')
+    .replaceAll('\n', CSS_ESCAPED_LINE_FEED);
+  return `url("${escapedPath}")`;
+}
+
 @Component({
   selector: 'app-episode-title-screen',
   imports: [RouterLink],
   templateUrl: './episode-title-screen.component.html',
   styleUrl: './episode-title-screen.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
@@ -27,11 +40,11 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
   @ViewChild('goToEpisodeButton')
   protected goToEpisodeButton!: ElementRef<HTMLAnchorElement>;
 
-  @HostBinding('class.screen')
   @HostBinding('style.--screen-background')
   get backgroundImage() {
-    return this.episode?.titleBackground
-      ? `url("${this.episode.titleBackground}")`
+    const background = this.episode?.titleBackground;
+    return typeof background === 'string' && background
+      ? cssUrl(background)
       : 'none';
   }
 

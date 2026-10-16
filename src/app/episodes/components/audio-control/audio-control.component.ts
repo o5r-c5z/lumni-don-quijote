@@ -14,6 +14,16 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 
+const TEXT_ENTRY_INPUT_TYPES = [
+  'text',
+  'search',
+  'email',
+  'url',
+  'tel',
+  'password',
+  'number',
+];
+
 @Component({
   selector: 'app-audio-control',
   standalone: true,
@@ -70,24 +80,32 @@ export class AudioControlComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (this.isLetterKeyUsedByFocusedField()) {
+    if (this.isModifiedKey(event) || this.isTextEntryFieldFocused()) {
       return;
     }
 
-    switch (event.key.toLowerCase()) {
+    switch (event.key?.toLowerCase()) {
       case 'm':
-        this.toggleAudio();
+        if (!event.repeat) {
+          this.toggleAudio();
+        }
         event.preventDefault();
         break;
     }
   }
 
-  private isLetterKeyUsedByFocusedField(): boolean {
+  private isModifiedKey(event: KeyboardEvent): boolean {
+    return event.ctrlKey || event.altKey || event.metaKey;
+  }
+
+  private isTextEntryFieldFocused(): boolean {
     const focused = document.activeElement;
     return (
-      (focused instanceof HTMLInputElement && focused.type !== 'radio') ||
+      (focused instanceof HTMLInputElement &&
+        TEXT_ENTRY_INPUT_TYPES.includes(focused.type)) ||
       focused instanceof HTMLTextAreaElement ||
-      focused instanceof HTMLSelectElement
+      focused instanceof HTMLSelectElement ||
+      (focused instanceof HTMLElement && focused.isContentEditable)
     );
   }
 

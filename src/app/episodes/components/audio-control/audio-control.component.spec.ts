@@ -1,3 +1,4 @@
+import { ErrorHandler } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -209,12 +210,54 @@ describe('AudioControlComponent', () => {
       });
     }
 
-    it('also reacts with a modifier key', () => {
+    it('toggles the sound only once while M is held down', () => {
       createComponent();
 
-      pressKey('m', { ctrlKey: true });
+      pressKey('m');
+      pressKey('m', { repeat: true });
+      pressKey('m', { repeat: true });
 
       expect(audioService.mute).toHaveBeenCalledTimes(1);
+      expect(audioService.unmute).not.toHaveBeenCalled();
+      expect(audioService.isMuted()).toBeTrue();
+    });
+
+    it('prevents the default action of each repeat while M is held down', () => {
+      createComponent();
+
+      pressKey('m');
+      const firstRepeat = pressKey('m', { repeat: true });
+      const secondRepeat = pressKey('m', { repeat: true });
+
+      expect(firstRepeat.defaultPrevented).toBeTrue();
+      expect(secondRepeat.defaultPrevented).toBeTrue();
+    });
+
+    it('ignores Ctrl+M and leaves its default action', () => {
+      createComponent();
+
+      const event = pressKey('m', { ctrlKey: true });
+
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
+    });
+
+    it('ignores Alt+M and leaves its default action', () => {
+      createComponent();
+
+      const event = pressKey('m', { altKey: true });
+
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
+    });
+
+    it('ignores Cmd+M and leaves its default action', () => {
+      createComponent();
+
+      const event = pressKey('m', { metaKey: true });
+
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
     });
 
     it('ignores the other keys', () => {
@@ -222,6 +265,24 @@ describe('AudioControlComponent', () => {
 
       const event = pressKey('n');
 
+      expect(event.defaultPrevented).toBeFalse();
+      expect(audioService.mute).not.toHaveBeenCalled();
+    });
+
+    it('ignores a keydown without a key, as sent by autofill', () => {
+      createComponent();
+      const errorHandler = spyOn(
+        TestBed.inject(ErrorHandler),
+        'handleError',
+      ).and.stub();
+      // Chrome autofill dispatches a plain `Event`, not a `KeyboardEvent`:
+      // its `key` is undefined.
+      const event = new Event('keydown', { cancelable: true });
+
+      document.dispatchEvent(event);
+      fixture.detectChanges();
+
+      expect(errorHandler.calls.allArgs()).toEqual([]);
       expect(event.defaultPrevented).toBeFalse();
       expect(audioService.mute).not.toHaveBeenCalled();
     });
@@ -245,6 +306,10 @@ describe('AudioControlComponent', () => {
         field.focus();
       }
 
+      function createInput(type: string): HTMLInputElement {
+        return Object.assign(document.createElement('input'), { type });
+      }
+
       for (const [description, create] of [
         ['a text input', () => document.createElement('input')],
         ['a textarea', () => document.createElement('textarea')],
@@ -261,11 +326,124 @@ describe('AudioControlComponent', () => {
         });
       }
 
+      it('is ignored in the other inputs that take letters', () => {
+        createComponent();
+
+        for (const type of [
+          'search',
+          'email',
+          'url',
+          'tel',
+          'password',
+          'number',
+        ]) {
+          focusField(createInput(type));
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeFalse();
+          expect(audioService.mute).withContext(type).not.toHaveBeenCalled();
+          field.remove();
+        }
+      });
+
+      it('is ignored in a contenteditable element and in its descendants', () => {
+        createComponent();
+        const editable = document.createElement('div');
+        editable.contentEditable = 'true';
+        const nested = document.createElement('span');
+        nested.tabIndex = -1;
+        nested.textContent = 'texte';
+        editable.appendChild(nested);
+        focusField(editable);
+
+        for (const [description, focused] of [
+          ['the editable host', editable],
+          ['a focusable descendant', nested],
+        ] as const) {
+          focused.focus();
+          expect(document.activeElement).withContext(description).toBe(focused);
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(description).toBeFalse();
+          expect(audioService.mute)
+            .withContext(description)
+            .not.toHaveBeenCalled();
+        }
+      });
+
       it('toggles the sound on a radio button', () => {
         createComponent();
-        focusField(
-          Object.assign(document.createElement('input'), { type: 'radio' }),
-        );
+        focusField(createInput('radio'));
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
+
+      it('toggles the sound on a checkbox', () => {
+        createComponent();
+        focusField(createInput('checkbox'));
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
+
+      it('toggles the sound on a slider', () => {
+        createComponent();
+        focusField(createInput('range'));
+
+        const event = pressKey('m');
+
+        expect(event.defaultPrevented).toBeTrue();
+        expect(audioService.mute).toHaveBeenCalledTimes(1);
+      });
+
+      it('toggles the sound in the inputs where one does not type text', () => {
+        createComponent();
+
+        for (const type of ['submit', 'color', 'date', 'file']) {
+          focusField(createInput(type));
+          const wasMuted = audioService.isMuted();
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeTrue();
+          expect(audioService.isMuted()).withContext(type).toBe(!wasMuted);
+          field.remove();
+        }
+      });
+
+      it('toggles the sound in every other input without text entry', () => {
+        createComponent();
+
+        for (const type of [
+          'button',
+          'reset',
+          'image',
+          'time',
+          'month',
+          'week',
+          'datetime-local',
+        ]) {
+          focusField(createInput(type));
+          const wasMuted = audioService.isMuted();
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeTrue();
+          expect(audioService.isMuted()).withContext(type).toBe(!wasMuted);
+          field.remove();
+        }
+      });
+
+      it('toggles the sound on a button', () => {
+        createComponent();
+        focusField(document.createElement('button'));
 
         const event = pressKey('m');
 

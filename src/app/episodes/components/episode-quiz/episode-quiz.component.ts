@@ -14,13 +14,13 @@ import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
-import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
 @Component({
   selector: 'app-episode-quiz',
   imports: [RouterLink],
   templateUrl: './episode-quiz.component.html',
   styleUrl: './episode-quiz.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
   private readonly audioService = inject(AudioService);
@@ -37,12 +37,6 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-
-  @HostBinding('class.screen')
-  @HostBinding('style.--screen-background')
-  get backgroundImage() {
-    return PARCHMENT_BACKGROUND;
-  }
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {

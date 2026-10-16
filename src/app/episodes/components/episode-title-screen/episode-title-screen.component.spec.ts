@@ -103,6 +103,43 @@ describe('EpisodeTitleScreenComponent', () => {
       );
     });
 
+    it('displays a title background whose path contains a double quote', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: 'data:,say "hello" background',
+      });
+      const host = await showTitleScreen();
+
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,say \\"hello\\" background")',
+      );
+    });
+
+    it('displays a title background whose path contains a backslash', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: 'data:,back\\slash background',
+      });
+      const host = await showTitleScreen();
+
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,back\\\\slash background")',
+      );
+    });
+
+    it('displays a title background whose path contains a line feed', async () => {
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: 'data:,line\nfeed background',
+      });
+      const host = await showTitleScreen();
+
+      // The computed URL is resolved, so the line feed comes back percent-encoded.
+      expect(getComputedStyle(host, '::before').backgroundImage).toBe(
+        'url("data:,line%0Afeed background")',
+      );
+    });
+
     it('has no background image when the episode has none', async () => {
       episodeService.setEpisode({
         ...createEpisode('La disparition'),
@@ -121,6 +158,33 @@ describe('EpisodeTitleScreenComponent', () => {
 
       expect(host.querySelector('h1')?.textContent).toBe('La disparition');
       expect(host.style.getPropertyValue('--screen-background')).toBe('none');
+    });
+
+    it('has no background image when the background is in the old object format', async () => {
+      // An outdated episode.json may still hold one image per orientation.
+      episodeService.setEpisode({
+        ...createEpisode('La disparition'),
+        titleBackground: {
+          landscape: 'data:,landscape background',
+          portrait: 'data:,portrait background',
+        },
+      } as unknown as Episode);
+      const host = await showTitleScreen();
+
+      expect(host.style.getPropertyValue('--screen-background')).toBe('none');
+    });
+
+    it('accepts an episode typed without a background field', async () => {
+      const episode: Episode = {
+        title: 'La disparition',
+        introduction: { url: 'https://vimeo.com/2', title: 'Introduction' },
+        lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
+        questions: [],
+      };
+      episodeService.setEpisode(episode);
+      const host = await showTitleScreen();
+
+      expect(host.querySelector('h1')?.textContent).toBe('La disparition');
     });
 
     it('shows no background image behind the links', async () => {

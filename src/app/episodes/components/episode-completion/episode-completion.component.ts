@@ -7,7 +7,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 import { EpisodeService } from '../../services/episode.service';
 
 @Component({
@@ -15,18 +14,13 @@ import { EpisodeService } from '../../services/episode.service';
   imports: [RouterLink],
   templateUrl: './episode-completion.component.html',
   styleUrl: './episode-completion.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeCompletionComponent implements AfterViewInit {
   private readonly episodeService = inject(EpisodeService);
 
   @ViewChild('resetQuizButton')
   protected resetQuizButton!: ElementRef<HTMLAnchorElement>;
-
-  @HostBinding('class.screen')
-  @HostBinding('style.--screen-background')
-  get backgroundImage() {
-    return PARCHMENT_BACKGROUND;
-  }
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {

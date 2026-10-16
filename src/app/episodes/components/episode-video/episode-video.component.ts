@@ -14,7 +14,6 @@ import { Episode, Video, VideoType } from '../../models';
 import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
-import { PARCHMENT_BACKGROUND } from '../../screen-backgrounds';
 
 const VIDEO_PATH = '../video';
 const QUIZ_PATH = '../quiz';
@@ -31,6 +30,7 @@ interface Destination {
   imports: [RouterLink],
   templateUrl: './episode-video.component.html',
   styleUrl: './episode-video.component.scss',
+  host: { class: 'screen' },
 })
 export class EpisodeVideoComponent implements OnInit, OnDestroy {
   private readonly episodeService = inject(EpisodeService);
@@ -46,12 +46,6 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   protected videoType?: VideoType;
 
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef;
-
-  @HostBinding('class.screen')
-  @HostBinding('style.--screen-background')
-  get backgroundImage() {
-    return PARCHMENT_BACKGROUND;
-  }
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
