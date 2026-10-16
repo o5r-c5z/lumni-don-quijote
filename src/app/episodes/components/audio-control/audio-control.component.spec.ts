@@ -318,6 +318,21 @@ describe('AudioControlComponent', () => {
         expect(audioService.mute).toHaveBeenCalledTimes(1);
       });
 
+      it('toggles the sound in the inputs where one does not type text', () => {
+        createComponent();
+
+        for (const type of ['submit', 'color', 'date', 'file']) {
+          focusField(Object.assign(document.createElement('input'), { type }));
+          const wasMuted = audioService.isMuted();
+
+          const event = pressKey('m');
+
+          expect(event.defaultPrevented).withContext(type).toBeTrue();
+          expect(audioService.isMuted()).withContext(type).toBe(!wasMuted);
+          field.remove();
+        }
+      });
+
       it('toggles the sound on a button', () => {
         createComponent();
         focusField(document.createElement('button'));
