@@ -152,7 +152,7 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | Champ | Contenu |
 | --- | --- |
 | `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
-| `titleBackground` | facultatif : chemin de l'image de titre, une chaîne qui peut contenir n'importe quel caractère (guillemet, antislash, retour à la ligne) ; absent, vide ou autre chose qu'une chaîne, l'écran titre n'a pas d'image de fond |
+| `titleBackground` | facultatif : chemin de l'image de titre, une chaîne qui peut contenir un guillemet, un antislash ou un saut de ligne (`\n`) ; absent, vide ou autre chose qu'une chaîne, l'écran titre n'a pas d'image de fond |
 | `introduction` | vidéo d'introduction : `{ "url", "title" }` |
 | `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
