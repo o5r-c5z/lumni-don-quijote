@@ -142,14 +142,10 @@
     var(--episode-quiz__answer-label-border-width) +
       var(--episode-quiz__answer-label-padding-x)
   );
-  color: var(--danger-color);
+  color: var(--text-color);
 
   > * {
     display: none;
-  }
-
-  &.correct {
-    color: var(--success-color);
   }
 
   &.active > * {
