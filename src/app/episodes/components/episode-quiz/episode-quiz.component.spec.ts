@@ -803,6 +803,22 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('puts only « Bonne réponse ! » in the live region after a wrong answer to the same question', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(2);
+
+      expect(
+        host()
+          .querySelector('[aria-live]')
+          ?.textContent?.replace(/\s+/g, ' ')
+          .trim(),
+      ).toBe('Bonne réponse !');
+    }));
+
     it('gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
