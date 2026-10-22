@@ -538,6 +538,23 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('is no longer highlighted in red once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      answer(1);
+
+      const untouched = radios(fieldsets()[0])[2];
+      const style = getComputedStyle(label(first));
+      const untouchedStyle = getComputedStyle(label(untouched));
+      expect([style.backgroundColor, style.borderColor]).toEqual([
+        untouchedStyle.backgroundColor,
+        untouchedStyle.borderColor,
+      ]);
+    }));
+
     it('gives no translation when the question has none', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
