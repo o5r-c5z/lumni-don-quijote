@@ -120,6 +120,11 @@ dans un vrai navigateur (section 5).
         cours de quiz
   - [x] Tests : `tick(2000)` sans effet retirés, la correction est vérifiée
         sur son texte affiché et non plus sur la classe `active`
+- [ ] Format des réponses dans `episode.json` : chaque réponse devient un
+      objet `{ original, translation }` (`translation` facultative), à la
+      place des deux tableaux parallèles `answers` et `answerTranslations`,
+      qui pouvaient se décaler ; README, données des tests et
+      `uploads/episodes/1/episode.json` convertis
 
 ## 5. Tests e2e (Playwright)
 
