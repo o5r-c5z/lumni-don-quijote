@@ -14,7 +14,6 @@ import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Answer, Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
-import { AnnouncementService } from '../../services/announcement.service';
 
 const VALIDATED_CLASS = 'active';
 
@@ -26,7 +25,6 @@ const VALIDATED_CLASS = 'active';
   host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
-  private readonly announcementService = inject(AnnouncementService);
   private readonly audioService = inject(AudioService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly episodeService = inject(EpisodeService);
@@ -175,7 +173,6 @@ export class EpisodeQuizComponent implements OnInit {
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
     this.isCorrectAnswerLive = true;
-    this.announcementService.announce('Bonne réponse !');
 
     timer(2000)
       .pipe(
@@ -210,14 +207,5 @@ export class EpisodeQuizComponent implements OnInit {
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
     this.liveAnswer = answer;
     this.liveValidationCount++;
-    this.announcementService.announce(this.incorrectAnswerAnnouncement(answer));
-  }
-
-  private incorrectAnswerAnnouncement(answer?: Answer): string {
-    const verdict = 'Mauvaise réponse !';
-    if (!answer?.translation) {
-      return verdict;
-    }
-    return `${verdict} « ${answer.original} » signifie « ${answer.translation} »`;
   }
 }
