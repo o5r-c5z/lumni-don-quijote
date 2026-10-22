@@ -562,6 +562,21 @@ describe('EpisodeQuizComponent', () => {
       ).toEqual([['es', '¿Soy yo español?']]);
     }));
 
+    it('renews the content of the live region when validated twice, so that it is announced again', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      const region = host().querySelector('[aria-live]')!;
+      const regionText = () => region.textContent?.replace(/\s+/g, ' ').trim();
+
+      answer(0);
+      const firstContent = region.firstElementChild!;
+      const input = answer(0);
+
+      expect(regionText()).toBe(correctionText(input));
+      expect(region.contains(firstContent)).toBeFalse();
+    }));
+
     it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
