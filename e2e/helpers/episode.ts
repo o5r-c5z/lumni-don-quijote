@@ -55,6 +55,20 @@ export async function answerWithKeyboard(
   answerIndex: number,
   fromIndex = 0,
 ): Promise<void> {
+  await checkWithKeyboard(page, questionIndex, answerIndex, fromIndex);
+  await page.keyboard.press('Enter');
+}
+
+/**
+ * Checks the answer at `answerIndex` with the arrow keys, starting from the
+ * answer at `fromIndex` (Space when they are the same), without validating it.
+ */
+export async function checkWithKeyboard(
+  page: Page,
+  questionIndex: number,
+  answerIndex: number,
+  fromIndex = 0,
+): Promise<void> {
   const moves = answerIndex - fromIndex;
   if (moves === 0) {
     await page.keyboard.press('Space');
@@ -66,7 +80,6 @@ export async function answerWithKeyboard(
   await expect(
     currentQuestion(page).getByRole('radio', { name: answer }),
   ).toBeChecked();
-  await page.keyboard.press('Enter');
 }
 
 /** The right answer of the question at `questionIndex`. */

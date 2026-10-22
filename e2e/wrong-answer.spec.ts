@@ -4,6 +4,7 @@ import { expect, test } from './fixtures';
 import {
   answerLabel,
   answerWithKeyboard,
+  checkWithKeyboard,
   correction,
   currentQuestion,
   liveRegion,
@@ -83,14 +84,7 @@ test.describe('wrong answer', () => {
     );
 
     // Checking another answer, without validating it, keeps the red.
-    await page.keyboard.press(
-      secondWrong > firstWrong ? 'ArrowDown' : 'ArrowUp',
-    );
-    await expect(
-      currentQuestion(page).getByRole('radio', {
-        name: EPISODE.questions[0].answers[secondWrong],
-      }),
-    ).toBeChecked();
+    await checkWithKeyboard(page, 0, secondWrong, firstWrong);
     await expect(answerLabel(page, 0, firstWrong)).toHaveCSS(
       'border-color',
       danger,
