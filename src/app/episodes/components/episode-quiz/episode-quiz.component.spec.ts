@@ -601,6 +601,30 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe('Mauvaise réponse !');
     }));
 
+    it('gives and announces only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
+      episodeService.setEpisode(
+        createEpisode([
+          {
+            ...translatedQuestion,
+            answers: [
+              translatedQuestion.answers[0],
+              { original: '¿Soy yo español?' },
+              translatedQuestion.answers[2],
+            ],
+          },
+        ]),
+      );
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correctionText(input)).toBe('Mauvaise réponse !');
+      expect(announcementService.announce).toHaveBeenCalledOnceWith(
+        'Mauvaise réponse !',
+      );
+    }));
+
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
