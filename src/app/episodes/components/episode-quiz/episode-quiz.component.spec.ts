@@ -350,6 +350,39 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('lets an answer text extend to the inner edge of its answer box before validation, keeping no room for the hidden correction', fakeAsync(() => {
+      const longAnswer =
+        'En un lugar de la Mancha, de cuyo nombre no quiero acordarme, ' +
+        'no ha mucho tiempo que vivía un hidalgo de los de lanza en ' +
+        'astillero, adarga antigua, rocín flaco y galgo corredor.';
+      episodeService.setEpisode(
+        createEpisode([
+          {
+            ...questions[0],
+            answers: [{ original: longAnswer }, ...questions[0].answers],
+          },
+        ]),
+      );
+      showQuiz();
+      tick(100);
+
+      const [input] = radios(fieldsets()[0]);
+      const answerText = document.getElementById(
+        input.getAttribute('aria-labelledby')!,
+      )!;
+      const textRect = answerText.getBoundingClientRect();
+      const lineHeight = parseFloat(getComputedStyle(answerText).lineHeight);
+      // The answer text wraps, so it takes all the room its box gives it.
+      expect(textRect.height).toBeGreaterThan(1.5 * lineHeight);
+      const box = label(input);
+      const boxStyle = getComputedStyle(box);
+      const innerRight =
+        box.getBoundingClientRect().right -
+        parseFloat(boxStyle.borderRightWidth) -
+        parseFloat(boxStyle.paddingRight);
+      expect(Math.round(innerRight - textRect.right)).toBe(0);
+    }));
+
     it('marks the answer text of each answer label as Spanish', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
