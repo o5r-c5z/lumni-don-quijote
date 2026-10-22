@@ -468,6 +468,19 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
+    it('gives no translation when the question has none', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
+        'Mauvaise réponse !',
+      );
+      tick(2000);
+    }));
+
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
       const translatedQuestion = {
         label: 'Comment dit-on « Es-tu espagnol ? » ?',
