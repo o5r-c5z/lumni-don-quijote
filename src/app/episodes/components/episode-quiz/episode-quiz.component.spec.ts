@@ -562,7 +562,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
-        0.41,
+        0.21,
       );
     }));
 
@@ -589,8 +589,8 @@ describe('EpisodeQuizComponent', () => {
         pressEnterOnValidate();
 
         expect(audioService.playSoundEffect.calls.allArgs()).toEqual([
-          ['/audio/App Negative.mp3', 0.26],
-          ['/audio/App Negative.mp3', 0.26],
+          ['/audio/App Negative.mp3', 0.13],
+          ['/audio/App Negative.mp3', 0.13],
         ]);
         tick(VERDICT_DELAY);
       }));
@@ -605,7 +605,7 @@ describe('EpisodeQuizComponent', () => {
 
         expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
           '/audio/Win 3.mp3',
-          0.41,
+          0.21,
         );
         tick(2400);
       }));
@@ -753,7 +753,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/App Negative.mp3',
-        0.26,
+        0.13,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
@@ -1097,7 +1097,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
-        0.41,
+        0.21,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
