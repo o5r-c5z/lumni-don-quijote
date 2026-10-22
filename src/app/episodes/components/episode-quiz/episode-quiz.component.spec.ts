@@ -502,8 +502,8 @@ describe('EpisodeQuizComponent', () => {
         pressEnterOnValidate();
 
         expect(audioService.playSoundEffect.calls.allArgs()).toEqual([
-          ['/audio/App Negative.mp3'],
-          ['/audio/App Negative.mp3'],
+          ['/audio/App Negative.mp3', 0.26],
+          ['/audio/App Negative.mp3', 0.26],
         ]);
         tick(VERDICT_DELAY);
       }));
@@ -589,6 +589,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/App Negative.mp3',
+        0.26,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
