@@ -943,6 +943,38 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it("reserves no room for a correction: the question's usual gap separates its answer boxes, the question and the links, even when its correction wraps onto several lines", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      // A narrow quiz, so that the correction wraps.
+      host().style.width = '240px';
+
+      answer(1);
+
+      const [fieldset] = fieldsets();
+      const usualGap = Math.round(parseFloat(getComputedStyle(fieldset).rowGap));
+      const boxes = [
+        fieldset.querySelector('legend')!,
+        ...radios(fieldset).map(label),
+        validateButton(fieldset),
+      ];
+      const gapsInQuestion = boxes
+        .slice(1)
+        .map((box, i) =>
+          Math.round(
+            box.getBoundingClientRect().top -
+              boxes[i].getBoundingClientRect().bottom,
+          ),
+        );
+      const gapBeforeLinks = Math.round(
+        host().querySelector('nav')!.getBoundingClientRect().top -
+          fieldset.getBoundingClientRect().bottom,
+      );
+      expect(gapsInQuestion).toEqual(boxes.slice(1).map(() => usualGap));
+      expect(gapBeforeLinks).toBe(usualGap);
+    }));
+
     it('shows no correction nor translation on screen before validation', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
