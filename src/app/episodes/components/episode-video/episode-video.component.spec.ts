@@ -23,13 +23,13 @@ const episode: Episode = {
   questions: [
     {
       label: 'Question 0',
-      answers: ['Oui', 'Non'],
+      answers: [{ original: 'Oui' }, { original: 'Non' }],
       correctAnswer: 0,
       answerVideo: video(700, 'Réponse 0'),
     },
     {
       label: 'Question 1',
-      answers: ['Oui', 'Non'],
+      answers: [{ original: 'Oui' }, { original: 'Non' }],
       correctAnswer: 1,
       answerVideo: video(701, 'Réponse 1'),
     },

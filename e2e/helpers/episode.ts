@@ -40,7 +40,7 @@ export async function expectQuestion(page: Page, index: number): Promise<void> {
   );
   await expect(
     currentQuestion(page).getByRole('radio', {
-      name: questions[index].answers[0],
+      name: questions[index].answers[0].original,
     }),
   ).toBeFocused();
 }
@@ -76,7 +76,7 @@ export async function checkWithKeyboard(
   for (let i = 0; i < Math.abs(moves); i++) {
     await page.keyboard.press(moves > 0 ? 'ArrowDown' : 'ArrowUp');
   }
-  const answer = EPISODE.questions[questionIndex].answers[answerIndex];
+  const answer = EPISODE.questions[questionIndex].answers[answerIndex].original;
   await expect(
     currentQuestion(page).getByRole('radio', { name: answer }),
   ).toBeChecked();
@@ -101,10 +101,14 @@ export function translation(
   questionIndex: number,
   answerIndex: number,
 ): string {
-  const { answers, answerTranslations } = EPISODE.questions[questionIndex];
-  const answer = answers[answerIndex];
-  const meaning = answerTranslations![answerIndex];
-  return `« ${answer} » signifie « ${meaning} »`;
+  const { original, translation } =
+    EPISODE.questions[questionIndex].answers[answerIndex];
+  if (translation === undefined) {
+    throw new Error(
+      `Answer ${answerIndex} of question ${questionIndex} has no translation in the episode double`,
+    );
+  }
+  return `« ${original} » signifie « ${translation} »`;
 }
 
 /** The correction shown under the checked answer once validated. */
@@ -164,7 +168,11 @@ export async function resolvedColor(
   }, token);
 }
 
-/** The live region through which the app speaks to screen readers. */
+/**
+ * The quiz's own live region, through which it announces its verdicts to
+ * screen readers. Scoped to the quiz, since the CDK announcer, which the video
+ * and the audio controls still use, is also `aria-live="polite"`.
+ */
 export function liveRegion(page: Page): Locator {
-  return page.locator('.cdk-live-announcer-element');
+  return page.locator('app-episode-quiz [aria-live="polite"]');
 }

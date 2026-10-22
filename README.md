@@ -30,8 +30,12 @@ premier) :
    correction, comme le rouge de la réponse, reste affichée jusqu'à la
    validation d'une autre réponse, et une mauvaise réponse ne fait pas
    avancer : il faut trouver la bonne. Le verdict, et la traduction d'une
-   mauvaise réponse, sont aussi annoncés aux lecteurs d'écran ; les réponses
-   sont marquées comme du texte espagnol (`lang="es"`). Après une bonne
+   mauvaise réponse, sont aussi annoncés aux lecteurs d'écran, par une
+   région live propre au quiz qui reprend la correction affichée (vidée à
+   chaque validation puis remplie 100 ms plus tard, comme le fait
+   `LiveAnnouncer`, pour qu'un même verdict soit annoncé de nouveau) ; les
+   réponses, et la réponse citée dans une traduction, sont marquées comme du
+   texte espagnol (`lang="es"`). Après une bonne
    réponse (« Bonne réponse ! »), la vidéo-réponse de la question se lance,
    puis vient la question suivante. Le lien « Revoir la leçon de
    Rossinante » lance la vidéo de la leçon seule, puis ramène au quiz ; il
@@ -68,7 +72,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`, sans modificateur, ignoré dans les champs de saisie de texte).
 - `src/app/episodes/services/episode.service.ts` — état courant de l'épisode et étape du quiz (`BehaviorSubject`).
 - `src/app/episodes/services/audio.service.ts` — musique de fond en boucle, effets sonores ponctuels, volumes séparés.
-- `src/app/episodes/services/announcement.service.ts` — annonces aux lecteurs d'écran via `LiveAnnouncer` (Angular CDK).
+- `src/app/episodes/services/announcement.service.ts` — annonces aux lecteurs d'écran du lecteur vidéo et du bouton du son, via `LiveAnnouncer` (Angular CDK) ; le quiz a sa propre région live.
 - `src/app/shared/components/not-found/` — message « numéro d'épisode valide ».
 - `src/styles.scss` — styles globaux, variables CSS (couleurs, ratio d'écran 16/9, fond d'écran), classes `.btn`, `.screen`.
 - `src/styles/_reset.scss`, `_a11y.scss`, `_figma.scss` — mixins et fonctions (reset de `fieldset`, contour de focus, conversion des valeurs Figma en `rem`).
@@ -167,8 +171,9 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | `lesson` | vidéo de la leçon de Rossinante, lancée par « Revoir la leçon de Rossinante » : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
 | `questions[].label` | texte de la question, sans numéro (l'application affiche « 1 / 3 ») |
-| `questions[].answers` | réponses proposées, sans lettre |
-| `questions[].answerTranslations` | facultatif : traduction française de chaque réponse, dans l'ordre d'`answers` ; celle d'une mauvaise réponse s'affiche une fois cette réponse validée |
+| `questions[].answers[]` | réponses proposées, sans lettre : `{ "original", "translation" }` |
+| `questions[].answers[].original` | texte espagnol de la réponse |
+| `questions[].answers[].translation` | facultatif : traduction française de la réponse ; celle d'une mauvaise réponse s'affiche une fois cette réponse validée |
 | `questions[].correctAnswer` | indice de la bonne réponse dans `answers`, à partir de 0 |
 | `questions[].answerVideo` | vidéo-réponse : `{ "url", "title" }` |
 

@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -9,24 +10,32 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
-import { Episode, VideoType } from '../../models';
+import { Answer, Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
-import { AnnouncementService } from '../../services/announcement.service';
 
 const VALIDATED_CLASS = 'active';
 
+/**
+ * Delay between emptying the live region and filling it, as LiveAnnouncer
+ * does: screen readers then announce the verdict even when it repeats the
+ * previous one.
+ */
+const LIVE_REGION_DELAY_MS = 100;
+
+/** The verdict on a validated answer: a wrong one is corrected by the answer. */
+type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
+
 @Component({
   selector: 'app-episode-quiz',
-  imports: [RouterLink],
+  imports: [NgTemplateOutlet, RouterLink],
   templateUrl: './episode-quiz.component.html',
   styleUrl: './episode-quiz.component.scss',
   host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
-  private readonly announcementService = inject(AnnouncementService);
   private readonly audioService = inject(AudioService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly episodeService = inject(EpisodeService);
@@ -41,6 +50,8 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
+  protected liveVerdict?: Verdict;
+  private pendingAnnouncement?: Subscription;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -171,7 +182,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
-    this.announcementService.announce('Bonne réponse !');
+    this.announce({ isCorrect: true });
 
     timer(2000)
       .pipe(
@@ -203,22 +214,17 @@ export class EpisodeQuizComponent implements OnInit {
     answerIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-    this.announcementService.announce(
-      this.incorrectAnswerAnnouncement(questionIndex, answerIndex),
-    );
+    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
+    this.announce(answer ? { isCorrect: false, answer } : undefined);
   }
 
-  private incorrectAnswerAnnouncement(
-    questionIndex: number,
-    answerIndex: number,
-  ): string {
-    const verdict = 'Mauvaise réponse !';
-    const question = this.episode?.questions[questionIndex];
-    const answer = question?.answers[answerIndex];
-    const translation = question?.answerTranslations?.[answerIndex];
-    if (!translation) {
-      return verdict;
-    }
-    return `${verdict} « ${answer} » signifie « ${translation} »`;
+  private announce(verdict?: Verdict): void {
+    this.liveVerdict = undefined;
+    this.pendingAnnouncement?.unsubscribe();
+    this.pendingAnnouncement = timer(LIVE_REGION_DELAY_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.liveVerdict = verdict;
+      });
   }
 }

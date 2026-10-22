@@ -13,13 +13,17 @@ import { EpisodeQuizComponent } from './episode-quiz.component';
 const questions: QuizQuestion[] = [
   {
     label: 'Qui a volé le tableau ?',
-    answers: ['Le chat', 'Le jardinier', 'Le majordome'],
+    answers: [
+      { original: 'Le chat' },
+      { original: 'Le jardinier' },
+      { original: 'Le majordome' },
+    ],
     correctAnswer: 2,
     answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
   },
   {
     label: 'Où était-il caché ?',
-    answers: ['Au grenier', 'À la cave'],
+    answers: [{ original: 'Au grenier' }, { original: 'À la cave' }],
     correctAnswer: 0,
     answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
   },
@@ -27,11 +31,10 @@ const questions: QuizQuestion[] = [
 
 const translatedQuestion: QuizQuestion = {
   label: 'Comment dit-on « Es-tu espagnol ? » ?',
-  answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-  answerTranslations: [
-    'Est-il espagnol ?',
-    'Suis-je espagnol ?',
-    'Es-tu espagnol ?',
+  answers: [
+    { original: '¿Es él español?', translation: 'Est-il espagnol ?' },
+    { original: '¿Soy yo español?', translation: 'Suis-je espagnol ?' },
+    { original: '¿Eres tú español?', translation: 'Es-tu espagnol ?' },
   ],
   correctAnswer: 2,
   answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
@@ -161,9 +164,18 @@ describe('EpisodeQuizComponent', () => {
     return document.getElementById(input.getAttribute('aria-describedby')!)!;
   }
 
+  /** The text of an element, whitespace collapsed. */
+  function collapsedText(element: Element | null): string | undefined {
+    return element?.textContent?.replace(/\s+/g, ' ').trim();
+  }
+
   /** The text of an answer's correction, whitespace collapsed. */
   function correctionText(input: HTMLInputElement): string | undefined {
-    return correction(input).textContent?.replace(/\s+/g, ' ').trim();
+    return collapsedText(correction(input));
+  }
+
+  function liveRegion(): Element | null {
+    return host().querySelector('[aria-live]');
   }
 
   function label(input: HTMLInputElement): HTMLLabelElement {
@@ -180,12 +192,30 @@ describe('EpisodeQuizComponent', () => {
     return color;
   }
 
-  /** Checks an answer of the visible question and validates it. */
-  function answer(answerIndex: number): HTMLInputElement {
+  /**
+   * Checks an answer of the visible question and validates it, without
+   * waiting for its verdict to reach the live region of the quiz.
+   */
+  function validate(answerIndex: number): HTMLInputElement {
     const [fieldset] = visibleFieldsets();
     const input = radios(fieldset)[answerIndex];
     input.click();
     validateButton(fieldset).click();
+    harness.detectChanges();
+    return input;
+  }
+
+  /** The time a verdict takes to reach the live region after validation. */
+  const VERDICT_DELAY = 100;
+
+  /**
+   * Checks an answer of the visible question, validates it and waits for its
+   * verdict to reach the live region of the quiz. To be called inside
+   * `fakeAsync`.
+   */
+  function answer(answerIndex: number): HTMLInputElement {
+    const input = validate(answerIndex);
+    tick(VERDICT_DELAY);
     harness.detectChanges();
     return input;
   }
@@ -331,6 +361,21 @@ describe('EpisodeQuizComponent', () => {
       expect(document.activeElement).toBe(radios(first)[0]);
     }));
 
+    it('has its own visually hidden live region, empty before any validation', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      expect(
+        Array.from(host().querySelectorAll('[aria-live]'), (region) => [
+          region.getAttribute('aria-live'),
+          region.getAttribute('aria-atomic'),
+          region.classList.contains('cdk-visually-hidden'),
+          region.textContent?.trim(),
+        ]),
+      ).toEqual([['polite', 'true', true, '']]);
+    }));
+
     it('links only to the lesson of Rossinante', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
@@ -460,6 +505,7 @@ describe('EpisodeQuizComponent', () => {
           ['/audio/App Negative.mp3'],
           ['/audio/App Negative.mp3'],
         ]);
+        tick(VERDICT_DELAY);
       }));
 
       it('validates a right answer once, as it locks the question', fakeAsync(() => {
@@ -476,6 +522,61 @@ describe('EpisodeQuizComponent', () => {
         tick(2400);
       }));
     });
+
+    it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(2);
+      tick(2300);
+
+      expect(announcementService.announce).not.toHaveBeenCalled();
+    }));
+
+    it('empties the live region of the quiz, then puts the verdict in it 100 ms later', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      answer(0);
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+
+      validate(2);
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      tick(2300);
+    }));
+
+    it('keeps the live region empty until the second verdict when a second answer is validated less than 100 ms after the first', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      validate(0);
+      tick(VERDICT_DELAY / 2);
+      const second = validate(1);
+
+      // When the first verdict would have arrived.
+      tick(VERDICT_DELAY / 2);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY / 2 - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe(correctionText(second));
+    }));
   });
 
   describe('a wrong answer', () => {
@@ -500,32 +601,53 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
     }));
 
-    it('announces « Mauvaise réponse ! » to screen readers', fakeAsync(() => {
+    it('puts « Mauvaise réponse ! » in the live region of the quiz', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
 
       answer(0);
 
-      expect(announcementService.announce).toHaveBeenCalledOnceWith(
-        'Mauvaise réponse !',
-      );
+      expect(liveRegion()?.textContent?.trim()).toBe('Mauvaise réponse !');
     }));
 
-    it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
+    it('puts only the last displayed correction in the live region, its quoted answer marked as Spanish', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
 
       answer(0);
-      answer(1);
+      const second = answer(1);
 
-      expect(announcementService.announce.calls.allArgs()).toEqual([
-        ['Mauvaise réponse ! « ¿Es él español? » signifie « Est-il espagnol ? »'],
-        [
-          'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
-        ],
-      ]);
+      const region = liveRegion()!;
+      expect(collapsedText(region)).toBe(correctionText(second));
+      expect(
+        Array.from(region.querySelectorAll('[lang]'), (element) => [
+          element.getAttribute('lang'),
+          element.textContent?.trim(),
+        ]),
+      ).toEqual([['es', '¿Soy yo español?']]);
+    }));
+
+    it('empties the live region when validated twice, then puts the same correction back 100 ms later, so that it is announced again', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      const first = answer(0);
+      const correctionBefore = correctionText(first);
+      expect(collapsedText(liveRegion())).toBe(correctionBefore);
+
+      const second = validate(0);
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe(correctionText(second));
+      expect(collapsedText(liveRegion())).toBe(correctionBefore);
     }));
 
     it('lets the question be answered again', fakeAsync(() => {
@@ -598,6 +720,28 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe('Mauvaise réponse !');
     }));
 
+    it('gives and puts in the live region only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
+      episodeService.setEpisode(
+        createEpisode([
+          {
+            ...translatedQuestion,
+            answers: [
+              translatedQuestion.answers[0],
+              { original: '¿Soy yo español?' },
+              translatedQuestion.answers[2],
+            ],
+          },
+        ]),
+      );
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correctionText(input)).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+    }));
+
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
@@ -642,8 +786,11 @@ describe('EpisodeQuizComponent', () => {
     it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
       const laterTranslatedQuestion = {
         label: 'Comment dit-on « Être » ?',
-        answers: ['Tener', 'Ser', 'Hacer'],
-        answerTranslations: ['Avoir', 'Être', 'Faire'],
+        answers: [
+          { original: 'Tener', translation: 'Avoir' },
+          { original: 'Ser', translation: 'Être' },
+          { original: 'Hacer', translation: 'Faire' },
+        ],
         correctAnswer: 1,
         answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
       };
@@ -712,17 +859,45 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
-    it('announces « Bonne réponse ! » to screen readers', fakeAsync(() => {
+    it('puts « Bonne réponse ! » in the live region of the quiz', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
 
       answer(2);
 
-      expect(announcementService.announce).toHaveBeenCalledOnceWith(
-        'Bonne réponse !',
-      );
-      tick(2300);
+      expect(liveRegion()?.textContent?.trim()).toBe('Bonne réponse !');
+    }));
+
+    it('puts only « Bonne réponse ! » in the live region after a wrong answer to the same question', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(2);
+
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+    }));
+
+    it("puts only the wrong answer's correction in the live region after a wrong answer to the next question", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(2);
+      tick(2000);
+      tick(300);
+      tick();
+      expect(url()).toBe('/3/video?videoType=answer&question=0');
+      showQuiz();
+      tick(100);
+      expect(visibleFieldsets()).toEqual([fieldsets()[1]]);
+
+      const wrong = answer(1);
+
+      expect(correctionText(wrong)).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
     }));
 
     it('gives no translation, even when the question has some', fakeAsync(() => {
@@ -742,7 +917,9 @@ describe('EpisodeQuizComponent', () => {
       // The mock clock captures the 2 s slide-out timer, keeping the
       // correction shown.
       withMockClock(() => {
-        answer(2);
+        validate(2);
+        jasmine.clock().tick(VERDICT_DELAY);
+        harness.detectChanges();
         expect(fieldsets()[0].disabled).toBeTrue();
       });
 
@@ -755,7 +932,7 @@ describe('EpisodeQuizComponent', () => {
       tick(100);
       const [first] = fieldsets();
 
-      answer(2);
+      validate(2);
       tick(1999);
       expect(first.classList).not.toContain('hiding');
 
@@ -776,13 +953,17 @@ describe('EpisodeQuizComponent', () => {
           ...questions,
           {
             label: 'Quand a-t-il été volé ?',
-            answers: ['La nuit', 'Le jour'],
+            answers: [{ original: 'La nuit' }, { original: 'Le jour' }],
             correctAnswer: 1,
             answerVideo: { url: 'https://vimeo.com/12', title: 'Réponse 3' },
           },
           {
             label: 'Pourquoi ?',
-            answers: ['Par jalousie', 'Par cupidité', 'Par erreur'],
+            answers: [
+              { original: 'Par jalousie' },
+              { original: 'Par cupidité' },
+              { original: 'Par erreur' },
+            ],
             correctAnswer: 1,
             answerVideo: { url: 'https://vimeo.com/13', title: 'Réponse 4' },
           },
@@ -810,7 +991,7 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
       tick(100);
 
-      answer(2);
+      validate(2);
       expect(tickErrors(0)).toEqual([
         'Error: Uncaught (in promise): NotAllowedError: Not allowed',
       ]);

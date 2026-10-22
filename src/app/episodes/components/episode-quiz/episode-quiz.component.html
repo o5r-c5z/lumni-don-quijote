@@ -38,23 +38,19 @@
             class="episode-quiz__answer-label"
             lang="es"
           >
-            {{ answer }}
+            {{ answer.original }}
           </label>
           <p
             [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
             class="episode-quiz__question-correction"
             [class.correct]="isCorrectAnswer"
           >
-            <span>
-              {{ isCorrectAnswer ? "Bonne réponse !" : "Mauvaise réponse !" }}
-            </span>
-            &ngsp;
-            @if (
-              !isCorrectAnswer && question.answerTranslations?.[aIndex];
-              as translation
-            ) {
-              <span>« <span lang="es">{{ answer }}</span> » signifie « {{ translation }} »</span>
-            }
+            <ng-container
+              *ngTemplateOutlet="
+                correctionContent;
+                context: { isCorrect: isCorrectAnswer, answer }
+              "
+            />
           </p>
         }
         <button
@@ -68,6 +64,32 @@
       </fieldset>
     }
   </form>
+
+  <div
+    class="cdk-visually-hidden"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    @if (liveVerdict; as verdict) {
+      <ng-container *ngTemplateOutlet="correctionContent; context: verdict" />
+    }
+  </div>
+
+  <!-- The correction of an answer, shown under it and put in the live region.
+       A right answer's correction does not depend on the answer. -->
+  <ng-template
+    #correctionContent
+    let-isCorrect="isCorrect"
+    let-answer="answer"
+  >
+    <span>
+      {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
+    </span>
+    &ngsp;
+    @if (!isCorrect && answer.translation; as translation) {
+      <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
+    }
+  </ng-template>
 
   <nav class="episode-quiz__links">
     <a
