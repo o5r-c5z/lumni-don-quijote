@@ -111,6 +111,7 @@ dans un vrai navigateur (section 5).
         française ne l'est pas
   - [x] Une mauvaise réponse validée reste en rouge quand on coche une
         autre réponse, jusqu'à la validation de celle-ci
+  - [x] Une espace sépare « Mauvaise réponse ! » de la traduction affichée
   - [x] Le verdict est annoncé aux lecteurs d'écran (« Bonne réponse ! »,
         « Mauvaise réponse ! » suivi de la traduction de la réponse)
   - [x] « Accès au quiz de l'épisode » mène toujours à la première
