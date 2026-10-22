@@ -215,10 +215,10 @@ export class EpisodeQuizComponent implements OnInit {
     const verdict = 'Mauvaise réponse !';
     const question = this.episode?.questions[questionIndex];
     const answer = question?.answers[answerIndex];
-    const translation = question?.answerTranslations?.[answerIndex];
+    const translation = answer?.translation;
     if (!translation) {
       return verdict;
     }
-    return `${verdict} « ${answer} » signifie « ${translation} »`;
+    return `${verdict} « ${answer?.original} » signifie « ${translation} »`;
   }
 }

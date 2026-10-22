@@ -11,10 +11,14 @@ export interface Video {
   title: string;
 }
 
+export interface Answer {
+  original: string;
+  translation?: string;
+}
+
 export interface QuizQuestion {
   label: string;
-  answers: string[];
-  answerTranslations?: string[];
+  answers: Answer[];
   correctAnswer: number;
   answerVideo: Video;
 }

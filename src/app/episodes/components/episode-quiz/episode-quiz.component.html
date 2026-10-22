@@ -38,7 +38,7 @@
             class="episode-quiz__answer-label"
             lang="es"
           >
-            {{ answer }}
+            {{ answer.original }}
           </label>
           <p
             [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
@@ -50,10 +50,10 @@
             </span>
             &ngsp;
             @if (
-              !isCorrectAnswer && question.answerTranslations?.[aIndex];
+              !isCorrectAnswer && answer.translation;
               as translation
             ) {
-              <span>« <span lang="es">{{ answer }}</span> » signifie « {{ translation }} »</span>
+              <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
             }
           </p>
         }
