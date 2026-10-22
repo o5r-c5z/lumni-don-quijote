@@ -138,6 +138,11 @@
 }
 
 .episode-quiz__answer-correction {
+  // Out of the flow, so that the hidden correction takes no room in the gap.
+  &:not(.active) {
+    position: absolute;
+  }
+
   > * {
     display: none;
   }
