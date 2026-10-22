@@ -23,20 +23,27 @@ premier) :
    première question.
 2. **Introduction** — vidéo d'introduction, qui contient la leçon de
    Rossinante ; le quiz la suit directement.
-3. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une
-   mauvaise réponse est signalée (« Mauvaise réponse ! »), suivie de sa
+3. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une fois
+   validée, la réponse choisie laisse place, dans sa case et au même
+   endroit, à la correction, écrite dans la couleur habituelle du texte :
+   seul le fond et la bordure passent au rouge ou au vert. Une mauvaise
+   réponse est signalée (« Mauvaise réponse ! »), suivie de sa
    traduction quand la question en fournit une
    (« « ¿Soy yo español? » signifie « Suis-je espagnol ? » »). Cette
-   correction, comme le rouge de la réponse, reste affichée jusqu'à la
-   validation d'une autre réponse, et une mauvaise réponse ne fait pas
-   avancer : il faut trouver la bonne. Le verdict, et la traduction d'une
-   mauvaise réponse, sont aussi annoncés aux lecteurs d'écran, par une
+   correction, comme le rouge de la case, reste affichée jusqu'à la
+   validation d'une autre réponse, qui fait réapparaître la réponse ; une
+   mauvaise réponse ne fait pas avancer : il faut trouver la bonne. Pour
+   les lecteurs d'écran, le bouton radio garde la réponse pour nom et
+   reçoit la correction pour description (`aria-describedby`). Le verdict,
+   et la traduction d'une mauvaise réponse, sont aussi annoncés aux
+   lecteurs d'écran, par une
    région live propre au quiz qui reprend la correction affichée (vidée à
    chaque validation puis remplie 100 ms plus tard, comme le fait
    `LiveAnnouncer`, pour qu'un même verdict soit annoncé de nouveau) ; les
    réponses, et la réponse citée dans une traduction, sont marquées comme du
    texte espagnol (`lang="es"`). Après une bonne
-   réponse (« Bonne réponse ! »), la vidéo-réponse de la question se lance,
+   réponse (« Bonne réponse ! « ¿De dónde eres? » », qui rappelle la
+   réponse), la vidéo-réponse de la question se lance,
    puis vient la question suivante. Le lien « Revoir la leçon de
    Rossinante » lance la vidéo de la leçon seule, puis ramène au quiz ; il
    reste accessible depuis chaque question.
@@ -189,7 +196,7 @@ Le versionnement d'`uploads/`, un script de vérification des `episode.json` et 
 
 ### Notes de configuration
 
-- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse), `App Negative.mp3` (mauvaise réponse).
+- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse, volume 0,41), `App Negative.mp3` (mauvaise réponse, volume 0,26) ; ces deux volumes ramènent les sons à −23 LUFS, le niveau sonore des vidéos.
 - Chemin de sortie du build : `dist/lumni-don-quijote/` ; les fichiers du site sont dans son sous-dossier `browser/`.
 
 ## Crédits
