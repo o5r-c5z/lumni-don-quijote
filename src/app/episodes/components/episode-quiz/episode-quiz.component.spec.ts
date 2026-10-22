@@ -554,6 +554,29 @@ describe('EpisodeQuizComponent', () => {
       expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
       tick(2300);
     }));
+
+    it('keeps the live region empty until the second verdict when a second answer is validated less than 100 ms after the first', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      validate(0);
+      tick(VERDICT_DELAY / 2);
+      const second = validate(1);
+
+      // When the first verdict would have arrived.
+      tick(VERDICT_DELAY / 2);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY / 2 - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe(correctionText(second));
+    }));
   });
 
   describe('a wrong answer', () => {
