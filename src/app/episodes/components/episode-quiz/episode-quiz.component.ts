@@ -32,7 +32,7 @@ const RIGHT_ANSWER_SOUND_VOLUME = 0.41;
 const WRONG_ANSWER_SOUND_VOLUME = 0.26;
 
 /** The verdict on a validated answer: a wrong one is corrected by the answer. */
-type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
+type Verdict = { isCorrect: boolean; answer: Answer };
 
 @Component({
   selector: 'app-episode-quiz',
@@ -168,7 +168,11 @@ export class EpisodeQuizComponent implements OnInit {
         fieldset.disabled = true;
       }
 
-      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
+      this.handleCorrectAnswer(
+        fieldset as HTMLFieldSetElement,
+        questionIndex,
+        selectedAnswerIndex,
+      );
     } else {
       this.handleIncorrectAnswer(questionIndex, selectedAnswerIndex);
     }
@@ -186,12 +190,14 @@ export class EpisodeQuizComponent implements OnInit {
   private handleCorrectAnswer(
     fieldset: HTMLFieldSetElement,
     questionIndex: number,
+    answerIndex: number,
   ): void {
     this.audioService.playSoundEffect(
       '/audio/Win 3.mp3',
       RIGHT_ANSWER_SOUND_VOLUME,
     );
-    this.announce({ isCorrect: true });
+    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
+    this.announce(answer ? { isCorrect: true, answer } : undefined);
 
     timer(2000)
       .pipe(

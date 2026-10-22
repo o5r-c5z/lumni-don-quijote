@@ -86,8 +86,12 @@
       {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
     </span>
     &ngsp;
-    @if (!isCorrect && answer.translation; as translation) {
-      <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
+    @if (isCorrect) {
+      <span>« <span lang="es">{{ answer.original }}</span> »</span>
+    } @else {
+      @if (answer.translation; as translation) {
+        <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
+      }
     }
   </ng-template>
 
