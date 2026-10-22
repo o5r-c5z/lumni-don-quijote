@@ -431,7 +431,7 @@ describe('EpisodeQuizComponent', () => {
   });
 
   describe('a wrong answer', () => {
-    it('plays the negative sound and shows its correction for 2 seconds', fakeAsync(() => {
+    it('plays the negative sound and keeps its correction shown', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
@@ -444,11 +444,11 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
 
-      tick(1999);
+      tick(2000);
       expect(correction(input).classList).toContain('active');
 
-      tick(1);
-      expect(correction(input).classList).not.toContain('active');
+      tick(60000);
+      expect(correction(input).classList).toContain('active');
       expect(input.classList).toContain('active');
     }));
 
