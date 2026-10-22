@@ -202,12 +202,21 @@ export class EpisodeQuizComponent implements OnInit {
     answerIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
+    this.announcementService.announce(
+      this.incorrectAnswerAnnouncement(questionIndex, answerIndex),
+    );
+  }
+
+  private incorrectAnswerAnnouncement(
+    questionIndex: number,
+    answerIndex: number,
+  ): string {
+    const verdict = 'Mauvaise réponse !';
     const question = this.episode?.questions[questionIndex];
     const translation = question?.answerTranslations?.[answerIndex];
-    this.announcementService.announce(
-      translation
-        ? `Mauvaise réponse ! « ${question?.answers[answerIndex]} » signifie « ${translation} »`
-        : 'Mauvaise réponse !',
-    );
+    if (!question || !translation) {
+      return verdict;
+    }
+    return `${verdict} « ${question.answers[answerIndex]} » signifie « ${translation} »`;
   }
 }
