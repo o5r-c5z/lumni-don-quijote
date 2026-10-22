@@ -476,6 +476,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
+        0.41,
       );
     }));
 
@@ -518,6 +519,7 @@ describe('EpisodeQuizComponent', () => {
 
         expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
           '/audio/Win 3.mp3',
+          0.41,
         );
         tick(2400);
       }));
@@ -854,6 +856,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
+        0.41,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
