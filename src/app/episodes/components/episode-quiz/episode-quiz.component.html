@@ -36,22 +36,21 @@
           <label
             for="question-{{ qIndex }}-answer-{{ aIndex }}"
             class="episode-quiz__answer-label"
-            lang="es"
           >
-            {{ answer.original }}
+            <span lang="es">{{ answer.original }}</span>
+            <span
+              [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
+              class="episode-quiz__question-correction"
+              [class.correct]="isCorrectAnswer"
+            >
+              <ng-container
+                *ngTemplateOutlet="
+                  correctionContent;
+                  context: { isCorrect: isCorrectAnswer, answer }
+                "
+              />
+            </span>
           </label>
-          <p
-            [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
-            class="episode-quiz__question-correction"
-            [class.correct]="isCorrectAnswer"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                correctionContent;
-                context: { isCorrect: isCorrectAnswer, answer }
-              "
-            />
-          </p>
         }
         <button
           type="button"
