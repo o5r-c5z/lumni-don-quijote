@@ -103,7 +103,12 @@ export function translation(
 ): string {
   const { original, translation } =
     EPISODE.questions[questionIndex].answers[answerIndex];
-  return `« ${original} » signifie « ${translation!} »`;
+  if (translation === undefined) {
+    throw new Error(
+      `Answer ${answerIndex} of question ${questionIndex} has no translation in the episode double`,
+    );
+  }
+  return `« ${original} » signifie « ${translation} »`;
 }
 
 /** The correction shown under the checked answer once validated. */

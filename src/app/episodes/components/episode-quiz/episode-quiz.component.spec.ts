@@ -606,7 +606,7 @@ describe('EpisodeQuizComponent', () => {
       ).toEqual([['es', '¿Soy yo español?']]);
     }));
 
-    it('renews the content of the live region when validated twice, so that it is announced again', fakeAsync(() => {
+    it('replaces the nodes of the live region with new ones when validated twice', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
