@@ -743,6 +743,20 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('shows its correction in place of its answer text once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      // innerText is the text as rendered: the box shows only the correction,
+      // whose quote is then the only « ¿Soy yo español? » on screen.
+      expect(label(input).innerText.trim()).toBe(
+        correction(input).innerText.trim(),
+      );
+    }));
+
     it('gives no translation when the question has none', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
