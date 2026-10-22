@@ -328,7 +328,7 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le chat',
           'false',
-          'Mauvaise réponse !',
+          'Mauvaise réponse ! « Le chat »',
           false,
         ],
         [
@@ -336,7 +336,7 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le jardinier',
           'false',
-          'Mauvaise réponse !',
+          'Mauvaise réponse ! « Le jardinier »',
           false,
         ],
         [
@@ -709,7 +709,7 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
       tick(100);
       answer(0);
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « Le chat »');
 
       validate(2);
       expect(collapsedText(liveRegion())).toBe('');
@@ -766,10 +766,10 @@ describe('EpisodeQuizComponent', () => {
       expect(correction(input).classList).toContain('active');
 
       tick(2000);
-      expect(correction(input).innerText).toBe('Mauvaise réponse !');
+      expect(correction(input).innerText).toBe('Mauvaise réponse ! « Le chat »');
 
       tick(60000);
-      expect(correction(input).innerText).toBe('Mauvaise réponse !');
+      expect(correction(input).innerText).toBe('Mauvaise réponse ! « Le chat »');
       expect(input.classList).toContain('active');
     }));
 
@@ -780,7 +780,7 @@ describe('EpisodeQuizComponent', () => {
 
       answer(0);
 
-      expect(liveRegion()?.textContent?.trim()).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « Le chat »');
     }));
 
     it('puts only the last displayed correction in the live region, its quoted answer marked as Spanish', fakeAsync(() => {
@@ -841,7 +841,9 @@ describe('EpisodeQuizComponent', () => {
       const second = answer(1);
 
       expect(correction(first).innerText).toBe('');
-      expect(correction(second).innerText).toBe('Mauvaise réponse !');
+      expect(correction(second).innerText).toBe(
+        'Mauvaise réponse ! « Le jardinier »',
+      );
     }));
 
     it('shows its answer text again, without its correction, once another answer is validated', fakeAsync(() => {
@@ -937,10 +939,10 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      expect(correctionText(input)).toBe('Mauvaise réponse !');
+      expect(correctionText(input)).toBe('Mauvaise réponse ! « Le jardinier »');
     }));
 
-    it('gives and puts in the live region only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
+    it('recalls an answer without translation among translated ones in its correction and its announcement, with no translation', fakeAsync(() => {
       episodeService.setEpisode(
         createEpisode([
           {
@@ -958,8 +960,12 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      expect(correctionText(input)).toBe('Mauvaise réponse !');
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(correctionText(input)).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? »',
+      );
+      expect(collapsedText(liveRegion())).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? »',
+      );
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -1144,8 +1150,8 @@ describe('EpisodeQuizComponent', () => {
 
       const wrong = answer(1);
 
-      expect(correctionText(wrong)).toBe('Mauvaise réponse !');
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(correctionText(wrong)).toBe('Mauvaise réponse ! « À la cave »');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « À la cave »');
     }));
 
     it('recalls the answer, marked as Spanish, and gives no translation, even when the question has some', fakeAsync(() => {
