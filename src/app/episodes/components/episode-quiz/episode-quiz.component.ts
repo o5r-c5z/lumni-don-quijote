@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -19,7 +20,7 @@ const VALIDATED_CLASS = 'active';
 
 @Component({
   selector: 'app-episode-quiz',
-  imports: [RouterLink],
+  imports: [NgTemplateOutlet, RouterLink],
   templateUrl: './episode-quiz.component.html',
   styleUrl: './episode-quiz.component.scss',
   host: { class: 'screen' },

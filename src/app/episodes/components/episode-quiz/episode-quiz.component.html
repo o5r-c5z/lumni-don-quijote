@@ -45,16 +45,12 @@
             class="episode-quiz__question-correction"
             [class.correct]="isCorrectAnswer"
           >
-            <span>
-              {{ isCorrectAnswer ? "Bonne réponse !" : "Mauvaise réponse !" }}
-            </span>
-            &ngsp;
-            @if (
-              !isCorrectAnswer && answer.translation;
-              as translation
-            ) {
-              <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
-            }
+            <ng-container
+              *ngTemplateOutlet="
+                correctionContent;
+                context: { isCorrect: isCorrectAnswer, answer }
+              "
+            />
           </p>
         }
         <button
@@ -75,20 +71,39 @@
     aria-atomic="true"
   >
     @if (isCorrectAnswerLive) {
-      <span>Bonne réponse !</span>
+      <ng-container
+        *ngTemplateOutlet="correctionContent; context: { isCorrect: true }"
+      />
     }
     <!-- Tracking the validation count recreates the nodes on every validation,
          so that screen readers announce the same wrong answer again. -->
     @for (validation of [liveValidationCount]; track validation) {
       @if (liveAnswer; as answer) {
-        <span>Mauvaise réponse !</span>
-        &ngsp;
-        @if (answer.translation) {
-          <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ answer.translation }} »</span>
-        }
+        <ng-container
+          *ngTemplateOutlet="
+            correctionContent;
+            context: { isCorrect: false, answer }
+          "
+        />
       }
     }
   </div>
+
+  <!-- The correction of an answer, shown under it and put in the live region.
+       A right answer's correction does not depend on the answer. -->
+  <ng-template
+    #correctionContent
+    let-isCorrect="isCorrect"
+    let-answer="answer"
+  >
+    <span>
+      {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
+    </span>
+    &ngsp;
+    @if (!isCorrect && answer.translation; as translation) {
+      <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
+    }
+  </ng-template>
 
   <nav class="episode-quiz__links">
     <a
