@@ -5,6 +5,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
 import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
+import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 import { EpisodeQuizComponent } from './episode-quiz.component';
@@ -83,12 +84,17 @@ describe('EpisodeQuizComponent', () => {
   let harness: RouterTestingHarness;
   let episodeService: EpisodeService;
   let audioService: jasmine.SpyObj<AudioService>;
+  let announcementService: jasmine.SpyObj<AnnouncementService>;
 
   beforeEach(async () => {
     audioService = jasmine.createSpyObj<AudioService>('AudioService', [
       'playSoundEffect',
     ]);
     audioService.playSoundEffect.and.resolveTo();
+    announcementService = jasmine.createSpyObj<AnnouncementService>(
+      'AnnouncementService',
+      ['announce'],
+    );
 
     TestBed.configureTestingModule({
       providers: [
@@ -103,6 +109,7 @@ describe('EpisodeQuizComponent', () => {
           },
         ]),
         { provide: AudioService, useValue: audioService },
+        { provide: AnnouncementService, useValue: announcementService },
       ],
     });
     episodeService = TestBed.inject(EpisodeService);
@@ -493,6 +500,18 @@ describe('EpisodeQuizComponent', () => {
       tick(60000);
       expect(correction(input).innerText).toBe('Mauvaise réponse !');
       expect(input.classList).toContain('active');
+    }));
+
+    it('announces « Mauvaise réponse ! » to screen readers', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(0);
+
+      expect(announcementService.announce).toHaveBeenCalledOnceWith(
+        'Mauvaise réponse !',
+      );
     }));
 
     it('lets the question be answered again', fakeAsync(() => {
