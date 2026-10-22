@@ -300,19 +300,15 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
-    it('offers to skip the introduction for the lesson', () => {
-      expect(controls(host)).toEqual([
-        ['Passer la vidéo', '/3/video?videoType=lesson'],
-      ]);
+    it('offers to skip the introduction for the quiz', () => {
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
     for (const query of ['?videoType=introduction', '?videoType=unknown']) {
-      it(`offers to skip the introduction for the lesson for "${query}"`, async () => {
+      it(`offers to skip the introduction for the quiz for "${query}"`, async () => {
         host = await showVideo(query);
 
-        expect(controls(host)).toEqual([
-          ['Passer la vidéo', '/3/video?videoType=lesson'],
-        ]);
+        expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
       });
     }
 
