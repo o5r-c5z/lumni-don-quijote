@@ -192,12 +192,30 @@ describe('EpisodeQuizComponent', () => {
     return color;
   }
 
-  /** Checks an answer of the visible question and validates it. */
-  function answer(answerIndex: number): HTMLInputElement {
+  /**
+   * Checks an answer of the visible question and validates it, without
+   * waiting for its verdict to reach the live region of the quiz.
+   */
+  function validate(answerIndex: number): HTMLInputElement {
     const [fieldset] = visibleFieldsets();
     const input = radios(fieldset)[answerIndex];
     input.click();
     validateButton(fieldset).click();
+    harness.detectChanges();
+    return input;
+  }
+
+  /** The time a verdict takes to reach the live region after validation. */
+  const VERDICT_DELAY = 100;
+
+  /**
+   * Checks an answer of the visible question, validates it and waits for its
+   * verdict to reach the live region of the quiz. To be called inside
+   * `fakeAsync`.
+   */
+  function answer(answerIndex: number): HTMLInputElement {
+    const input = validate(answerIndex);
+    tick(VERDICT_DELAY);
     harness.detectChanges();
     return input;
   }
@@ -487,6 +505,7 @@ describe('EpisodeQuizComponent', () => {
           ['/audio/App Negative.mp3'],
           ['/audio/App Negative.mp3'],
         ]);
+        tick(VERDICT_DELAY);
       }));
 
       it('validates a right answer once, as it locks the question', fakeAsync(() => {
@@ -514,6 +533,26 @@ describe('EpisodeQuizComponent', () => {
       tick(2300);
 
       expect(announcementService.announce).not.toHaveBeenCalled();
+    }));
+
+    it('empties the live region of the quiz, then puts the verdict in it 100 ms later', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      answer(0);
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+
+      validate(2);
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      tick(2300);
     }));
   });
 
@@ -848,7 +887,9 @@ describe('EpisodeQuizComponent', () => {
       // The mock clock captures the 2 s slide-out timer, keeping the
       // correction shown.
       withMockClock(() => {
-        answer(2);
+        validate(2);
+        jasmine.clock().tick(VERDICT_DELAY);
+        harness.detectChanges();
         expect(fieldsets()[0].disabled).toBeTrue();
       });
 
@@ -861,7 +902,7 @@ describe('EpisodeQuizComponent', () => {
       tick(100);
       const [first] = fieldsets();
 
-      answer(2);
+      validate(2);
       tick(1999);
       expect(first.classList).not.toContain('hiding');
 
@@ -920,7 +961,7 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
       tick(100);
 
-      answer(2);
+      validate(2);
       expect(tickErrors(0)).toEqual([
         'Error: Uncaught (in promise): NotAllowedError: Not allowed',
       ]);
