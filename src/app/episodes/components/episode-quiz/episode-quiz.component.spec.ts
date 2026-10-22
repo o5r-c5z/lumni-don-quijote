@@ -259,7 +259,7 @@ describe('EpisodeQuizComponent', () => {
           input.name,
           host().querySelector(`label[for="${input.id}"]`)?.textContent?.trim(),
           input.getAttribute('aria-checked'),
-          correction(input).textContent?.trim(),
+          correctionText(input),
           correction(input).classList.contains('active'),
         ]),
       ).toEqual([
@@ -284,7 +284,7 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le majordome',
           'false',
-          'Bonne réponse !',
+          'Bonne réponse ! « Le majordome »',
           false,
         ],
       ]);
@@ -553,7 +553,9 @@ describe('EpisodeQuizComponent', () => {
 
       tick(1);
       harness.detectChanges();
-      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe(
+        'Bonne réponse ! « Le majordome »',
+      );
       tick(2300);
     }));
 
@@ -863,17 +865,17 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
-    it('puts « Bonne réponse ! » in the live region of the quiz', fakeAsync(() => {
+    it('puts « Bonne réponse ! » and the recalled answer in the live region of the quiz', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
 
       answer(2);
 
-      expect(liveRegion()?.textContent?.trim()).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse ! « Le majordome »');
     }));
 
-    it('puts only « Bonne réponse ! » in the live region after a wrong answer to the same question', fakeAsync(() => {
+    it('puts only the right answer\'s correction in the live region after a wrong answer to the same question', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
@@ -881,7 +883,9 @@ describe('EpisodeQuizComponent', () => {
       answer(0);
       answer(2);
 
-      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe(
+        'Bonne réponse ! « ¿Eres tú español? »',
+      );
     }));
 
     it("puts only the wrong answer's correction in the live region after a wrong answer to the next question", fakeAsync(() => {
@@ -904,14 +908,21 @@ describe('EpisodeQuizComponent', () => {
       expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
     }));
 
-    it('gives no translation, even when the question has some', fakeAsync(() => {
+    it('recalls the answer, marked as Spanish, and gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
 
       const input = answer(2);
 
-      expect(correctionText(input)).toBe('Bonne réponse !');
+      expect(correctionText(input)).toBe('Bonne réponse ! « ¿Eres tú español? »');
+      expect(correction(input).closest('[lang="es"]')).toBeNull();
+      expect(
+        Array.from(correction(input).querySelectorAll('[lang]'), (element) => [
+          element.getAttribute('lang'),
+          element.textContent?.trim(),
+        ]),
+      ).toEqual([['es', '¿Eres tú español?']]);
     }));
 
     it('has no axe violation once validated', async () => {
