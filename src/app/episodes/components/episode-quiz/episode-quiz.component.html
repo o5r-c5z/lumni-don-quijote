@@ -77,6 +77,8 @@
     @if (isCorrectAnswerLive) {
       <span>Bonne réponse !</span>
     }
+    <!-- Tracking the validation count recreates the nodes on every validation,
+         so that screen readers announce the same wrong answer again. -->
     @for (validation of [liveValidationCount]; track validation) {
       @if (liveAnswer; as answer) {
         <span>Mauvaise réponse !</span>
