@@ -819,6 +819,31 @@ describe('EpisodeQuizComponent', () => {
       ).toBe('Bonne réponse !');
     }));
 
+    it('puts only the wrong answer\'s correction in the live region after a wrong answer to the next question', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(2);
+      tick(2000);
+      tick(300);
+      tick();
+      expect(url()).toBe('/3/video?videoType=answer&question=0');
+      showQuiz();
+      tick(100);
+      expect(visibleFieldsets()).toEqual([fieldsets()[1]]);
+
+      const wrong = answer(1);
+
+      expect(correctionText(wrong)).toBe('Mauvaise réponse !');
+      expect(
+        host()
+          .querySelector('[aria-live]')
+          ?.textContent?.replace(/\s+/g, ' ')
+          .trim(),
+      ).toBe('Mauvaise réponse !');
+    }));
+
     it('gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
