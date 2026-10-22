@@ -105,6 +105,20 @@ dans un vrai navigateur (section 5).
   - [x] La correction d'une mauvaise réponse reste affichée jusqu'à la
         réponse suivante (auparavant 2 s), et ne chevauche pas la réponse
         suivante quand elle tient sur plusieurs lignes
+- [x] Suites de la relecture des retours sur l'épisode 1 :
+  - [x] Les réponses, et la réponse citée dans une traduction, sont
+        marquées comme du texte espagnol (`lang="es"`) ; la traduction
+        française ne l'est pas
+  - [x] Une mauvaise réponse validée reste en rouge quand on coche une
+        autre réponse, jusqu'à la validation de celle-ci
+  - [x] Le verdict est annoncé aux lecteurs d'écran (« Bonne réponse ! »,
+        « Mauvaise réponse ! » suivi de la traduction de la réponse)
+  - [x] « Accès au quiz de l'épisode » mène toujours à la première
+        question, et « Accès à l'épisode » fait recommencer l'épisode
+        depuis l'introduction, même après un retour à l'écran titre en
+        cours de quiz
+  - [x] Tests : `tick(2000)` sans effet retirés, la correction est vérifiée
+        sur son texte affiché et non plus sur la classe `active`
 
 ## 5. Tests e2e (Playwright)
 
@@ -115,6 +129,10 @@ vrai navigateur, une fois les fonctionnalités en place.
 - [x] Une mauvaise réponse bloque la progression, et affiche sa traduction
       jusqu'à la réponse suivante
 - [x] Accès direct au quiz depuis l'écran titre
+- [x] Retour à la première question par les deux liens de l'écran titre,
+      après un retour arrière du navigateur en cours de quiz
+- [x] Une mauvaise réponse reste en rouge jusqu'à la validation d'une autre
+- [x] Annonce du verdict et de la traduction aux lecteurs d'écran
 - [x] « Revoir la leçon de Rossinante » depuis une question
 - [x] axe sur chaque écran, contrastes compris
 - [x] Lecteur Vimeo et `episode.json` simulés avec `page.route`
