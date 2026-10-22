@@ -159,11 +159,11 @@ export class EpisodeQuizComponent implements OnInit {
 
   private clearPreviousValidation(fieldset: HTMLFieldSetElement): void {
     fieldset
-      .querySelectorAll(`.episode-quiz__question-correction.${VALIDATED_CLASS}`)
-      .forEach((correction) => correction.classList.remove(VALIDATED_CLASS));
-    fieldset
-      .querySelectorAll(`.episode-quiz__answer-input.${VALIDATED_CLASS}`)
-      .forEach((input) => input.classList.remove(VALIDATED_CLASS));
+      .querySelectorAll(
+        `.episode-quiz__answer-input.${VALIDATED_CLASS},` +
+          ` .episode-quiz__question-correction.${VALIDATED_CLASS}`,
+      )
+      .forEach((element) => element.classList.remove(VALIDATED_CLASS));
   }
 
   private handleCorrectAnswer(
