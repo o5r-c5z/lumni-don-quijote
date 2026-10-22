@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Answer, Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
@@ -51,6 +51,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
   protected liveVerdict?: Verdict;
+  private pendingAnnouncement?: Subscription;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -219,7 +220,8 @@ export class EpisodeQuizComponent implements OnInit {
 
   private announce(verdict?: Verdict): void {
     this.liveVerdict = undefined;
-    timer(LIVE_REGION_DELAY_MS)
+    this.pendingAnnouncement?.unsubscribe();
+    this.pendingAnnouncement = timer(LIVE_REGION_DELAY_MS)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.liveVerdict = verdict;
