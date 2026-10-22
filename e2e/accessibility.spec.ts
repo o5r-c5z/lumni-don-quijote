@@ -10,6 +10,7 @@ import {
   openQuiz,
   openTitleScreen,
   rightAnswer,
+  translation,
   watchVideo,
   wrongAnswer,
 } from './helpers/episode';
@@ -49,7 +50,8 @@ async function pauseTime(page: Page): Promise<void> {
 /**
  * Validates the answer at `answerIndex` of the first question while the
  * clock is paused, then lets Angular's coalesced change detection, which
- * waits for a timer, update the page: the correction stays for 2 s.
+ * waits for a timer, update the page: a right answer leaves the question
+ * after 2.3 s.
  */
 async function answerWhileTimePaused(page: Page, answerIndex: number) {
   await page.clock.install();
@@ -93,6 +95,9 @@ test.describe('accessibility', () => {
   test('question after a wrong answer', async ({ page }) => {
     await answerWhileTimePaused(page, wrongAnswer(0));
     await expect(correction(page, 'Mauvaise réponse !')).toBeVisible();
+    await expect(
+      correction(page, translation(0, wrongAnswer(0))),
+    ).toBeVisible();
     expect(await violations(page, { pausedClock: true })).toEqual([]);
     await expect(correction(page, 'Mauvaise réponse !')).toBeVisible();
   });

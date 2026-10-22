@@ -239,18 +239,15 @@ describe('EpisodeVideoComponent', () => {
       expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
 
-    it('then creates a single player for the lesson when the introduction ends', async () => {
+    it('then goes to the quiz with a single player when the introduction ends', async () => {
       await showVideo();
       episodeService.setEpisode(episode);
 
       emit('ended');
       await harness.fixture.whenStable();
 
-      expect(currentUrl()).toBe('/3/video?videoType=lesson');
-      expect(requestedVideos()).toEqual([
-        'https://vimeo.com/500',
-        'https://vimeo.com/600',
-      ]);
+      expect(currentUrl()).toBe('/3/quiz');
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
     });
   });
 
@@ -300,19 +297,15 @@ describe('EpisodeVideoComponent', () => {
       ]);
     });
 
-    it('offers to skip the introduction for the lesson', () => {
-      expect(controls(host)).toEqual([
-        ['Passer la vidéo', '/3/video?videoType=lesson'],
-      ]);
+    it('offers to skip the introduction for the quiz', () => {
+      expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
     });
 
     for (const query of ['?videoType=introduction', '?videoType=unknown']) {
-      it(`offers to skip the introduction for the lesson for "${query}"`, async () => {
+      it(`offers to skip the introduction for the quiz for "${query}"`, async () => {
         host = await showVideo(query);
 
-        expect(controls(host)).toEqual([
-          ['Passer la vidéo', '/3/video?videoType=lesson'],
-        ]);
+        expect(controls(host)).toEqual([['Passer la vidéo', '/3/quiz']]);
       });
     }
 
@@ -439,28 +432,25 @@ describe('EpisodeVideoComponent', () => {
       expect(currentUrl()).toBe('/3/quiz');
     });
 
-    it('plays the lesson after the introduction', async () => {
+    it('goes to the quiz after the introduction', async () => {
       await showVideo();
 
       emit('ended');
       await harness.fixture.whenStable();
 
-      expect(currentUrl()).toBe('/3/video?videoType=lesson');
-      expect(requestedVideos()).toEqual([
-        'https://vimeo.com/500',
-        'https://vimeo.com/600',
-      ]);
-      expect(playerPlay).toHaveBeenCalledTimes(2);
+      expect(currentUrl()).toBe('/3/quiz');
+      expect(requestedVideos()).toEqual(['https://vimeo.com/500']);
+      expect(playerPlay).toHaveBeenCalledTimes(1);
     });
 
     for (const query of ['?videoType=introduction', '?videoType=unknown']) {
-      it(`plays the lesson after the introduction for "${query}"`, async () => {
+      it(`goes to the quiz after the introduction for "${query}"`, async () => {
         await showVideo(query);
 
         emit('ended');
         await harness.fixture.whenStable();
 
-        expect(currentUrl()).toBe('/3/video?videoType=lesson');
+        expect(currentUrl()).toBe('/3/quiz');
       });
     }
 

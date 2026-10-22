@@ -12,13 +12,13 @@ export async function openTitleScreen(page: Page): Promise<void> {
 
 /**
  * Opens the quiz on its first question, the way a player reaches it: by
- * skipping the lesson. Loaded directly, the quiz subscribes twice to its
- * steps and focuses the first answer twice, the second time possibly after
- * the test has moved on.
+ * skipping the introduction. Loaded directly, the quiz subscribes twice to
+ * its steps and focuses the first answer twice, the second time possibly
+ * after the test has moved on.
  */
 export async function openQuiz(page: Page): Promise<void> {
-  await page.goto(`/${EPISODE_NUMBER}/video?videoType=lesson`);
-  await expectVideo(page, EPISODE.lesson.title);
+  await page.goto(`/${EPISODE_NUMBER}/video`);
+  await expectVideo(page, EPISODE.introduction.title);
   await page.getByRole('link', { name: 'Passer la vidéo' }).click();
   await expectQuestion(page, 0);
 }
@@ -78,6 +78,20 @@ export function rightAnswer(questionIndex: number): number {
 export function wrongAnswer(questionIndex: number): number {
   const { answers } = EPISODE.questions[questionIndex];
   return (rightAnswer(questionIndex) + 1) % answers.length;
+}
+
+/**
+ * The translation the correction of the answer at `answerIndex` of the
+ * question at `questionIndex` gives once that wrong answer is validated.
+ */
+export function translation(
+  questionIndex: number,
+  answerIndex: number,
+): string {
+  const { answers, answerTranslations } = EPISODE.questions[questionIndex];
+  const answer = answers[answerIndex];
+  const meaning = answerTranslations![answerIndex];
+  return `« ${answer} » signifie « ${meaning} »`;
 }
 
 /** The correction shown under the checked answer once validated. */

@@ -3,10 +3,12 @@
 Dérivé de Détective Biggle (remote `upstream`). Développement en TDD avec le
 skill `tdd:feature`.
 
-Enchaînement de l'épisode 1 (« Bigote y bigote ») : Titre → Introduction →
-Rossinante (leçon) → Q1 → Réponse Q1 → Q2 → Réponse Q2 → Q3 → Réponse Q3 →
-Bravo. Une bonne réponse est obligatoire pour avancer ; « Revoir la leçon de
-Rossinante » reste accessible depuis les questions.
+Enchaînement de l'épisode 1 (« Bigote y bigote ») : Titre → Introduction
+(qui contient la leçon) → Q1 → Réponse Q1 → Q2 → Réponse Q2 → Q3 → Réponse
+Q3 → Bravo. L'écran titre donne aussi un accès direct au quiz. Une bonne
+réponse est obligatoire pour avancer ; une mauvaise réponse affiche sa
+traduction française. « Revoir la leçon de Rossinante » reste accessible
+depuis les questions.
 
 ## 1. Reprise des tests de Biggle
 
@@ -47,8 +49,8 @@ dans un vrai navigateur (section 5).
 - [x] Modèle d'épisode : introduction, leçon, questions avec leur
       vidéo-réponse (`answerVideo`) ; plus d'indices, donc plus de liens
       « Revoir indice N » sur les questions
-- [x] Titre → Introduction → leçon → première question (plus d'accès direct
-      au quiz)
+- [x] ~~Titre → Introduction → leçon → première question (plus d'accès
+      direct au quiz)~~ : remplacé par les retours sur l'épisode 1, plus bas
 - [x] Bonne réponse → vidéo-réponse → question suivante, ou écran de fin
       après la dernière
 - [x] « Revoir la leçon de Rossinante » depuis les questions
@@ -92,6 +94,17 @@ dans un vrai navigateur (section 5).
       change pas
 - [x] Test de la touche `M` sur une vraie réponse du quiz, et non plus sur
       un bouton radio isolé
+- [x] Retours sur l'épisode 1 :
+  - [x] L'introduction contient déjà la leçon : sa fin, ou « Passer la
+        vidéo », mène directement au quiz
+  - [x] Écran titre : « Accès au quiz de l'épisode », après « Accès à
+        l'épisode », pour passer l'introduction
+  - [x] Une mauvaise réponse donne sa traduction française (« « … » signifie
+        « … » »), tirée du champ facultatif `answerTranslations` de la
+        question ; jamais pour la bonne réponse
+  - [x] La correction d'une mauvaise réponse reste affichée jusqu'à la
+        réponse suivante (auparavant 2 s), et ne chevauche pas la réponse
+        suivante quand elle tient sur plusieurs lignes
 
 ## 5. Tests e2e (Playwright)
 
@@ -99,7 +112,9 @@ Hors des cycles TDD : ces tests vérifient l'application assemblée dans un
 vrai navigateur, une fois les fonctionnalités en place.
 
 - [x] Parcours complet de l'épisode au clavier
-- [x] Une mauvaise réponse bloque la progression
+- [x] Une mauvaise réponse bloque la progression, et affiche sa traduction
+      jusqu'à la réponse suivante
+- [x] Accès direct au quiz depuis l'écran titre
 - [x] « Revoir la leçon de Rossinante » depuis une question
 - [x] axe sur chaque écran, contrastes compris
 - [x] Lecteur Vimeo et `episode.json` simulés avec `page.route`
@@ -131,6 +146,7 @@ production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`
 - [x] Questions du QUIZZ.docx (bonnes réponses : A, B, B), sans le préfixe
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
+- [x] Traduction française de chaque réponse (`answerTranslations`)
 
 En attendant l'image de titre (section 6), `titleBackground` vaut `""` :
 l'écran titre n'a alors pas d'image de fond.
@@ -160,7 +176,7 @@ serveur de production.
 | Vidéo (nom sur Vimeo)   | Écran                         |
 | ----------------------- | ----------------------------- |
 | EPISODE_01_Introduction | après le titre                |
-| EPISODE_01_Rossinante   | leçon, revisitable            |
+| EPISODE_01_Rossinante   | leçon seule, depuis le quiz   |
 | EPISODE_01_Reponse_Q1   | après une bonne réponse à Q1  |
 | EPISODE_01_Reponse_Q2_1 | après une bonne réponse à Q2  |
 | EPISODE_01_Reponse_Q3   | après Q3, puis écran Bravo    |

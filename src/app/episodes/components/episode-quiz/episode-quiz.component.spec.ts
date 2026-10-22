@@ -24,6 +24,18 @@ const questions: QuizQuestion[] = [
   },
 ];
 
+const translatedQuestion: QuizQuestion = {
+  label: 'Comment dit-on « Es-tu espagnol ? » ?',
+  answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
+  answerTranslations: [
+    'Est-il espagnol ?',
+    'Suis-je espagnol ?',
+    'Es-tu espagnol ?',
+  ],
+  correctAnswer: 2,
+  answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
+};
+
 function createEpisode(quiz = questions): Episode {
   return {
     title: 'La disparition',
@@ -140,6 +152,11 @@ describe('EpisodeQuizComponent', () => {
 
   function correction(input: HTMLInputElement): HTMLElement {
     return document.getElementById(input.getAttribute('aria-describedby')!)!;
+  }
+
+  /** The text of an answer's correction, whitespace collapsed. */
+  function correctionText(input: HTMLInputElement): string | undefined {
+    return correction(input).textContent?.replace(/\s+/g, ' ').trim();
   }
 
   /** Checks an answer of the visible question and validates it. */
@@ -431,7 +448,7 @@ describe('EpisodeQuizComponent', () => {
   });
 
   describe('a wrong answer', () => {
-    it('plays the negative sound and shows its correction for 2 seconds', fakeAsync(() => {
+    it('plays the negative sound and keeps its correction shown', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
@@ -444,11 +461,11 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
 
-      tick(1999);
+      tick(2000);
       expect(correction(input).classList).toContain('active');
 
-      tick(1);
-      expect(correction(input).classList).not.toContain('active');
+      tick(60000);
+      expect(correction(input).classList).toContain('active');
       expect(input.classList).toContain('active');
     }));
 
@@ -467,6 +484,99 @@ describe('EpisodeQuizComponent', () => {
       answer(2);
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
+
+    it('hides its correction once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      const second = answer(1);
+
+      expect(correction(first).classList).not.toContain('active');
+      expect(correction(second).classList).toContain('active');
+    }));
+
+    it('gives no translation when the question has none', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correctionText(input)).toBe('Mauvaise réponse !');
+      tick(2000);
+    }));
+
+    it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correctionText(input)).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+      tick(2000);
+    }));
+
+    it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
+      const laterTranslatedQuestion = {
+        label: 'Comment dit-on « Être » ?',
+        answers: ['Tener', 'Ser', 'Hacer'],
+        answerTranslations: ['Avoir', 'Être', 'Faire'],
+        correctAnswer: 1,
+        answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
+      };
+      episodeService.setEpisode(
+        createEpisode([questions[0], laterTranslatedQuestion]),
+      );
+      episodeService.incrementQuizStep();
+      showQuiz();
+      tick(100);
+
+      const input = answer(2);
+
+      expect(correctionText(input)).toBe(
+        'Mauvaise réponse ! « Hacer » signifie « Faire »',
+      );
+      tick(2000);
+    }));
+
+    it('does not overlap the next answer when its correction wraps onto several lines', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      // A narrow quiz, so that the correction wraps.
+      host().style.width = '240px';
+
+      const input = answer(1);
+
+      const text = document.createRange();
+      text.selectNodeContents(correction(input));
+      const textRect = text.getBoundingClientRect();
+      const lineHeight = parseFloat(
+        getComputedStyle(correction(input)).lineHeight,
+      );
+      expect(textRect.height).toBeGreaterThan(1.5 * lineHeight);
+      const nextLabel = host().querySelector(
+        `label[for="${radios(fieldsets()[0])[2].id}"]`,
+      )!;
+      expect(textRect.bottom).toBeLessThanOrEqual(
+        nextLabel.getBoundingClientRect().top,
+      );
+    }));
+
+    it('shows no correction nor translation on screen before validation', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      expect(
+        radios(fieldsets()[0]).map((input) => correction(input).innerText),
+      ).toEqual(['', '', '']);
+    }));
   });
 
   describe('a right answer', () => {
@@ -483,6 +593,16 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
       expect(fieldsets()[0].disabled).toBeTrue();
+    }));
+
+    it('gives no translation, even when the question has some', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(2);
+
+      expect(correctionText(input)).toBe('Bonne réponse !');
     }));
 
     it('has no axe violation once validated', async () => {

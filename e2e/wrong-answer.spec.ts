@@ -7,6 +7,7 @@ import {
   currentQuestion,
   openQuiz,
   rightAnswer,
+  translation,
   wrongAnswer,
 } from './helpers/episode';
 
@@ -22,7 +23,6 @@ test.describe('wrong answer', () => {
 
     // A right answer would have left the question after 2.3 s.
     await page.clock.runFor(3000);
-    await expect(correction(page, 'Mauvaise réponse !')).toBeHidden();
     await expect(page).toHaveURL(`/${EPISODE_NUMBER}/quiz`);
     await expect(currentQuestion(page)).toHaveAccessibleName(
       `1 / 3 ${EPISODE.questions[0].label}`,
@@ -35,5 +35,32 @@ test.describe('wrong answer', () => {
       `/${EPISODE_NUMBER}/video?videoType=answer&question=0`,
     );
     await expectVideo(page, EPISODE.questions[0].answerVideo.title);
+  });
+
+  test('gives the translation of the wrong answer until another answer is validated', async ({
+    page,
+  }) => {
+    const [firstWrong, secondWrong] = [
+      ...EPISODE.questions[0].answers.keys(),
+    ].filter((index) => index !== rightAnswer(0));
+    await page.clock.install();
+    await openQuiz(page);
+
+    await answerWithKeyboard(page, 0, firstWrong);
+    await expect(correction(page, 'Mauvaise réponse !')).toBeVisible();
+    await expect(correction(page, translation(0, firstWrong))).toBeVisible();
+
+    await page.clock.runFor(3000);
+    await expect(correction(page, 'Mauvaise réponse !')).toBeVisible();
+    await expect(correction(page, translation(0, firstWrong))).toBeVisible();
+
+    await answerWithKeyboard(page, 0, secondWrong, firstWrong);
+    await expect(correction(page, translation(0, firstWrong))).toBeHidden();
+    await expect(correction(page, translation(0, secondWrong))).toBeVisible();
+
+    await answerWithKeyboard(page, 0, rightAnswer(0), secondWrong);
+    await expect(correction(page, translation(0, secondWrong))).toBeHidden();
+    await expect(correction(page, 'Mauvaise réponse !')).toBeHidden();
+    await expect(correction(page, 'Bonne réponse !')).toBeVisible();
   });
 });

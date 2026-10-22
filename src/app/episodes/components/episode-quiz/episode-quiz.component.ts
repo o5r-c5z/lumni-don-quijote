@@ -134,19 +134,29 @@ export class EpisodeQuizComponent implements OnInit {
       selectedAnswerIndex ===
       this.episode?.questions[questionIndex].correctAnswer;
 
+    const fieldset = input.closest('fieldset');
+
+    if (fieldset) {
+      this.hideShownCorrections(fieldset);
+    }
     input.classList.add('active');
     correction?.classList.add('active');
 
     if (isCorrect) {
-      const fieldset = input.closest('fieldset');
       if (fieldset) {
         fieldset.disabled = true;
       }
 
       this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer(correction);
+      this.handleIncorrectAnswer();
     }
+  }
+
+  private hideShownCorrections(fieldset: HTMLFieldSetElement): void {
+    fieldset
+      .querySelectorAll('.episode-quiz__question-correction.active')
+      .forEach((correction) => correction.classList.remove('active'));
   }
 
   private handleCorrectAnswer(
@@ -180,13 +190,7 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(correction: HTMLElement | null): void {
+  private handleIncorrectAnswer(): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-
-    timer(2000)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        correction?.classList.remove('active');
-      });
   }
 }
