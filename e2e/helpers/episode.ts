@@ -111,7 +111,7 @@ export function translation(
   return `« ${original} » signifie « ${translation} »`;
 }
 
-/** The correction shown under the checked answer once validated. */
+/** The correction shown in place of the checked answer once validated. */
 export function correction(page: Page, text: string): Locator {
   return currentQuestion(page).getByText(text).filter({ visible: true });
 }

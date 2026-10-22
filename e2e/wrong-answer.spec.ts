@@ -102,7 +102,7 @@ test.describe('wrong answer', () => {
     );
   });
 
-  test('announces the verdict, and the translation of a wrong answer, to screen readers', async ({
+  test('announces the verdict, the recalled answer and the translation of a wrong answer, to screen readers', async ({
     page,
   }) => {
     await openQuiz(page);
@@ -120,6 +120,8 @@ test.describe('wrong answer', () => {
     );
 
     await answerWithKeyboard(page, 0, rightAnswer(0), wrongAnswer(0));
-    await expect(liveRegion(page)).toHaveText('Bonne réponse !');
+    const right = EPISODE.questions[0].answers[rightAnswer(0)].original;
+    await expect(liveRegion(page)).toHaveText(`Bonne réponse ! « ${right} »`);
+    await expect(spanish).toHaveText(right);
   });
 });
