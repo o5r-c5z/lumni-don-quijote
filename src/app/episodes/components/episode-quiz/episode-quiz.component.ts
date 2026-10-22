@@ -50,7 +50,6 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-  // Always assign a fresh object: the live region tracks it by identity.
   protected liveVerdict?: Verdict;
 
   @HostBinding('style.--screen-background-overlay-opacity')

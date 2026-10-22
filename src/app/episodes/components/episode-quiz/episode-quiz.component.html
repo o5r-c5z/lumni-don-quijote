@@ -70,9 +70,7 @@
     aria-live="polite"
     aria-atomic="true"
   >
-    <!-- Tracking the verdict by identity recreates the nodes on every
-         validation, so that screen readers announce the same verdict again. -->
-    @for (verdict of liveVerdict ? [liveVerdict] : []; track verdict) {
+    @if (liveVerdict; as verdict) {
       <ng-container *ngTemplateOutlet="correctionContent; context: verdict" />
     }
   </div>
