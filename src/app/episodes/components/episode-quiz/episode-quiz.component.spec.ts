@@ -967,6 +967,21 @@ describe('EpisodeQuizComponent', () => {
       ).toEqual([['es', '¿Eres tú español?']]);
     }));
 
+    it('shows its correction in place of its answer text once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      // Before the 2 s after which the question slides out.
+      const input = answer(2);
+
+      // innerText is the text as rendered: the box shows only the correction,
+      // whose quote is then the only « ¿Eres tú español? » on screen.
+      expect(label(input).innerText.trim()).toBe(
+        correction(input).innerText.trim(),
+      );
+    }));
+
     it('has no axe violation once validated', async () => {
       episodeService.setEpisode(createEpisode());
       await showRevealedQuiz();
