@@ -2,10 +2,13 @@ import { EPISODE, EPISODE_NUMBER } from './doubles/episode';
 import { expectVideo } from './doubles/vimeo';
 import { expect, test } from './fixtures';
 import {
+  answerLabel,
   answerWithKeyboard,
   correction,
   currentQuestion,
+  liveRegion,
   openQuiz,
+  resolvedColor,
   rightAnswer,
   translation,
   wrongAnswer,
@@ -62,5 +65,60 @@ test.describe('wrong answer', () => {
     await expect(correction(page, translation(0, secondWrong))).toBeHidden();
     await expect(correction(page, 'Mauvaise réponse !')).toBeHidden();
     await expect(correction(page, 'Bonne réponse !')).toBeVisible();
+  });
+
+  test('keeps a validated wrong answer red until another answer is validated', async ({
+    page,
+  }) => {
+    const [firstWrong, secondWrong] = [
+      ...EPISODE.questions[0].answers.keys(),
+    ].filter((index) => index !== rightAnswer(0));
+    await openQuiz(page);
+    const danger = await resolvedColor(page, '--danger-color');
+
+    await answerWithKeyboard(page, 0, firstWrong);
+    await expect(answerLabel(page, 0, firstWrong)).toHaveCSS(
+      'border-color',
+      danger,
+    );
+
+    // Checking another answer, without validating it, keeps the red.
+    await page.keyboard.press(
+      secondWrong > firstWrong ? 'ArrowDown' : 'ArrowUp',
+    );
+    await expect(
+      currentQuestion(page).getByRole('radio', {
+        name: EPISODE.questions[0].answers[secondWrong],
+      }),
+    ).toBeChecked();
+    await expect(answerLabel(page, 0, firstWrong)).toHaveCSS(
+      'border-color',
+      danger,
+    );
+    await expect(correction(page, translation(0, firstWrong))).toBeVisible();
+
+    await page.keyboard.press('Enter');
+    await expect(answerLabel(page, 0, secondWrong)).toHaveCSS(
+      'border-color',
+      danger,
+    );
+    await expect(answerLabel(page, 0, firstWrong)).not.toHaveCSS(
+      'border-color',
+      danger,
+    );
+  });
+
+  test('announces the verdict, and the translation of a wrong answer, to screen readers', async ({
+    page,
+  }) => {
+    await openQuiz(page);
+
+    await answerWithKeyboard(page, 0, wrongAnswer(0));
+    await expect(liveRegion(page)).toHaveText(
+      `Mauvaise réponse ! ${translation(0, wrongAnswer(0))}`,
+    );
+
+    await answerWithKeyboard(page, 0, rightAnswer(0), wrongAnswer(0));
+    await expect(liveRegion(page)).toHaveText('Bonne réponse !');
   });
 });

@@ -124,3 +124,34 @@ export async function skipVideo(page: Page, title: string): Promise<void> {
   await tabTo(page, page.getByRole('link', { name: 'Passer la vidéo' }));
   await page.keyboard.press('Enter');
 }
+
+/** The label of the answer at `answerIndex` of the question at `questionIndex`. */
+export function answerLabel(
+  page: Page,
+  questionIndex: number,
+  answerIndex: number,
+): Locator {
+  return page.locator(
+    `label[for="question-${questionIndex}-answer-${answerIndex}"]`,
+  );
+}
+
+/** The colour the CSS custom property `token` resolves to, as `rgb(…)`. */
+export async function resolvedColor(
+  page: Page,
+  token: string,
+): Promise<string> {
+  return page.evaluate((name) => {
+    const probe = document.createElement('div');
+    probe.style.color = `var(${name})`;
+    document.body.append(probe);
+    const { color } = getComputedStyle(probe);
+    probe.remove();
+    return color;
+  }, token);
+}
+
+/** The live region through which the app speaks to screen readers. */
+export function liveRegion(page: Page): Locator {
+  return page.locator('.cdk-live-announcer-element');
+}
