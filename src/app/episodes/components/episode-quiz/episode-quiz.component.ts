@@ -14,6 +14,7 @@ import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
+import { AnnouncementService } from '../../services/announcement.service';
 
 const VALIDATED_CLASS = 'active';
 
@@ -25,6 +26,7 @@ const VALIDATED_CLASS = 'active';
   host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
+  private readonly announcementService = inject(AnnouncementService);
   private readonly audioService = inject(AudioService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly episodeService = inject(EpisodeService);
@@ -197,5 +199,6 @@ export class EpisodeQuizComponent implements OnInit {
 
   private handleIncorrectAnswer(): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
+    this.announcementService.announce('Mauvaise réponse !');
   }
 }
