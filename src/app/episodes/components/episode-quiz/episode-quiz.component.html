@@ -74,6 +74,9 @@
     aria-live="polite"
     aria-atomic="true"
   >
+    @if (liveCorrect) {
+      <span>Bonne réponse !</span>
+    }
     @if (liveAnswer; as answer) {
       <span>Mauvaise réponse !</span>
       &ngsp;
