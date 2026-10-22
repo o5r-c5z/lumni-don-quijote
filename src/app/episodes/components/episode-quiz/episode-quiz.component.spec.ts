@@ -159,6 +159,20 @@ describe('EpisodeQuizComponent', () => {
     return correction(input).textContent?.replace(/\s+/g, ' ').trim();
   }
 
+  function label(input: HTMLInputElement): HTMLLabelElement {
+    return host().querySelector(`label[for="${input.id}"]`)!;
+  }
+
+  /** The colour a CSS custom property resolves to inside the quiz. */
+  function resolvedColor(customProperty: string): string {
+    const probe = document.createElement('span');
+    probe.style.color = `var(${customProperty})`;
+    host().appendChild(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  }
+
   /** Checks an answer of the visible question and validates it. */
   function answer(answerIndex: number): HTMLInputElement {
     const [fieldset] = visibleFieldsets();
@@ -506,6 +520,22 @@ describe('EpisodeQuizComponent', () => {
 
       expect(correction(first).innerText).toBe('');
       expect(correction(second).innerText).toBe('Mauvaise réponse !');
+    }));
+
+    it('stays highlighted in red once another answer is checked but not validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const wrong = answer(0);
+      radios(fieldsets()[0])[1].click();
+      harness.detectChanges();
+
+      const style = getComputedStyle(label(wrong));
+      expect([style.backgroundColor, style.borderColor]).toEqual([
+        resolvedColor('--light-danger-color'),
+        resolvedColor('--danger-color'),
+      ]);
     }));
 
     it('gives no translation when the question has none', fakeAsync(() => {
