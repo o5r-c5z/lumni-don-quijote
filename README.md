@@ -167,8 +167,9 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | `lesson` | vidéo de la leçon de Rossinante, lancée par « Revoir la leçon de Rossinante » : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
 | `questions[].label` | texte de la question, sans numéro (l'application affiche « 1 / 3 ») |
-| `questions[].answers` | réponses proposées, sans lettre |
-| `questions[].answerTranslations` | facultatif : traduction française de chaque réponse, dans l'ordre d'`answers` ; celle d'une mauvaise réponse s'affiche une fois cette réponse validée |
+| `questions[].answers[]` | réponses proposées, sans lettre : `{ "original", "translation" }` |
+| `questions[].answers[].original` | texte espagnol de la réponse |
+| `questions[].answers[].translation` | facultatif : traduction française de la réponse ; celle d'une mauvaise réponse s'affiche une fois cette réponse validée |
 | `questions[].correctAnswer` | indice de la bonne réponse dans `answers`, à partir de 0 |
 | `questions[].answerVideo` | vidéo-réponse : `{ "url", "title" }` |
 
