@@ -164,9 +164,18 @@ describe('EpisodeQuizComponent', () => {
     return document.getElementById(input.getAttribute('aria-describedby')!)!;
   }
 
+  /** The text of an element, whitespace collapsed. */
+  function collapsedText(element: Element | null): string | undefined {
+    return element?.textContent?.replace(/\s+/g, ' ').trim();
+  }
+
   /** The text of an answer's correction, whitespace collapsed. */
   function correctionText(input: HTMLInputElement): string | undefined {
-    return correction(input).textContent?.replace(/\s+/g, ' ').trim();
+    return collapsedText(correction(input));
+  }
+
+  function liveRegion(): Element | null {
+    return host().querySelector('[aria-live]');
   }
 
   function label(input: HTMLInputElement): HTMLLabelElement {
@@ -537,9 +546,7 @@ describe('EpisodeQuizComponent', () => {
 
       answer(0);
 
-      expect(host().querySelector('[aria-live]')?.textContent?.trim()).toBe(
-        'Mauvaise réponse !',
-      );
+      expect(liveRegion()?.textContent?.trim()).toBe('Mauvaise réponse !');
     }));
 
     it('puts only the last displayed correction in the live region, its quoted answer marked as Spanish', fakeAsync(() => {
@@ -550,10 +557,8 @@ describe('EpisodeQuizComponent', () => {
       answer(0);
       const second = answer(1);
 
-      const region = host().querySelector('[aria-live]')!;
-      expect(region.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-        correctionText(second),
-      );
+      const region = liveRegion()!;
+      expect(collapsedText(region)).toBe(correctionText(second));
       expect(
         Array.from(region.querySelectorAll('[lang]'), (element) => [
           element.getAttribute('lang'),
@@ -566,14 +571,13 @@ describe('EpisodeQuizComponent', () => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
-      const region = host().querySelector('[aria-live]')!;
-      const regionText = () => region.textContent?.replace(/\s+/g, ' ').trim();
+      const region = liveRegion()!;
 
       answer(0);
       const firstContent = region.firstElementChild!;
       const input = answer(0);
 
-      expect(regionText()).toBe(correctionText(input));
+      expect(collapsedText(region)).toBe(correctionText(input));
       expect(region.contains(firstContent)).toBeFalse();
     }));
 
@@ -666,12 +670,7 @@ describe('EpisodeQuizComponent', () => {
       const input = answer(1);
 
       expect(correctionText(input)).toBe('Mauvaise réponse !');
-      expect(
-        host()
-          .querySelector('[aria-live]')
-          ?.textContent?.replace(/\s+/g, ' ')
-          .trim(),
-      ).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -798,9 +797,7 @@ describe('EpisodeQuizComponent', () => {
 
       answer(2);
 
-      expect(host().querySelector('[aria-live]')?.textContent?.trim()).toBe(
-        'Bonne réponse !',
-      );
+      expect(liveRegion()?.textContent?.trim()).toBe('Bonne réponse !');
     }));
 
     it('puts only « Bonne réponse ! » in the live region after a wrong answer to the same question', fakeAsync(() => {
@@ -811,15 +808,10 @@ describe('EpisodeQuizComponent', () => {
       answer(0);
       answer(2);
 
-      expect(
-        host()
-          .querySelector('[aria-live]')
-          ?.textContent?.replace(/\s+/g, ' ')
-          .trim(),
-      ).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
     }));
 
-    it('puts only the wrong answer\'s correction in the live region after a wrong answer to the next question', fakeAsync(() => {
+    it("puts only the wrong answer's correction in the live region after a wrong answer to the next question", fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
@@ -836,12 +828,7 @@ describe('EpisodeQuizComponent', () => {
       const wrong = answer(1);
 
       expect(correctionText(wrong)).toBe('Mauvaise réponse !');
-      expect(
-        host()
-          .querySelector('[aria-live]')
-          ?.textContent?.replace(/\s+/g, ' ')
-          .trim(),
-      ).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
     }));
 
     it('gives no translation, even when the question has some', fakeAsync(() => {
