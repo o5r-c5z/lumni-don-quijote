@@ -88,6 +88,18 @@ describe('EpisodeTitleScreenComponent', () => {
       ]);
     });
 
+    it('brings the quiz back to its first question when following the quiz link', async () => {
+      episodeService.setEpisode(createEpisode('La disparition'));
+      episodeService.incrementQuizStep();
+      episodeService.incrementQuizStep();
+      const host = await showTitleScreen();
+
+      links(host)[1].click();
+      await harness.fixture.whenStable();
+
+      expect(episodeService.quizStep).toBe(0);
+    });
+
     it('builds the links on top of an unknown child path', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen('/3/unknown');
