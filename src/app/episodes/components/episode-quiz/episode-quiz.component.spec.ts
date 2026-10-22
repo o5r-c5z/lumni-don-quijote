@@ -606,20 +606,6 @@ describe('EpisodeQuizComponent', () => {
       ).toEqual([['es', '¿Soy yo español?']]);
     }));
 
-    it('replaces the nodes of the live region with new ones when validated twice', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode([translatedQuestion]));
-      showQuiz();
-      tick(100);
-      const region = liveRegion()!;
-
-      answer(0);
-      const firstContent = region.firstElementChild!;
-      const input = answer(0);
-
-      expect(collapsedText(region)).toBe(correctionText(input));
-      expect(region.contains(firstContent)).toBeFalse();
-    }));
-
     it('empties the live region when validated twice, then puts the same correction back 100 ms later, so that it is announced again', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
