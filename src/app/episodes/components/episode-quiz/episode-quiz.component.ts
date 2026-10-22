@@ -171,6 +171,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
+    this.announcementService.announce('Bonne réponse !');
 
     timer(2000)
       .pipe(
