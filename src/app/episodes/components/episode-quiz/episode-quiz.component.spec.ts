@@ -13,13 +13,17 @@ import { EpisodeQuizComponent } from './episode-quiz.component';
 const questions: QuizQuestion[] = [
   {
     label: 'Qui a volé le tableau ?',
-    answers: ['Le chat', 'Le jardinier', 'Le majordome'],
+    answers: [
+      { original: 'Le chat' },
+      { original: 'Le jardinier' },
+      { original: 'Le majordome' },
+    ],
     correctAnswer: 2,
     answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
   },
   {
     label: 'Où était-il caché ?',
-    answers: ['Au grenier', 'À la cave'],
+    answers: [{ original: 'Au grenier' }, { original: 'À la cave' }],
     correctAnswer: 0,
     answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
   },
@@ -27,11 +31,10 @@ const questions: QuizQuestion[] = [
 
 const translatedQuestion: QuizQuestion = {
   label: 'Comment dit-on « Es-tu espagnol ? » ?',
-  answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-  answerTranslations: [
-    'Est-il espagnol ?',
-    'Suis-je espagnol ?',
-    'Es-tu espagnol ?',
+  answers: [
+    { original: '¿Es él español?', translation: 'Est-il espagnol ?' },
+    { original: '¿Soy yo español?', translation: 'Suis-je espagnol ?' },
+    { original: '¿Eres tú español?', translation: 'Es-tu espagnol ?' },
   ],
   correctAnswer: 2,
   answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
@@ -642,8 +645,11 @@ describe('EpisodeQuizComponent', () => {
     it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
       const laterTranslatedQuestion = {
         label: 'Comment dit-on « Être » ?',
-        answers: ['Tener', 'Ser', 'Hacer'],
-        answerTranslations: ['Avoir', 'Être', 'Faire'],
+        answers: [
+          { original: 'Tener', translation: 'Avoir' },
+          { original: 'Ser', translation: 'Être' },
+          { original: 'Hacer', translation: 'Faire' },
+        ],
         correctAnswer: 1,
         answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
       };
@@ -776,13 +782,17 @@ describe('EpisodeQuizComponent', () => {
           ...questions,
           {
             label: 'Quand a-t-il été volé ?',
-            answers: ['La nuit', 'Le jour'],
+            answers: [{ original: 'La nuit' }, { original: 'Le jour' }],
             correctAnswer: 1,
             answerVideo: { url: 'https://vimeo.com/12', title: 'Réponse 3' },
           },
           {
             label: 'Pourquoi ?',
-            answers: ['Par jalousie', 'Par cupidité', 'Par erreur'],
+            answers: [
+              { original: 'Par jalousie' },
+              { original: 'Par cupidité' },
+              { original: 'Par erreur' },
+            ],
             correctAnswer: 1,
             answerVideo: { url: 'https://vimeo.com/13', title: 'Réponse 4' },
           },

@@ -25,11 +25,13 @@ export const EPISODE: Episode = {
   questions: [
     {
       label: 'Question factice 1 ?',
-      answers: ['¿De dónde eres?', '¿Soy yo español?', '¿España es un país?'],
-      answerTranslations: [
-        "D'où viens-tu ?",
-        'Suis-je espagnol ?',
-        "L'Espagne est-elle un pays ?",
+      answers: [
+        { original: '¿De dónde eres?', translation: "D'où viens-tu ?" },
+        { original: '¿Soy yo español?', translation: 'Suis-je espagnol ?' },
+        {
+          original: '¿España es un país?',
+          translation: "L'Espagne est-elle un pays ?",
+        },
       ],
       correctAnswer: 0,
       answerVideo: {
@@ -39,11 +41,13 @@ export const EPISODE: Episode = {
     },
     {
       label: 'Question factice 2 ?',
-      answers: ['¿Llevas bigote?', '¿Qué te gusta?', '¿Eres español?'],
-      answerTranslations: [
-        'Portes-tu une moustache ?',
-        "Qu'est-ce que tu aimes ?",
-        'Es-tu espagnol ?',
+      answers: [
+        {
+          original: '¿Llevas bigote?',
+          translation: 'Portes-tu une moustache ?',
+        },
+        { original: '¿Qué te gusta?', translation: "Qu'est-ce que tu aimes ?" },
+        { original: '¿Eres español?', translation: 'Es-tu espagnol ?' },
       ],
       correctAnswer: 1,
       answerVideo: {
@@ -53,8 +57,11 @@ export const EPISODE: Episode = {
     },
     {
       label: 'Question factice 3 ?',
-      answers: ['Tener', 'Ser', 'Hacer'],
-      answerTranslations: ['Avoir', 'Être', 'Faire'],
+      answers: [
+        { original: 'Tener', translation: 'Avoir' },
+        { original: 'Ser', translation: 'Être' },
+        { original: 'Hacer', translation: 'Faire' },
+      ],
       correctAnswer: 1,
       answerVideo: {
         url: 'https://vimeo.com/5',

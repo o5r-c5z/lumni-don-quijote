@@ -9,7 +9,7 @@ test.describe('M shortcut', () => {
     await openQuiz(page);
     const music = page.locator('#background-music');
     const firstAnswer = currentQuestion(page).getByRole('radio', {
-      name: EPISODE.questions[0].answers[0],
+      name: EPISODE.questions[0].answers[0].original,
     });
     await expect(music).toHaveJSProperty('muted', false);
 

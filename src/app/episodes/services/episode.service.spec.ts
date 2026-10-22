@@ -10,7 +10,7 @@ function createEpisode(questionCount: number): Episode {
     lesson: { url: 'https://vimeo.com/3', title: 'Leçon' },
     questions: Array.from({ length: questionCount }, (_, index) => ({
       label: `Question ${index + 1}`,
-      answers: ['A', 'B'],
+      answers: [{ original: 'A' }, { original: 'B' }],
       correctAnswer: 0,
       answerVideo: {
         url: `https://vimeo.com/${10 + index}`,
