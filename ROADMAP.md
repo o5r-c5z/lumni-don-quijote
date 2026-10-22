@@ -129,7 +129,9 @@ dans un vrai navigateur (section 5).
       réponse citée en espagnol (`lang="es"`), comme la correction
       affichée : le quiz annonce ses verdicts par sa propre région live,
       qui reprend la correction affichée au lieu d'en recopier le texte
-      (`LiveAnnouncer` n'accepte que du texte)
+      (`LiveAnnouncer` n'accepte que du texte) ; comme `LiveAnnouncer`,
+      elle est vidée à chaque validation puis remplie 100 ms plus tard,
+      pour qu'un même verdict soit annoncé de nouveau
 
 ## 5. Tests e2e (Playwright)
 

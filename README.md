@@ -31,7 +31,9 @@ premier) :
    validation d'une autre réponse, et une mauvaise réponse ne fait pas
    avancer : il faut trouver la bonne. Le verdict, et la traduction d'une
    mauvaise réponse, sont aussi annoncés aux lecteurs d'écran, par une
-   région live propre au quiz qui reprend la correction affichée ; les
+   région live propre au quiz qui reprend la correction affichée (vidée à
+   chaque validation puis remplie 100 ms plus tard, comme le fait
+   `LiveAnnouncer`, pour qu'un même verdict soit annoncé de nouveau) ; les
    réponses, et la réponse citée dans une traduction, sont marquées comme du
    texte espagnol (`lang="es"`). Après une bonne
    réponse (« Bonne réponse ! »), la vidéo-réponse de la question se lance,
