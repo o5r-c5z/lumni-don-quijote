@@ -138,11 +138,6 @@
 }
 
 .episode-quiz__answer-correction {
-  padding-left: calc(
-    var(--episode-quiz__answer-label-border-width) +
-      var(--episode-quiz__answer-label-padding-x)
-  );
-
   > * {
     display: none;
   }
