@@ -422,20 +422,13 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
-    it('marks the right answer and its correction as correct', fakeAsync(() => {
+    it("marks only the right answer's radio as correct", fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
       expect(
-        radios(fieldsets()[0]).map((input) => [
-          input.classList.contains('correct'),
-          correction(input).classList.contains('correct'),
-        ]),
-      ).toEqual([
-        [false, false],
-        [false, false],
-        [true, true],
-      ]);
+        radios(fieldsets()[0]).map((input) => input.classList.contains('correct')),
+      ).toEqual([false, false, true]);
     }));
 
     it('slides the question in and focuses its first answer after 100 ms', fakeAsync(() => {
