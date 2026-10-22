@@ -65,6 +65,10 @@ export class EpisodeTitleScreenComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected restartQuiz(): void {
+    this.episodeService.resetQuiz();
+  }
+
   private focusFirstButton(): void {
     setTimeout(() => {
       this.goToEpisodeButton.nativeElement.focus();
