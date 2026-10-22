@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Player from '@vimeo/player';
 import { Subscription, switchMap, tap } from 'rxjs';
 import { Episode, Video, VideoType } from '../../models';
@@ -17,12 +17,6 @@ import { EpisodeService } from '../../services/episode.service';
 
 const QUIZ_PATH = '../quiz';
 const COMPLETION_PATH = '../completion';
-
-/** Where the screen leads once the video is over or skipped. */
-interface Destination {
-  path: string;
-  queryParams?: Params;
-}
 
 @Component({
   selector: 'app-episode-video',
@@ -139,29 +133,14 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
 
   private onVideoEnded() {
     this.announcementService.announce(`Fin de la vidéo: ${this.videoTitle}`);
-    const { path, queryParams } = this.nextDestination;
-    this.router.navigate([path], { relativeTo: this.route, queryParams });
+    this.router.navigate([this.nextPath], { relativeTo: this.route });
   }
 
-  protected get nextDestination(): Destination {
-    switch (this.videoType) {
-      case VideoType.Lesson:
-        return { path: QUIZ_PATH };
-      case VideoType.Answer:
-        return { path: this.pathAfterAnswer() };
-      default:
-        return { path: QUIZ_PATH };
-    }
-  }
-
-  protected get skipDestination(): Destination {
-    switch (this.videoType) {
-      case VideoType.Lesson:
-      case VideoType.Answer:
-        return this.nextDestination;
-      default:
-        return { path: QUIZ_PATH };
-    }
+  /** Where the screen leads once the video is over or skipped. */
+  protected get nextPath(): string {
+    return this.videoType === VideoType.Answer
+      ? this.pathAfterAnswer()
+      : QUIZ_PATH;
   }
 
   private pathAfterAnswer(): string {

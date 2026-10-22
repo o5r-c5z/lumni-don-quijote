@@ -1,10 +1,8 @@
 <div #playerContainer id="episode-video__player-container"></div>
-@let destination = skipDestination;
 <a
   id="episode-video__exit-btn"
   class="btn btn-plain"
-  [routerLink]="[destination.path]"
-  [queryParams]="destination.queryParams"
+  [routerLink]="[nextPath]"
   tabindex="0"
 >
   Passer la vidéo
