@@ -41,6 +41,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
+  protected liveMessage = '';
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -203,9 +204,12 @@ export class EpisodeQuizComponent implements OnInit {
     answerIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-    this.announcementService.announce(
-      this.incorrectAnswerAnnouncement(questionIndex, answerIndex),
+    const message = this.incorrectAnswerAnnouncement(
+      questionIndex,
+      answerIndex,
     );
+    this.liveMessage = message;
+    this.announcementService.announce(message);
   }
 
   private incorrectAnswerAnnouncement(
