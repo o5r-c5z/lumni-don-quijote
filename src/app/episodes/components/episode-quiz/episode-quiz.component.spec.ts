@@ -491,6 +491,29 @@ describe('EpisodeQuizComponent', () => {
       );
       tick(2000);
     }));
+
+    it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
+      const translatedQuestion = {
+        label: 'Comment dit-on « Être » ?',
+        answers: ['Tener', 'Ser', 'Hacer'],
+        answerTranslations: ['Avoir', 'Être', 'Faire'],
+        correctAnswer: 1,
+        answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
+      };
+      episodeService.setEpisode(
+        createEpisode([questions[0], translatedQuestion]),
+      );
+      episodeService.incrementQuizStep();
+      showQuiz();
+      tick(100);
+
+      const input = answer(2);
+
+      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
+        'Mauvaise réponse ! « Hacer » signifie « Faire »',
+      );
+      tick(2000);
+    }));
   });
 
   describe('a right answer', () => {
