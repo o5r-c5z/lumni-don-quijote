@@ -14,6 +14,9 @@ import { concatMap, mergeMap, tap } from 'rxjs/operators';
 import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
+import { AnnouncementService } from '../../services/announcement.service';
+
+const VALIDATED_CLASS = 'active';
 
 @Component({
   selector: 'app-episode-quiz',
@@ -23,6 +26,7 @@ import { AudioService } from '../../services/audio.service';
   host: { class: 'screen' },
 })
 export class EpisodeQuizComponent implements OnInit {
+  private readonly announcementService = inject(AnnouncementService);
   private readonly audioService = inject(AudioService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly episodeService = inject(EpisodeService);
@@ -137,10 +141,10 @@ export class EpisodeQuizComponent implements OnInit {
     const fieldset = input.closest('fieldset');
 
     if (fieldset) {
-      this.hideShownCorrections(fieldset);
+      this.clearPreviousValidation(fieldset);
     }
-    input.classList.add('active');
-    correction?.classList.add('active');
+    input.classList.add(VALIDATED_CLASS);
+    correction?.classList.add(VALIDATED_CLASS);
 
     if (isCorrect) {
       if (fieldset) {
@@ -149,14 +153,17 @@ export class EpisodeQuizComponent implements OnInit {
 
       this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer();
+      this.handleIncorrectAnswer(questionIndex, selectedAnswerIndex);
     }
   }
 
-  private hideShownCorrections(fieldset: HTMLFieldSetElement): void {
+  private clearPreviousValidation(fieldset: HTMLFieldSetElement): void {
     fieldset
-      .querySelectorAll('.episode-quiz__question-correction.active')
-      .forEach((correction) => correction.classList.remove('active'));
+      .querySelectorAll(
+        `.episode-quiz__answer-input.${VALIDATED_CLASS},` +
+          ` .episode-quiz__question-correction.${VALIDATED_CLASS}`,
+      )
+      .forEach((element) => element.classList.remove(VALIDATED_CLASS));
   }
 
   private handleCorrectAnswer(
@@ -164,6 +171,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
+    this.announcementService.announce('Bonne réponse !');
 
     timer(2000)
       .pipe(
@@ -190,7 +198,27 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(): void {
+  private handleIncorrectAnswer(
+    questionIndex: number,
+    answerIndex: number,
+  ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
+    this.announcementService.announce(
+      this.incorrectAnswerAnnouncement(questionIndex, answerIndex),
+    );
+  }
+
+  private incorrectAnswerAnnouncement(
+    questionIndex: number,
+    answerIndex: number,
+  ): string {
+    const verdict = 'Mauvaise réponse !';
+    const question = this.episode?.questions[questionIndex];
+    const answer = question?.answers[answerIndex];
+    const translation = question?.answerTranslations?.[answerIndex];
+    if (!translation) {
+      return verdict;
+    }
+    return `${verdict} « ${answer} » signifie « ${translation} »`;
   }
 }

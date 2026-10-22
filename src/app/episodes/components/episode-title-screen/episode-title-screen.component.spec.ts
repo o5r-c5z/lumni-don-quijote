@@ -49,6 +49,11 @@ describe('EpisodeTitleScreenComponent', () => {
     return Array.from(host.querySelectorAll('a'));
   }
 
+  function progressQuizPastFirstQuestion(): void {
+    episodeService.incrementQuizStep();
+    episodeService.incrementQuizStep();
+  }
+
   describe('before the episode is loaded', () => {
     it('renders nothing', async () => {
       const host = await showTitleScreen();
@@ -86,6 +91,28 @@ describe('EpisodeTitleScreenComponent', () => {
         ["Accès à l'épisode", '/3/video'],
         ["Accès au quiz de l'épisode", '/3/quiz'],
       ]);
+    });
+
+    it('brings the quiz back to its first question when following the quiz link', async () => {
+      episodeService.setEpisode(createEpisode('La disparition'));
+      progressQuizPastFirstQuestion();
+      const host = await showTitleScreen();
+
+      links(host)[1].click();
+      await harness.fixture.whenStable();
+
+      expect(episodeService.quizStep).toBe(0);
+    });
+
+    it('brings the quiz back to its first question when following the episode link', async () => {
+      episodeService.setEpisode(createEpisode('La disparition'));
+      progressQuizPastFirstQuestion();
+      const host = await showTitleScreen();
+
+      links(host)[0].click();
+      await harness.fixture.whenStable();
+
+      expect(episodeService.quizStep).toBe(0);
     });
 
     it('builds the links on top of an unknown child path', async () => {

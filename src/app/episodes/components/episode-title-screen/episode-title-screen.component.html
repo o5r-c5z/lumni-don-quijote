@@ -4,12 +4,18 @@
     <a
       #goToEpisodeButton
       [routerLink]="['video']"
+      (click)="restartQuiz()"
       class="btn btn-plain"
       tabindex="0"
     >
       Accès à l'épisode
     </a>
-    <a [routerLink]="['quiz']" class="btn btn-plain" tabindex="0">
+    <a
+      [routerLink]="['quiz']"
+      (click)="restartQuiz()"
+      class="btn btn-plain"
+      tabindex="0"
+    >
       Accès au quiz de l'épisode
     </a>
   </nav>

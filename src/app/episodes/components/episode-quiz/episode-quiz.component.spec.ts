@@ -5,6 +5,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { axeViolations } from '../../../../testing/axe';
 import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
+import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 import { EpisodeQuizComponent } from './episode-quiz.component';
@@ -83,12 +84,17 @@ describe('EpisodeQuizComponent', () => {
   let harness: RouterTestingHarness;
   let episodeService: EpisodeService;
   let audioService: jasmine.SpyObj<AudioService>;
+  let announcementService: jasmine.SpyObj<AnnouncementService>;
 
   beforeEach(async () => {
     audioService = jasmine.createSpyObj<AudioService>('AudioService', [
       'playSoundEffect',
     ]);
     audioService.playSoundEffect.and.resolveTo();
+    announcementService = jasmine.createSpyObj<AnnouncementService>(
+      'AnnouncementService',
+      ['announce'],
+    );
 
     TestBed.configureTestingModule({
       providers: [
@@ -103,6 +109,7 @@ describe('EpisodeQuizComponent', () => {
           },
         ]),
         { provide: AudioService, useValue: audioService },
+        { provide: AnnouncementService, useValue: announcementService },
       ],
     });
     episodeService = TestBed.inject(EpisodeService);
@@ -157,6 +164,20 @@ describe('EpisodeQuizComponent', () => {
   /** The text of an answer's correction, whitespace collapsed. */
   function correctionText(input: HTMLInputElement): string | undefined {
     return correction(input).textContent?.replace(/\s+/g, ' ').trim();
+  }
+
+  function label(input: HTMLInputElement): HTMLLabelElement {
+    return host().querySelector(`label[for="${input.id}"]`)!;
+  }
+
+  /** The colour a CSS custom property resolves to inside the quiz. */
+  function resolvedColor(customProperty: string): string {
+    const probe = document.createElement('span');
+    probe.style.color = `var(${customProperty})`;
+    host().appendChild(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
   }
 
   /** Checks an answer of the visible question and validates it. */
@@ -237,6 +258,17 @@ describe('EpisodeQuizComponent', () => {
           false,
         ],
       ]);
+    }));
+
+    it('marks each answer label as Spanish', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+
+      expect(
+        radios(fieldsets()[0]).map((input) =>
+          label(input)?.getAttribute('lang'),
+        ),
+      ).toEqual(['es', 'es', 'es']);
     }));
 
     it('sets aria-checked to "true" on the checked answer', fakeAsync(() => {
@@ -428,7 +460,6 @@ describe('EpisodeQuizComponent', () => {
           ['/audio/App Negative.mp3'],
           ['/audio/App Negative.mp3'],
         ]);
-        tick(2000);
       }));
 
       it('validates a right answer once, as it locks the question', fakeAsync(() => {
@@ -462,11 +493,39 @@ describe('EpisodeQuizComponent', () => {
       expect(correction(input).classList).toContain('active');
 
       tick(2000);
-      expect(correction(input).classList).toContain('active');
+      expect(correction(input).innerText).toBe('Mauvaise réponse !');
 
       tick(60000);
-      expect(correction(input).classList).toContain('active');
+      expect(correction(input).innerText).toBe('Mauvaise réponse !');
       expect(input.classList).toContain('active');
+    }));
+
+    it('announces « Mauvaise réponse ! » to screen readers', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(0);
+
+      expect(announcementService.announce).toHaveBeenCalledOnceWith(
+        'Mauvaise réponse !',
+      );
+    }));
+
+    it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(1);
+
+      expect(announcementService.announce.calls.allArgs()).toEqual([
+        ['Mauvaise réponse ! « ¿Es él español? » signifie « Est-il espagnol ? »'],
+        [
+          'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+        ],
+      ]);
     }));
 
     it('lets the question be answered again', fakeAsync(() => {
@@ -475,7 +534,6 @@ describe('EpisodeQuizComponent', () => {
       tick(100);
 
       answer(0);
-      tick(2000);
 
       expect(fieldsets()[0].disabled).toBeFalse();
       expect(episodeService.quizStep).toBe(0);
@@ -493,8 +551,41 @@ describe('EpisodeQuizComponent', () => {
       const first = answer(0);
       const second = answer(1);
 
-      expect(correction(first).classList).not.toContain('active');
-      expect(correction(second).classList).toContain('active');
+      expect(correction(first).innerText).toBe('');
+      expect(correction(second).innerText).toBe('Mauvaise réponse !');
+    }));
+
+    it('stays highlighted in red once another answer is checked but not validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const wrong = answer(0);
+      radios(fieldsets()[0])[1].click();
+      harness.detectChanges();
+
+      const style = getComputedStyle(label(wrong));
+      expect([style.backgroundColor, style.borderColor]).toEqual([
+        resolvedColor('--light-danger-color'),
+        resolvedColor('--danger-color'),
+      ]);
+    }));
+
+    it('is no longer highlighted in red once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      answer(1);
+
+      const untouched = radios(fieldsets()[0])[2];
+      const style = getComputedStyle(label(first));
+      const untouchedStyle = getComputedStyle(label(untouched));
+      expect([style.backgroundColor, style.borderColor]).toEqual([
+        untouchedStyle.backgroundColor,
+        untouchedStyle.borderColor,
+      ]);
     }));
 
     it('gives no translation when the question has none', fakeAsync(() => {
@@ -505,7 +596,6 @@ describe('EpisodeQuizComponent', () => {
       const input = answer(1);
 
       expect(correctionText(input)).toBe('Mauvaise réponse !');
-      tick(2000);
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -518,7 +608,35 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
       );
-      tick(2000);
+    }));
+
+    it('shows a space on screen between « Mauvaise réponse ! » and the translation', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      // innerText is the text as rendered: whitespace the layout drops is
+      // missing from it, unlike textContent.
+      expect(correction(input).innerText).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+    }));
+
+    it('marks the quoted answer of its translation as Spanish, and only it', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(correction(input).closest('[lang="es"]')).toBeNull();
+      expect(
+        Array.from(correction(input).querySelectorAll('[lang="es"]'), (span) =>
+          span.textContent?.trim(),
+        ),
+      ).toEqual(['¿Soy yo español?']);
     }));
 
     it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
@@ -541,7 +659,6 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « Hacer » signifie « Faire »',
       );
-      tick(2000);
     }));
 
     it('does not overlap the next answer when its correction wraps onto several lines', fakeAsync(() => {
@@ -593,6 +710,19 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
       expect(fieldsets()[0].disabled).toBeTrue();
+    }));
+
+    it('announces « Bonne réponse ! » to screen readers', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(2);
+
+      expect(announcementService.announce).toHaveBeenCalledOnceWith(
+        'Bonne réponse !',
+      );
+      tick(2300);
     }));
 
     it('gives no translation, even when the question has some', fakeAsync(() => {

@@ -117,7 +117,7 @@
     }
   }
 
-  .episode-quiz__answer-input.active:checked + & {
+  .episode-quiz__answer-input.active + & {
     --background-color: var(--light-danger-color);
     border-color: var(--danger-color);
 
@@ -127,7 +127,7 @@
     }
   }
 
-  .episode-quiz__answer-input.active.correct:checked + & {
+  .episode-quiz__answer-input.active.correct + & {
     --background-color: var(--light-success-color);
     border-color: var(--success-color);
 

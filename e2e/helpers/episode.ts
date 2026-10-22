@@ -55,6 +55,20 @@ export async function answerWithKeyboard(
   answerIndex: number,
   fromIndex = 0,
 ): Promise<void> {
+  await checkWithKeyboard(page, questionIndex, answerIndex, fromIndex);
+  await page.keyboard.press('Enter');
+}
+
+/**
+ * Checks the answer at `answerIndex` with the arrow keys, starting from the
+ * answer at `fromIndex` (Space when they are the same), without validating it.
+ */
+export async function checkWithKeyboard(
+  page: Page,
+  questionIndex: number,
+  answerIndex: number,
+  fromIndex = 0,
+): Promise<void> {
   const moves = answerIndex - fromIndex;
   if (moves === 0) {
     await page.keyboard.press('Space');
@@ -66,7 +80,6 @@ export async function answerWithKeyboard(
   await expect(
     currentQuestion(page).getByRole('radio', { name: answer }),
   ).toBeChecked();
-  await page.keyboard.press('Enter');
 }
 
 /** The right answer of the question at `questionIndex`. */
@@ -123,4 +136,35 @@ export async function skipVideo(page: Page, title: string): Promise<void> {
   await expectVideo(page, title);
   await tabTo(page, page.getByRole('link', { name: 'Passer la vidéo' }));
   await page.keyboard.press('Enter');
+}
+
+/** The label of the answer at `answerIndex` of the question at `questionIndex`. */
+export function answerLabel(
+  page: Page,
+  questionIndex: number,
+  answerIndex: number,
+): Locator {
+  return page.locator(
+    `label[for="question-${questionIndex}-answer-${answerIndex}"]`,
+  );
+}
+
+/** The colour the CSS custom property `token` resolves to, as `rgb(…)`. */
+export async function resolvedColor(
+  page: Page,
+  token: string,
+): Promise<string> {
+  return page.evaluate((name) => {
+    const probe = document.createElement('div');
+    probe.style.color = `var(${name})`;
+    document.body.append(probe);
+    const { color } = getComputedStyle(probe);
+    probe.remove();
+    return color;
+  }, token);
+}
+
+/** The live region through which the app speaks to screen readers. */
+export function liveRegion(page: Page): Locator {
+  return page.locator('.cdk-live-announcer-element');
 }

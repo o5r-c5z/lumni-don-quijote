@@ -8,6 +8,7 @@ import {
   openTitleScreen,
   rightAnswer,
   skipVideo,
+  tabTo,
   watchVideo,
 } from './helpers/episode';
 
@@ -68,4 +69,36 @@ test.describe('episode flow', () => {
 
     await expectQuestion(page, 0);
   });
+
+  for (const { link, intro } of [
+    { link: "Accès au quiz de l'épisode", intro: false },
+    { link: "Accès à l'épisode", intro: true },
+  ]) {
+    test(`restarts the quiz at its first question through « ${link} », after going back to the title screen mid-quiz`, async ({
+      page,
+    }) => {
+      await openTitleScreen(page);
+      await tabTo(
+        page,
+        page.getByRole('link', { name: "Accès au quiz de l'épisode" }),
+      );
+      await page.keyboard.press('Enter');
+      await expectQuestion(page, 0);
+      await answerWithKeyboard(page, 0, rightAnswer(0));
+      await skipVideo(page, EPISODE.questions[0].answerVideo.title);
+      await expectQuestion(page, 1);
+
+      await page.goBack();
+      await page.goBack();
+      await page.goBack();
+      await expect(page).toHaveURL(`/${EPISODE_NUMBER}`);
+      await tabTo(page, page.getByRole('link', { name: link }));
+      await page.keyboard.press('Enter');
+
+      if (intro) {
+        await skipVideo(page, EPISODE.introduction.title);
+      }
+      await expectQuestion(page, 0);
+    });
+  }
 });
