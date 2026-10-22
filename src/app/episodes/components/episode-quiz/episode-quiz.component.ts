@@ -18,6 +18,13 @@ import { AudioService } from '../../services/audio.service';
 
 const VALIDATED_CLASS = 'active';
 
+/**
+ * Delay between emptying the live region and filling it, as LiveAnnouncer
+ * does: screen readers then announce the verdict even when it repeats the
+ * previous one.
+ */
+const LIVE_REGION_DELAY_MS = 100;
+
 /** The verdict on a validated answer: a wrong one is corrected by the answer. */
 type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
 
@@ -211,10 +218,9 @@ export class EpisodeQuizComponent implements OnInit {
     this.announce(answer ? { isCorrect: false, answer } : undefined);
   }
 
-  /** Empties the live region, then puts the verdict in it 100 ms later. */
   private announce(verdict?: Verdict): void {
     this.liveVerdict = undefined;
-    timer(100)
+    timer(LIVE_REGION_DELAY_MS)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.liveVerdict = verdict;
