@@ -75,8 +75,7 @@
     }
   </div>
 
-  <!-- The correction of an answer, shown under it and put in the live region.
-       A right answer's correction does not depend on the answer. -->
+  <!-- The correction of an answer, shown under it and put in the live region. -->
   <ng-template
     #correctionContent
     let-isCorrect="isCorrect"
@@ -86,12 +85,13 @@
       {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
     </span>
     &ngsp;
-    @if (isCorrect) {
-      <span>« <span lang="es">{{ answer.original }}</span> »</span>
-    } @else {
-      @if (answer.translation; as translation) {
-        <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
-      }
+    @if (isCorrect || answer.translation) {
+      <span>
+        « <span lang="es">{{ answer.original }}</span> »
+        @if (!isCorrect) {
+          signifie « {{ answer.translation }} »
+        }
+      </span>
     }
   </ng-template>
 

@@ -31,7 +31,7 @@ const RIGHT_ANSWER_SOUND_VOLUME = 0.41;
 /** Brings the wrong-answer sound's loudness down to −23 LUFS. */
 const WRONG_ANSWER_SOUND_VOLUME = 0.26;
 
-/** The verdict on a validated answer: a wrong one is corrected by the answer. */
+/** The verdict on a validated answer, recalled in its correction. */
 type Verdict = { isCorrect: boolean; answer: Answer };
 
 @Component({
@@ -163,19 +163,19 @@ export class EpisodeQuizComponent implements OnInit {
     input.classList.add(VALIDATED_CLASS);
     correction?.classList.add(VALIDATED_CLASS);
 
+    const answer =
+      this.episode?.questions[questionIndex]?.answers[selectedAnswerIndex];
+
     if (isCorrect) {
       if (fieldset) {
         fieldset.disabled = true;
       }
 
-      this.handleCorrectAnswer(
-        fieldset as HTMLFieldSetElement,
-        questionIndex,
-        selectedAnswerIndex,
-      );
+      this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer(questionIndex, selectedAnswerIndex);
+      this.handleIncorrectAnswer();
     }
+    this.announce(answer && { isCorrect, answer });
   }
 
   private clearPreviousValidation(fieldset: HTMLFieldSetElement): void {
@@ -190,14 +190,11 @@ export class EpisodeQuizComponent implements OnInit {
   private handleCorrectAnswer(
     fieldset: HTMLFieldSetElement,
     questionIndex: number,
-    answerIndex: number,
   ): void {
     this.audioService.playSoundEffect(
       '/audio/Win 3.mp3',
       RIGHT_ANSWER_SOUND_VOLUME,
     );
-    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.announce(answer ? { isCorrect: true, answer } : undefined);
 
     timer(2000)
       .pipe(
@@ -224,16 +221,11 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(
-    questionIndex: number,
-    answerIndex: number,
-  ): void {
+  private handleIncorrectAnswer(): void {
     this.audioService.playSoundEffect(
       '/audio/App Negative.mp3',
       WRONG_ANSWER_SOUND_VOLUME,
     );
-    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.announce(answer ? { isCorrect: false, answer } : undefined);
   }
 
   private announce(verdict?: Verdict): void {
