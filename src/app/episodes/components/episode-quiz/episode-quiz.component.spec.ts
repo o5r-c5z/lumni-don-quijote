@@ -733,6 +733,18 @@ describe('EpisodeQuizComponent', () => {
       expect(correction(second).innerText).toBe('Mauvaise réponse !');
     }));
 
+    it('shows its answer text again, without its correction, once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      answer(1);
+
+      // innerText is the text as rendered: the box shows only its answer text.
+      expect(label(first).innerText.trim()).toBe('¿Es él español?');
+    }));
+
     it('stays highlighted in red once another answer is checked but not validated', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
