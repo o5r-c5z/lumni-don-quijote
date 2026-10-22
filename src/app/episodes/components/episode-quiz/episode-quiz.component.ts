@@ -184,7 +184,7 @@ export class EpisodeQuizComponent implements OnInit {
     fieldset: HTMLFieldSetElement,
     questionIndex: number,
   ): void {
-    this.audioService.playSoundEffect('/audio/Win 3.mp3');
+    this.audioService.playSoundEffect('/audio/Win 3.mp3', 0.41);
     this.announce({ isCorrect: true });
 
     timer(2000)
