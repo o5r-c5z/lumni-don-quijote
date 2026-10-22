@@ -24,6 +24,18 @@ const questions: QuizQuestion[] = [
   },
 ];
 
+const translatedQuestion: QuizQuestion = {
+  label: 'Comment dit-on « Es-tu espagnol ? » ?',
+  answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
+  answerTranslations: [
+    'Est-il espagnol ?',
+    'Suis-je espagnol ?',
+    'Es-tu espagnol ?',
+  ],
+  correctAnswer: 2,
+  answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
+};
+
 function createEpisode(quiz = questions): Episode {
   return {
     title: 'La disparition',
@@ -140,6 +152,11 @@ describe('EpisodeQuizComponent', () => {
 
   function correction(input: HTMLInputElement): HTMLElement {
     return document.getElementById(input.getAttribute('aria-describedby')!)!;
+  }
+
+  /** The text of an answer's correction, whitespace collapsed. */
+  function correctionText(input: HTMLInputElement): string | undefined {
+    return correction(input).textContent?.replace(/\s+/g, ' ').trim();
   }
 
   /** Checks an answer of the visible question and validates it. */
@@ -487,38 +504,25 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
-        'Mauvaise réponse !',
-      );
+      expect(correctionText(input)).toBe('Mauvaise réponse !');
       tick(2000);
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
-      const translatedQuestion = {
-        label: 'Comment dit-on « Es-tu espagnol ? » ?',
-        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-        answerTranslations: [
-          'Est-il espagnol ?',
-          'Suis-je espagnol ?',
-          'Es-tu espagnol ?',
-        ],
-        correctAnswer: 2,
-        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
-      };
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
 
       const input = answer(1);
 
-      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
       );
       tick(2000);
     }));
 
     it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
-      const translatedQuestion = {
+      const laterTranslatedQuestion = {
         label: 'Comment dit-on « Être » ?',
         answers: ['Tener', 'Ser', 'Hacer'],
         answerTranslations: ['Avoir', 'Être', 'Faire'],
@@ -526,7 +530,7 @@ describe('EpisodeQuizComponent', () => {
         answerVideo: { url: 'https://vimeo.com/11', title: 'Réponse 2' },
       };
       episodeService.setEpisode(
-        createEpisode([questions[0], translatedQuestion]),
+        createEpisode([questions[0], laterTranslatedQuestion]),
       );
       episodeService.incrementQuizStep();
       showQuiz();
@@ -534,24 +538,13 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(2);
 
-      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « Hacer » signifie « Faire »',
       );
       tick(2000);
     }));
 
     it('does not overlap the next answer when its correction wraps onto several lines', fakeAsync(() => {
-      const translatedQuestion = {
-        label: 'Comment dit-on « Es-tu espagnol ? » ?',
-        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-        answerTranslations: [
-          'Est-il espagnol ?',
-          'Suis-je espagnol ?',
-          'Es-tu espagnol ?',
-        ],
-        correctAnswer: 2,
-        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
-      };
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
@@ -576,17 +569,6 @@ describe('EpisodeQuizComponent', () => {
     }));
 
     it('shows no correction nor translation on screen before validation', fakeAsync(() => {
-      const translatedQuestion = {
-        label: 'Comment dit-on « Es-tu espagnol ? » ?',
-        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-        answerTranslations: [
-          'Est-il espagnol ?',
-          'Suis-je espagnol ?',
-          'Es-tu espagnol ?',
-        ],
-        correctAnswer: 2,
-        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
-      };
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
@@ -614,26 +596,13 @@ describe('EpisodeQuizComponent', () => {
     }));
 
     it('gives no translation, even when the question has some', fakeAsync(() => {
-      const translatedQuestion = {
-        label: 'Comment dit-on « Es-tu espagnol ? » ?',
-        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
-        answerTranslations: [
-          'Est-il espagnol ?',
-          'Suis-je espagnol ?',
-          'Es-tu espagnol ?',
-        ],
-        correctAnswer: 2,
-        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
-      };
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
 
       const input = answer(2);
 
-      expect(correction(input).textContent?.replace(/\s+/g, ' ').trim()).toBe(
-        'Bonne réponse !',
-      );
+      expect(correctionText(input)).toBe('Bonne réponse !');
     }));
 
     it('has no axe violation once validated', async () => {
