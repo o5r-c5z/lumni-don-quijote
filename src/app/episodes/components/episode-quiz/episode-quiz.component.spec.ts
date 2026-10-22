@@ -793,6 +793,22 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('keeps showing its correction in place of its answer text once another answer is checked but not validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const wrong = answer(1);
+      radios(fieldsets()[0])[0].click();
+      harness.detectChanges();
+
+      // innerText is the text as rendered: the box still shows only the
+      // correction, not « ¿Soy yo español? » as an answer text.
+      expect(label(wrong).innerText.trim()).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+    }));
+
     it('gives no translation when the question has none', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
