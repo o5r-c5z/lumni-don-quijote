@@ -628,6 +628,37 @@ describe('EpisodeQuizComponent', () => {
       expect(usualColor).toBe(resolvedColor('--text-color'));
     }));
 
+    it("starts a validated answer's correction, wrong or right, exactly where its answer text started", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      // Measured from the left of the answer box, which the question's slide
+      // moves along with its text.
+      const textStart = (input: HTMLInputElement, text: Element): number => {
+        const range = document.createRange();
+        range.selectNodeContents(text);
+        return Math.round(
+          range.getBoundingClientRect().left -
+            label(input).getBoundingClientRect().left,
+        );
+      };
+      const answerText = (input: HTMLInputElement): Element =>
+        document.getElementById(input.getAttribute('aria-labelledby')!)!;
+      const [wrongInput, , rightInput] = radios(fieldsets()[0]);
+      const answerStarts = [wrongInput, rightInput].map((input) =>
+        textStart(input, answerText(input)),
+      );
+
+      const wrong = answer(0);
+      const wrongStart = textStart(wrong, correction(wrong));
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      const rightStart = textStart(right, correction(right));
+
+      expect([wrongStart, rightStart]).toEqual(answerStarts);
+    }));
+
     it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
