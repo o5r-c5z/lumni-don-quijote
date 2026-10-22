@@ -138,6 +138,10 @@
   }
 }
 
+.episode-quiz__answer-input.active:not(.correct) + * > [lang] {
+  display: none;
+}
+
 .episode-quiz__question-correction {
   padding-left: calc(
     var(--episode-quiz__answer-label-border-width) +
