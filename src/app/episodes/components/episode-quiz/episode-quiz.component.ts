@@ -145,7 +145,7 @@ export class EpisodeQuizComponent implements OnInit {
 
       this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer(correction);
+      this.handleIncorrectAnswer();
     }
   }
 
@@ -180,13 +180,7 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(correction: HTMLElement | null): void {
+  private handleIncorrectAnswer(): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-
-    timer(2000)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        correction?.classList.remove('active');
-      });
   }
 }
