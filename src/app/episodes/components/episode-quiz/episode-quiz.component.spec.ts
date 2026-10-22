@@ -542,6 +542,26 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('puts only the last displayed correction in the live region, its quoted answer marked as Spanish', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      const second = answer(1);
+
+      const region = host().querySelector('[aria-live]')!;
+      expect(region.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+        correctionText(second),
+      );
+      expect(
+        Array.from(region.querySelectorAll('[lang]'), (element) => [
+          element.getAttribute('lang'),
+          element.textContent?.trim(),
+        ]),
+      ).toEqual([['es', '¿Soy yo español?']]);
+    }));
+
     it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
