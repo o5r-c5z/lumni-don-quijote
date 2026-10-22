@@ -70,22 +70,10 @@
     aria-live="polite"
     aria-atomic="true"
   >
-    @if (isCorrectAnswerLive) {
-      <ng-container
-        *ngTemplateOutlet="correctionContent; context: { isCorrect: true }"
-      />
-    }
-    <!-- Tracking the validation count recreates the nodes on every validation,
-         so that screen readers announce the same wrong answer again. -->
-    @for (validation of [liveValidationCount]; track validation) {
-      @if (liveAnswer; as answer) {
-        <ng-container
-          *ngTemplateOutlet="
-            correctionContent;
-            context: { isCorrect: false, answer }
-          "
-        />
-      }
+    <!-- Tracking the verdict by identity recreates the nodes on every
+         validation, so that screen readers announce the same verdict again. -->
+    @for (verdict of liveVerdict ? [liveVerdict] : []; track verdict) {
+      <ng-container *ngTemplateOutlet="correctionContent; context: verdict" />
     }
   </div>
 

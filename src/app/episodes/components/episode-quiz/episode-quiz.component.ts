@@ -18,6 +18,9 @@ import { AudioService } from '../../services/audio.service';
 
 const VALIDATED_CLASS = 'active';
 
+/** The verdict on a validated answer: a wrong one is corrected by the answer. */
+type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
+
 @Component({
   selector: 'app-episode-quiz',
   imports: [NgTemplateOutlet, RouterLink],
@@ -40,9 +43,8 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-  protected liveAnswer?: Answer;
-  protected isCorrectAnswerLive = false;
-  protected liveValidationCount = 0;
+  // Always assign a fresh object: the live region tracks it by identity.
+  protected liveVerdict?: Verdict;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -173,8 +175,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
-    this.isCorrectAnswerLive = true;
-    this.liveAnswer = undefined;
+    this.liveVerdict = { isCorrect: true };
 
     timer(2000)
       .pipe(
@@ -207,7 +208,6 @@ export class EpisodeQuizComponent implements OnInit {
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.liveAnswer = answer;
-    this.liveValidationCount++;
+    this.liveVerdict = answer ? { isCorrect: false, answer } : undefined;
   }
 }
