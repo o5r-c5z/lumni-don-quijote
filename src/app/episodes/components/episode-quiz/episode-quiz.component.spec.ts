@@ -540,6 +540,41 @@ describe('EpisodeQuizComponent', () => {
       tick(2000);
     }));
 
+    it('does not overlap the next answer when its correction wraps onto several lines', fakeAsync(() => {
+      const translatedQuestion = {
+        label: 'Comment dit-on « Es-tu espagnol ? » ?',
+        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
+        answerTranslations: [
+          'Est-il espagnol ?',
+          'Suis-je espagnol ?',
+          'Es-tu espagnol ?',
+        ],
+        correctAnswer: 2,
+        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
+      };
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      // A narrow quiz, so that the correction wraps.
+      host().style.width = '240px';
+
+      const input = answer(1);
+
+      const text = document.createRange();
+      text.selectNodeContents(correction(input));
+      const textRect = text.getBoundingClientRect();
+      const lineHeight = parseFloat(
+        getComputedStyle(correction(input)).lineHeight,
+      );
+      expect(textRect.height).toBeGreaterThan(1.5 * lineHeight);
+      const nextLabel = host().querySelector(
+        `label[for="${radios(fieldsets()[0])[2].id}"]`,
+      )!;
+      expect(textRect.bottom).toBeLessThanOrEqual(
+        nextLabel.getBoundingClientRect().top,
+      );
+    }));
+
     it('shows no correction nor translation on screen before validation', fakeAsync(() => {
       const translatedQuestion = {
         label: 'Comment dit-on « Es-tu espagnol ? » ?',
