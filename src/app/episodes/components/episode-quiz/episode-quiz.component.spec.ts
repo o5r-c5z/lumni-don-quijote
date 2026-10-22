@@ -607,6 +607,27 @@ describe('EpisodeQuizComponent', () => {
       expect(names()).toEqual(answerTexts);
     }));
 
+    it("writes a validated answer's correction, wrong or right, in the usual color of an answer text, not in red or green", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const untouched = radios(fieldsets()[0])[1];
+      const untouchedText = document.getElementById(
+        untouched.getAttribute('aria-labelledby')!,
+      )!;
+      const usualColor = getComputedStyle(untouchedText).color;
+
+      const wrong = answer(0);
+      const wrongColor = getComputedStyle(correction(wrong)).color;
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      const rightColor = getComputedStyle(correction(right)).color;
+
+      expect([wrongColor, rightColor]).toEqual([usualColor, usualColor]);
+      expect(usualColor).toBe(resolvedColor('--text-color'));
+    }));
+
     it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
