@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { concatMap, mergeMap, tap } from 'rxjs/operators';
-import { Episode, VideoType } from '../../models';
+import { Answer, Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
 import { AnnouncementService } from '../../services/announcement.service';
@@ -41,7 +41,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-  protected liveAnswer?: { original: string; translation?: string };
+  protected liveAnswer?: Answer;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -204,21 +204,13 @@ export class EpisodeQuizComponent implements OnInit {
     answerIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-    const message = this.incorrectAnswerAnnouncement(
-      questionIndex,
-      answerIndex,
-    );
-    this.liveAnswer =
-      this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.announcementService.announce(message);
+    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
+    this.liveAnswer = answer;
+    this.announcementService.announce(this.incorrectAnswerAnnouncement(answer));
   }
 
-  private incorrectAnswerAnnouncement(
-    questionIndex: number,
-    answerIndex: number,
-  ): string {
+  private incorrectAnswerAnnouncement(answer?: Answer): string {
     const verdict = 'Mauvaise réponse !';
-    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
     if (!answer?.translation) {
       return verdict;
     }
