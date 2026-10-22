@@ -120,11 +120,16 @@ dans un vrai navigateur (section 5).
         cours de quiz
   - [x] Tests : `tick(2000)` sans effet retirés, la correction est vérifiée
         sur son texte affiché et non plus sur la classe `active`
-- [ ] Format des réponses dans `episode.json` : chaque réponse devient un
+- [x] Format des réponses dans `episode.json` : chaque réponse devient un
       objet `{ original, translation }` (`translation` facultative), à la
       place des deux tableaux parallèles `answers` et `answerTranslations`,
       qui pouvaient se décaler ; README, données des tests et
       `uploads/episodes/1/episode.json` convertis
+- [x] L'annonce d'une mauvaise réponse aux lecteurs d'écran garde la
+      réponse citée en espagnol (`lang="es"`), comme la correction
+      affichée : le quiz annonce ses verdicts par sa propre région live,
+      qui reprend la correction affichée au lieu d'en recopier le texte
+      (`LiveAnnouncer` n'accepte que du texte)
 
 ## 5. Tests e2e (Playwright)
 
@@ -138,7 +143,8 @@ vrai navigateur, une fois les fonctionnalités en place.
 - [x] Retour à la première question par les deux liens de l'écran titre,
       après un retour arrière du navigateur en cours de quiz
 - [x] Une mauvaise réponse reste en rouge jusqu'à la validation d'une autre
-- [x] Annonce du verdict et de la traduction aux lecteurs d'écran
+- [x] Annonce du verdict et de la traduction aux lecteurs d'écran, la
+      réponse citée marquée en espagnol
 - [x] « Revoir la leçon de Rossinante » depuis une question
 - [x] axe sur chaque écran, contrastes compris
 - [x] Lecteur Vimeo et `episode.json` simulés avec `page.route`
@@ -170,7 +176,7 @@ production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`
 - [x] Questions du QUIZZ.docx (bonnes réponses : A, B, B), sans le préfixe
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
-- [x] Traduction française de chaque réponse (`answerTranslations`)
+- [x] Traduction française de chaque réponse (`translation`)
 
 En attendant l'image de titre (section 6), `titleBackground` vaut `""` :
 l'écran titre n'a alors pas d'image de fond.
