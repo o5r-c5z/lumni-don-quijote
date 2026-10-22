@@ -175,7 +175,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
-    this.liveVerdict = { isCorrect: true };
+    this.announce({ isCorrect: true });
 
     timer(2000)
       .pipe(
@@ -208,6 +208,16 @@ export class EpisodeQuizComponent implements OnInit {
   ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.liveVerdict = answer ? { isCorrect: false, answer } : undefined;
+    this.announce(answer ? { isCorrect: false, answer } : undefined);
+  }
+
+  /** Empties the live region, then puts the verdict in it 100 ms later. */
+  private announce(verdict?: Verdict): void {
+    this.liveVerdict = undefined;
+    timer(100)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.liveVerdict = verdict;
+      });
   }
 }
