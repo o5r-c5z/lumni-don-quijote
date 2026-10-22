@@ -334,6 +334,21 @@ describe('EpisodeQuizComponent', () => {
       expect(document.activeElement).toBe(radios(first)[0]);
     }));
 
+    it('has its own visually hidden live region, empty before any validation', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      expect(
+        Array.from(host().querySelectorAll('[aria-live]'), (region) => [
+          region.getAttribute('aria-live'),
+          region.getAttribute('aria-atomic'),
+          region.classList.contains('cdk-visually-hidden'),
+          region.textContent?.trim(),
+        ]),
+      ).toEqual([['polite', 'true', true, '']]);
+    }));
+
     it('links only to the lesson of Rossinante', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
