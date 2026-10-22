@@ -37,7 +37,9 @@
             for="question-{{ qIndex }}-answer-{{ aIndex }}"
             class="episode-quiz__answer-label"
           >
-            <span lang="es">{{ answer.original }}</span>
+            <span class="episode-quiz__answer-text" lang="es">{{
+              answer.original
+            }}</span>
             <span
               [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
               class="episode-quiz__question-correction"
