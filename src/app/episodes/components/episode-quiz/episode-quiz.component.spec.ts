@@ -182,6 +182,20 @@ describe('EpisodeQuizComponent', () => {
     return host().querySelector(`label[for="${input.id}"]`)!;
   }
 
+  /**
+   * The language of the first text node of an element whose trimmed text is
+   * `text`, or `undefined` when there is no such text node.
+   */
+  function languageOfText(element: Element, text: string): string | undefined {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.textContent?.trim() === text) {
+        return node.parentElement?.closest('[lang]')?.getAttribute('lang') ?? '';
+      }
+    }
+    return undefined;
+  }
+
   /** The colour a CSS custom property resolves to inside the quiz. */
   function resolvedColor(customProperty: string): string {
     const probe = document.createElement('span');
@@ -257,7 +271,8 @@ describe('EpisodeQuizComponent', () => {
         inputs.map((input) => [
           input.type,
           input.name,
-          host().querySelector(`label[for="${input.id}"]`)?.textContent?.trim(),
+          // As rendered: a hidden correction inside the label is left out.
+          label(input).innerText.trim(),
           input.getAttribute('aria-checked'),
           correctionText(input),
           correction(input).classList.contains('active'),
@@ -290,13 +305,13 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
-    it('marks each answer label as Spanish', fakeAsync(() => {
+    it('marks the answer text of each answer label as Spanish', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
 
       expect(
-        radios(fieldsets()[0]).map((input) =>
-          label(input)?.getAttribute('lang'),
+        radios(fieldsets()[0]).map((input, index) =>
+          languageOfText(label(input), translatedQuestion.answers[index].original),
         ),
       ).toEqual(['es', 'es', 'es']);
     }));
@@ -713,6 +728,19 @@ describe('EpisodeQuizComponent', () => {
         untouchedStyle.backgroundColor,
         untouchedStyle.borderColor,
       ]);
+    }));
+
+    it('shows its correction inside its answer box once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(label(input).contains(correction(input))).toBeTrue();
+      expect(correction(input).innerText).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
     }));
 
     it('gives no translation when the question has none', fakeAsync(() => {
