@@ -428,7 +428,6 @@ describe('EpisodeQuizComponent', () => {
           ['/audio/App Negative.mp3'],
           ['/audio/App Negative.mp3'],
         ]);
-        tick(2000);
       }));
 
       it('validates a right answer once, as it locks the question', fakeAsync(() => {
@@ -462,10 +461,10 @@ describe('EpisodeQuizComponent', () => {
       expect(correction(input).classList).toContain('active');
 
       tick(2000);
-      expect(correction(input).classList).toContain('active');
+      expect(correction(input).innerText).toBe('Mauvaise réponse !');
 
       tick(60000);
-      expect(correction(input).classList).toContain('active');
+      expect(correction(input).innerText).toBe('Mauvaise réponse !');
       expect(input.classList).toContain('active');
     }));
 
@@ -475,7 +474,6 @@ describe('EpisodeQuizComponent', () => {
       tick(100);
 
       answer(0);
-      tick(2000);
 
       expect(fieldsets()[0].disabled).toBeFalse();
       expect(episodeService.quizStep).toBe(0);
@@ -493,8 +491,8 @@ describe('EpisodeQuizComponent', () => {
       const first = answer(0);
       const second = answer(1);
 
-      expect(correction(first).classList).not.toContain('active');
-      expect(correction(second).classList).toContain('active');
+      expect(correction(first).innerText).toBe('');
+      expect(correction(second).innerText).toBe('Mauvaise réponse !');
     }));
 
     it('gives no translation when the question has none', fakeAsync(() => {
@@ -505,7 +503,6 @@ describe('EpisodeQuizComponent', () => {
       const input = answer(1);
 
       expect(correctionText(input)).toBe('Mauvaise réponse !');
-      tick(2000);
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -518,7 +515,6 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
       );
-      tick(2000);
     }));
 
     it('gives the translation of the chosen answer on a later question', fakeAsync(() => {
@@ -541,7 +537,6 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe(
         'Mauvaise réponse ! « Hacer » signifie « Faire »',
       );
-      tick(2000);
     }));
 
     it('does not overlap the next answer when its correction wraps onto several lines', fakeAsync(() => {
