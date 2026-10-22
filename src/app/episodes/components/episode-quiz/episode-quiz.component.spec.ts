@@ -514,6 +514,22 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(1);
+
+      expect(announcementService.announce.calls.allArgs()).toEqual([
+        ['Mauvaise réponse ! « ¿Es él español? » signifie « Est-il espagnol ? »'],
+        [
+          'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+        ],
+      ]);
+    }));
+
     it('lets the question be answered again', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
