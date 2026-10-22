@@ -213,7 +213,7 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
     answerIndex: number,
   ): void {
-    this.audioService.playSoundEffect('/audio/App Negative.mp3');
+    this.audioService.playSoundEffect('/audio/App Negative.mp3', 0.26);
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
     this.announce(answer ? { isCorrect: false, answer } : undefined);
   }
