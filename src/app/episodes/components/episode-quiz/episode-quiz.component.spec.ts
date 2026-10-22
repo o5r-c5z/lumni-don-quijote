@@ -494,6 +494,18 @@ describe('EpisodeQuizComponent', () => {
         tick(2400);
       }));
     });
+
+    it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      answer(0);
+      answer(2);
+      tick(2300);
+
+      expect(announcementService.announce).not.toHaveBeenCalled();
+    }));
   });
 
   describe('a wrong answer', () => {
@@ -516,18 +528,6 @@ describe('EpisodeQuizComponent', () => {
       tick(60000);
       expect(correction(input).innerText).toBe('Mauvaise réponse !');
       expect(input.classList).toContain('active');
-    }));
-
-    it('announces « Mauvaise réponse ! » to screen readers', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
-      showQuiz();
-      tick(100);
-
-      answer(0);
-
-      expect(announcementService.announce).toHaveBeenCalledOnceWith(
-        'Mauvaise réponse !',
-      );
     }));
 
     it('puts « Mauvaise réponse ! » in the live region of the quiz', fakeAsync(() => {
@@ -575,22 +575,6 @@ describe('EpisodeQuizComponent', () => {
 
       expect(regionText()).toBe(correctionText(input));
       expect(region.contains(firstContent)).toBeFalse();
-    }));
-
-    it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode([translatedQuestion]));
-      showQuiz();
-      tick(100);
-
-      answer(0);
-      answer(1);
-
-      expect(announcementService.announce.calls.allArgs()).toEqual([
-        ['Mauvaise réponse ! « ¿Es él español? » signifie « Est-il espagnol ? »'],
-        [
-          'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
-        ],
-      ]);
     }));
 
     it('lets the question be answered again', fakeAsync(() => {
@@ -663,7 +647,7 @@ describe('EpisodeQuizComponent', () => {
       expect(correctionText(input)).toBe('Mauvaise réponse !');
     }));
 
-    it('gives and announces only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
+    it('gives and puts in the live region only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
       episodeService.setEpisode(
         createEpisode([
           {
@@ -682,9 +666,12 @@ describe('EpisodeQuizComponent', () => {
       const input = answer(1);
 
       expect(correctionText(input)).toBe('Mauvaise réponse !');
-      expect(announcementService.announce).toHaveBeenCalledOnceWith(
-        'Mauvaise réponse !',
-      );
+      expect(
+        host()
+          .querySelector('[aria-live]')
+          ?.textContent?.replace(/\s+/g, ' ')
+          .trim(),
+      ).toBe('Mauvaise réponse !');
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -802,19 +789,6 @@ describe('EpisodeQuizComponent', () => {
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
       expect(fieldsets()[0].disabled).toBeTrue();
-    }));
-
-    it('announces « Bonne réponse ! » to screen readers', fakeAsync(() => {
-      episodeService.setEpisode(createEpisode());
-      showQuiz();
-      tick(100);
-
-      answer(2);
-
-      expect(announcementService.announce).toHaveBeenCalledOnceWith(
-        'Bonne réponse !',
-      );
-      tick(2300);
     }));
 
     it('puts « Bonne réponse ! » in the live region of the quiz', fakeAsync(() => {
