@@ -530,6 +530,18 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('puts « Mauvaise réponse ! » in the live region of the quiz', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(0);
+
+      expect(host().querySelector('[aria-live]')?.textContent?.trim()).toBe(
+        'Mauvaise réponse !',
+      );
+    }));
+
     it('announces the translation of the chosen answer after « Mauvaise réponse ! »', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
