@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import axe from 'axe-core';
 import { axeViolations } from '../../../../testing/axe';
 import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
@@ -64,6 +65,19 @@ function tickErrors(milliseconds: number): string[] {
     } catch (error) {
       errors.push(String(error));
     }
+  }
+}
+
+/**
+ * The accessible name of `element`, as axe computes it for assistive
+ * technology: text hidden with `display: none` is left out.
+ */
+function accessibleName(element: Element): string {
+  axe.setup(document);
+  try {
+    return axe.commons.text.accessibleText(element);
+  } finally {
+    axe.teardown();
   }
 }
 
@@ -539,6 +553,28 @@ describe('EpisodeQuizComponent', () => {
         tick(2400);
       }));
     });
+
+    it('keeps the answer text as the accessible name of each radio button, its correction being only its description', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      const answerTexts = translatedQuestion.answers.map(
+        (answer) => answer.original,
+      );
+      const names = () => radios(fieldsets()[0]).map(accessibleName);
+      expect(names()).toEqual(answerTexts);
+
+      const wrong = answer(1);
+      expect(correctionText(wrong)).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+      expect(names()).toEqual(answerTexts);
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      expect(correctionText(right)).toBe('Bonne réponse ! « ¿Eres tú español? »');
+      expect(names()).toEqual(answerTexts);
+    }));
 
     it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
