@@ -73,7 +73,7 @@ describe('EpisodeTitleScreenComponent', () => {
       expect(title?.classList).toContain('cdk-visually-hidden');
     });
 
-    it('links to the episode video only', async () => {
+    it('links to the episode video, then to the quiz to skip the introduction', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
       const host = await showTitleScreen();
 
@@ -82,7 +82,10 @@ describe('EpisodeTitleScreenComponent', () => {
           link.textContent?.trim(),
           link.getAttribute('href'),
         ]),
-      ).toEqual([["Accès à l'épisode", '/3/video']]);
+      ).toEqual([
+        ["Accès à l'épisode", '/3/video'],
+        ["Accès au quiz de l'épisode", '/3/quiz'],
+      ]);
     });
 
     it('builds the links on top of an unknown child path', async () => {
@@ -91,6 +94,7 @@ describe('EpisodeTitleScreenComponent', () => {
 
       expect(links(host).map((link) => link.getAttribute('href'))).toEqual([
         '/3/unknown/video',
+        '/3/unknown/quiz',
       ]);
     });
 
