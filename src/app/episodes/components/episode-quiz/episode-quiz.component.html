@@ -50,6 +50,13 @@
                   : "Mauvaise réponse !"
               }}
             </span>
+            @if (
+              aIndex !== question.correctAnswer &&
+              question.answerTranslations?.[aIndex]
+            ) {
+              « {{ answer }} » signifie «
+              {{ question.answerTranslations?.[aIndex] }} »
+            }
           </p>
         }
         <button

@@ -14,6 +14,7 @@ export interface Video {
 export interface QuizQuestion {
   label: string;
   answers: string[];
+  answerTranslations?: string[];
   correctAnswer: number;
   answerVideo: Video;
 }
