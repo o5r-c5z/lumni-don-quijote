@@ -15,6 +15,8 @@ import { Episode, VideoType } from '../../models';
 import { EpisodeService } from '../../services/episode.service';
 import { AudioService } from '../../services/audio.service';
 
+const VALIDATED_CLASS = 'active';
+
 @Component({
   selector: 'app-episode-quiz',
   imports: [RouterLink],
@@ -137,10 +139,10 @@ export class EpisodeQuizComponent implements OnInit {
     const fieldset = input.closest('fieldset');
 
     if (fieldset) {
-      this.hideShownCorrections(fieldset);
+      this.clearPreviousValidation(fieldset);
     }
-    input.classList.add('active');
-    correction?.classList.add('active');
+    input.classList.add(VALIDATED_CLASS);
+    correction?.classList.add(VALIDATED_CLASS);
 
     if (isCorrect) {
       if (fieldset) {
@@ -153,13 +155,13 @@ export class EpisodeQuizComponent implements OnInit {
     }
   }
 
-  private hideShownCorrections(fieldset: HTMLFieldSetElement): void {
+  private clearPreviousValidation(fieldset: HTMLFieldSetElement): void {
     fieldset
-      .querySelectorAll('.episode-quiz__question-correction.active')
-      .forEach((correction) => correction.classList.remove('active'));
+      .querySelectorAll(`.episode-quiz__question-correction.${VALIDATED_CLASS}`)
+      .forEach((correction) => correction.classList.remove(VALIDATED_CLASS));
     fieldset
-      .querySelectorAll('.episode-quiz__answer-input.active')
-      .forEach((input) => input.classList.remove('active'));
+      .querySelectorAll(`.episode-quiz__answer-input.${VALIDATED_CLASS}`)
+      .forEach((input) => input.classList.remove(VALIDATED_CLASS));
   }
 
   private handleCorrectAnswer(
