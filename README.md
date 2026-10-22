@@ -1,7 +1,7 @@
 # Don Quijote
 
 Application web d'épisodes pédagogiques. Chaque épisode enchaîne des vidéos
-(une introduction, la leçon de Rossinante, une vidéo-réponse par question) et
+(une introduction qui contient la leçon, une vidéo-réponse par question) et
 un quiz à choix multiples avec correction immédiate, jusqu'à un écran de fin.
 L'interface est en français et conçue pour être utilisable au clavier et avec
 un lecteur d'écran. Projet commandé par Lumni, produit par Big Company.
@@ -17,16 +17,22 @@ code, les tests et la CI.
 Un épisode s'ouvre à l'URL `/<n>`, où `<n>` est son numéro (`/1` pour le
 premier) :
 
-1. **Titre** — l'image de titre de l'épisode et le lien « Accès à l'épisode ».
-2. **Introduction** — vidéo d'introduction.
-3. **Leçon de Rossinante** — vidéo de la leçon.
-4. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une
-   mauvaise réponse est signalée (« Mauvaise réponse ! ») et ne fait pas
-   avancer : il faut trouver la bonne. Après une bonne réponse
-   (« Bonne réponse ! »), la vidéo-réponse de la question se lance, puis
-   vient la question suivante. Le lien « Revoir la leçon de Rossinante »
+1. **Titre** — l'image de titre de l'épisode, le lien « Accès à l'épisode »
+   (vers l'introduction) et le lien « Accès au quiz de l'épisode », qui
+   passe l'introduction.
+2. **Introduction** — vidéo d'introduction, qui contient la leçon de
+   Rossinante ; le quiz la suit directement.
+3. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une
+   mauvaise réponse est signalée (« Mauvaise réponse ! »), suivie de sa
+   traduction quand la question en fournit une
+   (« « ¿Soy yo español? » signifie « Suis-je espagnol ? » »). Cette
+   correction reste affichée jusqu'à la réponse suivante, et une mauvaise
+   réponse ne fait pas avancer : il faut trouver la bonne. Après une bonne
+   réponse (« Bonne réponse ! »), la vidéo-réponse de la question se lance,
+   puis vient la question suivante. Le lien « Revoir la leçon de
+   Rossinante » lance la vidéo de la leçon seule, puis ramène au quiz ; il
    reste accessible depuis chaque question.
-5. **Bravo** — après la vidéo-réponse de la dernière question, l'écran
+4. **Bravo** — après la vidéo-réponse de la dernière question, l'écran
    « Bravo ! » propose de retourner au début de l'épisode.
 
 Chaque vidéo peut être passée (« Passer la vidéo ») ; à la fin d'une vidéo,
@@ -51,9 +57,9 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/app/episodes/models.ts` — types `Episode`, `Video`, `QuizQuestion`, énum `VideoType` : le format d'`episode.json`.
 - `src/styles.scss`, variable `--screen-background` de `.screen` — fond parchemin par défaut des écrans d'épisode ; l'écran titre la surcharge avec l'image `titleBackground` de l'épisode (voir « Données des épisodes »).
 - `src/app/episodes/components/episode/` — conteneur d'un épisode ; charge `uploads/episodes/<n>/episode.json` au runtime et choisit la musique selon l'écran.
-- `src/app/episodes/components/episode-title-screen/` — écran titre, avec l'image de titre de l'épisode et l'accès à la vidéo d'introduction.
-- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction → leçon → question, vidéo-réponse → question suivante ou écran Bravo) et lien « Passer la vidéo ».
-- `src/app/episodes/components/episode-quiz/` — questions à choix multiples : validation, correction affichée, effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
+- `src/app/episodes/components/episode-title-screen/` — écran titre, avec l'image de titre de l'épisode, l'accès à la vidéo d'introduction et l'accès direct au quiz.
+- `src/app/episodes/components/episode-video/` — lecteur Vimeo ; enchaînement selon le type de vidéo (introduction ou leçon → quiz, vidéo-réponse → question suivante ou écran Bravo) et lien « Passer la vidéo ».
+- `src/app/episodes/components/episode-quiz/` — questions à choix multiples : validation, correction affichée jusqu'à la réponse suivante (avec la traduction d'une mauvaise réponse), effet sonore selon la réponse, vidéo-réponse après une bonne réponse, lien « Revoir la leçon de Rossinante ».
 - `src/app/episodes/components/episode-completion/` — écran Bravo et retour au début de l'épisode.
 - `src/app/episodes/components/audio-control/` — bouton activer/couper le son (raccourci clavier `M`, sans modificateur, ignoré dans les champs de saisie de texte).
 - `src/app/episodes/services/episode.service.ts` — état courant de l'épisode et étape du quiz (`BehaviorSubject`).
@@ -126,7 +132,7 @@ Les dépendances externes sont remplacées par des doublures, si bien qu'aucun t
 
 ### Tests e2e
 
-Les tests Playwright vérifient l'application assemblée, au clavier : le parcours complet de l'épisode, du titre à l'écran Bravo (en regardant chaque vidéo jusqu'au bout, puis en la passant), le blocage sur une mauvaise réponse et « Revoir la leçon de Rossinante » depuis une question. `e2e/accessibility.spec.ts` lance axe-core sur chaque écran ; les contrastes qu'axe ne sait pas évaluer (texte sur image ou dégradé) sont mesurés sur une capture d'écran, contre le pixel de fond le moins favorable. Le contraste du contour de focus n'est pas vérifié.
+Les tests Playwright vérifient l'application assemblée, au clavier : le parcours complet de l'épisode, du titre à l'écran Bravo (en regardant chaque vidéo jusqu'au bout, puis en la passant), l'accès direct au quiz depuis l'écran titre, le blocage sur une mauvaise réponse et sa traduction, et « Revoir la leçon de Rossinante » depuis une question. `e2e/accessibility.spec.ts` lance axe-core sur chaque écran ; les contrastes qu'axe ne sait pas évaluer (texte sur image ou dégradé) sont mesurés sur une capture d'écran, contre le pixel de fond le moins favorable. Le contraste du contour de focus n'est pas vérifié.
 
 Aucun test n'appelle le réseau ni ne dépend du dossier `uploads/` ou des assets : `e2e/fixtures.ts` fait échouer tout test dont une requête quitte le serveur local. Avec `page.route`, `episode.json` est remplacé par un épisode factice (`e2e/doubles/episode.ts`), le lecteur Vimeo par une page factice qui imite son protocole `postMessage` (`e2e/doubles/vimeo.ts`), Google Fonts par une feuille vide, et les sons comme les images de `public/images/` par des réponses 404 : les contrastes mesurés ne dépendent pas de la présence du parchemin.
 
@@ -154,10 +160,11 @@ Un `episode.json` suit le modèle `Episode` de `src/app/episodes/models.ts` :
 | `title` | titre de l'épisode, lu par les lecteurs d'écran sur l'écran titre |
 | `titleBackground` | facultatif : chemin de l'image de titre, une chaîne qui peut contenir un guillemet, un antislash ou un saut de ligne (`\n`) ; absent, vide ou autre chose qu'une chaîne, l'écran titre n'a pas d'image de fond |
 | `introduction` | vidéo d'introduction : `{ "url", "title" }` |
-| `lesson` | vidéo de la leçon de Rossinante : `{ "url", "title" }` |
+| `lesson` | vidéo de la leçon de Rossinante, lancée par « Revoir la leçon de Rossinante » : `{ "url", "title" }` |
 | `questions[]` | questions, dans l'ordre de l'épisode |
 | `questions[].label` | texte de la question, sans numéro (l'application affiche « 1 / 3 ») |
 | `questions[].answers` | réponses proposées, sans lettre |
+| `questions[].answerTranslations` | facultatif : traduction française de chaque réponse, dans l'ordre d'`answers` ; celle d'une mauvaise réponse s'affiche une fois cette réponse validée |
 | `questions[].correctAnswer` | indice de la bonne réponse dans `answers`, à partir de 0 |
 | `questions[].answerVideo` | vidéo-réponse : `{ "url", "title" }` |
 
