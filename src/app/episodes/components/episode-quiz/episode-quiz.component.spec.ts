@@ -610,6 +610,20 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
+    it('shows a space on screen between « Mauvaise réponse ! » and the translation', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      // innerText is the text as rendered: whitespace the layout drops is
+      // missing from it, unlike textContent.
+      expect(correction(input).innerText).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+    }));
+
     it('marks the quoted answer of its translation as Spanish, and only it', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
