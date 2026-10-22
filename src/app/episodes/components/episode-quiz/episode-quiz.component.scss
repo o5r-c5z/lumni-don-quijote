@@ -144,7 +144,7 @@
     var(--episode-quiz__answer-label-border-width) +
       var(--episode-quiz__answer-label-padding-x)
   );
-  height: var(--episode-quiz__question-correction-height);
+  min-height: var(--episode-quiz__question-correction-height);
   color: var(--danger-color);
 
   > * {
