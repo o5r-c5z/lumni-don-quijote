@@ -81,6 +81,24 @@ function accessibleName(element: Element): string {
   }
 }
 
+/** The space between the bottom of `above` and the top of `below`, in px. */
+function verticalGap(above: Element, below: Element): number {
+  return Math.round(
+    below.getBoundingClientRect().top - above.getBoundingClientRect().bottom,
+  );
+}
+
+/**
+ * The language and the trimmed text of each element inside `element` that is
+ * marked with a language.
+ */
+function languageMarks(element: Element): (string | null | undefined)[][] {
+  return Array.from(element.querySelectorAll('[lang]'), (marked) => [
+    marked.getAttribute('lang'),
+    marked.textContent?.trim(),
+  ]);
+}
+
 /** Each error of a timer callback comes out of `tick()` twice. */
 function reportedTwice(...errors: string[]): string[] {
   return errors.flatMap((error) => [error, error]);
@@ -183,6 +201,14 @@ describe('EpisodeQuizComponent', () => {
     return element?.textContent?.replace(/\s+/g, ' ').trim();
   }
 
+  /**
+   * The text of an element as rendered on screen, trimmed: unlike
+   * `textContent`, `innerText` leaves out text the layout hides.
+   */
+  function renderedText(element: HTMLElement): string {
+    return element.innerText.trim();
+  }
+
   /** The text of an answer's correction, whitespace collapsed. */
   function correctionText(input: HTMLInputElement): string | undefined {
     return collapsedText(correction(input));
@@ -208,6 +234,11 @@ describe('EpisodeQuizComponent', () => {
       }
     }
     return undefined;
+  }
+
+  /** Narrows the quiz, so that a translated wrong answer's correction wraps. */
+  function narrowQuiz(): void {
+    host().style.width = '240px';
   }
 
   /** The colour a CSS custom property resolves to inside the quiz. */
@@ -285,8 +316,8 @@ describe('EpisodeQuizComponent', () => {
         inputs.map((input) => [
           input.type,
           input.name,
-          // As rendered: a hidden correction inside the label is left out.
-          label(input).innerText.trim(),
+          // A hidden correction inside the label is left out.
+          renderedText(label(input)),
           input.getAttribute('aria-checked'),
           correctionText(input),
           correction(input).classList.contains('active'),
@@ -559,7 +590,7 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
       tick(100);
       const answerTexts = translatedQuestion.answers.map(
-        (answer) => answer.original,
+        ({ original }) => original,
       );
       const names = () => radios(fieldsets()[0]).map(accessibleName);
       expect(names()).toEqual(answerTexts);
@@ -677,12 +708,7 @@ describe('EpisodeQuizComponent', () => {
 
       const region = liveRegion()!;
       expect(collapsedText(region)).toBe(correctionText(second));
-      expect(
-        Array.from(region.querySelectorAll('[lang]'), (element) => [
-          element.getAttribute('lang'),
-          element.textContent?.trim(),
-        ]),
-      ).toEqual([['es', '¿Soy yo español?']]);
+      expect(languageMarks(region)).toEqual([['es', '¿Soy yo español?']]);
     }));
 
     it('empties the live region when validated twice, then puts the same correction back 100 ms later, so that it is announced again', fakeAsync(() => {
@@ -741,8 +767,8 @@ describe('EpisodeQuizComponent', () => {
       const first = answer(0);
       answer(1);
 
-      // innerText is the text as rendered: the box shows only its answer text.
-      expect(label(first).innerText.trim()).toBe('¿Es él español?');
+      // The box shows only its answer text.
+      expect(renderedText(label(first))).toBe('¿Es él español?');
     }));
 
     it('stays highlighted in red once another answer is checked but not validated', fakeAsync(() => {
@@ -798,11 +824,9 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      // innerText is the text as rendered: the box shows only the correction,
-      // whose quote is then the only « ¿Soy yo español? » on screen.
-      expect(label(input).innerText.trim()).toBe(
-        correction(input).innerText.trim(),
-      );
+      // The box shows only the correction, whose quote is then the only
+      // « ¿Soy yo español? » on screen.
+      expect(renderedText(label(input))).toBe(renderedText(correction(input)));
     }));
 
     it('keeps showing its correction in place of its answer text once another answer is checked but not validated', fakeAsync(() => {
@@ -814,9 +838,9 @@ describe('EpisodeQuizComponent', () => {
       radios(fieldsets()[0])[0].click();
       harness.detectChanges();
 
-      // innerText is the text as rendered: the box still shows only the
-      // correction, not « ¿Soy yo español? » as an answer text.
-      expect(label(wrong).innerText.trim()).toBe(
+      // The box still shows only the correction, not « ¿Soy yo español? » as
+      // an answer text.
+      expect(renderedText(label(wrong))).toBe(
         'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
       );
     }));
@@ -923,8 +947,7 @@ describe('EpisodeQuizComponent', () => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
-      // A narrow quiz, so that the correction wraps.
-      host().style.width = '240px';
+      narrowQuiz();
 
       const input = answer(1);
 
@@ -947,8 +970,7 @@ describe('EpisodeQuizComponent', () => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
-      // A narrow quiz, so that the correction wraps.
-      host().style.width = '240px';
+      narrowQuiz();
 
       answer(1);
 
@@ -961,15 +983,10 @@ describe('EpisodeQuizComponent', () => {
       ];
       const gapsInQuestion = boxes
         .slice(1)
-        .map((box, i) =>
-          Math.round(
-            box.getBoundingClientRect().top -
-              boxes[i].getBoundingClientRect().bottom,
-          ),
-        );
-      const gapBeforeLinks = Math.round(
-        host().querySelector('nav')!.getBoundingClientRect().top -
-          fieldset.getBoundingClientRect().bottom,
+        .map((box, index) => verticalGap(boxes[index], box));
+      const gapBeforeLinks = verticalGap(
+        fieldset,
+        host().querySelector('nav')!,
       );
       expect(gapsInQuestion).toEqual(boxes.slice(1).map(() => usualGap));
       expect(gapBeforeLinks).toBe(usualGap);
@@ -1055,12 +1072,9 @@ describe('EpisodeQuizComponent', () => {
 
       expect(correctionText(input)).toBe('Bonne réponse ! « ¿Eres tú español? »');
       expect(correction(input).closest('[lang="es"]')).toBeNull();
-      expect(
-        Array.from(correction(input).querySelectorAll('[lang]'), (element) => [
-          element.getAttribute('lang'),
-          element.textContent?.trim(),
-        ]),
-      ).toEqual([['es', '¿Eres tú español?']]);
+      expect(languageMarks(correction(input))).toEqual([
+        ['es', '¿Eres tú español?'],
+      ]);
     }));
 
     it('shows its correction in place of its answer text once validated', fakeAsync(() => {
@@ -1071,11 +1085,9 @@ describe('EpisodeQuizComponent', () => {
       // Before the 2 s after which the question slides out.
       const input = answer(2);
 
-      // innerText is the text as rendered: the box shows only the correction,
-      // whose quote is then the only « ¿Eres tú español? » on screen.
-      expect(label(input).innerText.trim()).toBe(
-        correction(input).innerText.trim(),
-      );
+      // The box shows only the correction, whose quote is then the only
+      // « ¿Eres tú español? » on screen.
+      expect(renderedText(label(input))).toBe(renderedText(correction(input)));
     }));
 
     it('has no axe violation once validated', async () => {
