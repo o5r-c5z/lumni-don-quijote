@@ -15,6 +15,7 @@
           {{ question.label }}
         </legend>
         @for (answer of question.answers; track answer; let aIndex = $index) {
+          @let isCorrectAnswer = aIndex === question.correctAnswer;
           <input
             required
             id="question-{{ qIndex }}-answer-{{ aIndex }}"
@@ -24,7 +25,7 @@
             [attr.data-answer-index]="aIndex"
             value="{{ aIndex }}"
             class="episode-quiz__answer-input cdk-visually-hidden"
-            [class.correct]="aIndex === question.correctAnswer"
+            [class.correct]="isCorrectAnswer"
             [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
             (change)="onCheckAnswer(qIndex, aIndex)"
             [attr.aria-describedby]="
@@ -41,18 +42,13 @@
           <p
             [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
             class="episode-quiz__question-correction"
-            [class.correct]="aIndex === question.correctAnswer"
+            [class.correct]="isCorrectAnswer"
           >
             <span>
-              {{
-                aIndex === question.correctAnswer
-                  ? "Bonne réponse !"
-                  : "Mauvaise réponse !"
-              }}
+              {{ isCorrectAnswer ? "Bonne réponse !" : "Mauvaise réponse !" }}
             </span>
             @if (
-              aIndex !== question.correctAnswer &&
-              question.answerTranslations?.[aIndex];
+              !isCorrectAnswer && question.answerTranslations?.[aIndex];
               as translation
             ) {
               <span>« {{ answer }} » signifie « {{ translation }} »</span>
