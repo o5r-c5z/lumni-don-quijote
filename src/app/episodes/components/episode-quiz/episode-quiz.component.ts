@@ -134,15 +134,15 @@ export class EpisodeQuizComponent implements OnInit {
       selectedAnswerIndex ===
       this.episode?.questions[questionIndex].correctAnswer;
 
-    input
-      .closest('fieldset')
-      ?.querySelectorAll('.episode-quiz__question-correction.active')
-      .forEach((previous) => previous.classList.remove('active'));
+    const fieldset = input.closest('fieldset');
+
+    if (fieldset) {
+      this.hideShownCorrections(fieldset);
+    }
     input.classList.add('active');
     correction?.classList.add('active');
 
     if (isCorrect) {
-      const fieldset = input.closest('fieldset');
       if (fieldset) {
         fieldset.disabled = true;
       }
@@ -151,6 +151,12 @@ export class EpisodeQuizComponent implements OnInit {
     } else {
       this.handleIncorrectAnswer();
     }
+  }
+
+  private hideShownCorrections(fieldset: HTMLFieldSetElement): void {
+    fieldset
+      .querySelectorAll('.episode-quiz__question-correction.active')
+      .forEach((correction) => correction.classList.remove('active'));
   }
 
   private handleCorrectAnswer(
