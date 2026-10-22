@@ -239,6 +239,19 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('marks each answer label as Spanish', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+
+      expect(
+        radios(fieldsets()[0]).map((input) =>
+          host()
+            .querySelector(`label[for="${input.id}"]`)
+            ?.getAttribute('lang'),
+        ),
+      ).toEqual(['es', 'es', 'es']);
+    }));
+
     it('sets aria-checked to "true" on the checked answer', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
