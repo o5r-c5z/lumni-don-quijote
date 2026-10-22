@@ -88,14 +88,12 @@
       {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
     </span>
     &ngsp;
-    @if (isCorrect || answer.translation) {
-      <span>
-        « <span lang="es">{{ answer.original }}</span> »
-        @if (!isCorrect) {
-          signifie « {{ answer.translation }} »
-        }
-      </span>
-    }
+    <span>
+      « <span lang="es">{{ answer.original }}</span> »
+      @if (!isCorrect && answer.translation) {
+        signifie « {{ answer.translation }} »
+      }
+    </span>
   </ng-template>
 
   <nav class="episode-quiz__links">
