@@ -17,6 +17,8 @@
         @for (answer of question.answers; track answer; let aIndex = $index) {
           @let isCorrectAnswer = aIndex === question.correctAnswer;
           @let answerId = "question-" + qIndex + "-answer-" + aIndex;
+          @let answerTextId = answerId + "-text";
+          @let correctionId = answerId + "-correction";
           <input
             required
             [id]="answerId"
@@ -27,22 +29,22 @@
             value="{{ aIndex }}"
             class="episode-quiz__answer-input cdk-visually-hidden"
             [class.correct]="isCorrectAnswer"
-            [attr.aria-labelledby]="answerId + '-text'"
+            [attr.aria-labelledby]="answerTextId"
             [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
             (change)="onCheckAnswer(qIndex, aIndex)"
-            [attr.aria-describedby]="answerId + '-correction'"
+            [attr.aria-describedby]="correctionId"
             tabindex="0"
           />
           <label [for]="answerId" class="episode-quiz__answer-label">
             <span
-              [id]="answerId + '-text'"
+              [id]="answerTextId"
               class="episode-quiz__answer-text"
               lang="es"
               >{{ answer.original }}</span
             >
             <span
-              [id]="answerId + '-correction'"
-              class="episode-quiz__question-correction"
+              [id]="correctionId"
+              class="episode-quiz__answer-correction"
               [class.correct]="isCorrectAnswer"
             >
               <ng-container

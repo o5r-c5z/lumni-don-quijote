@@ -120,6 +120,10 @@
       background-color: var(--danger-color);
       box-shadow: 0 0 0 1px var(--danger-color);
     }
+
+    > .episode-quiz__answer-text {
+      display: none;
+    }
   }
 
   .episode-quiz__answer-input.active.correct + & {
@@ -133,13 +137,7 @@
   }
 }
 
-.episode-quiz__answer-input.active
-  + *
-  > .episode-quiz__answer-text {
-  display: none;
-}
-
-.episode-quiz__question-correction {
+.episode-quiz__answer-correction {
   padding-left: calc(
     var(--episode-quiz__answer-label-border-width) +
       var(--episode-quiz__answer-label-padding-x)

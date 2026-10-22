@@ -151,9 +151,9 @@ export class EpisodeQuizComponent implements OnInit {
     const correction = correctionId
       ? document.getElementById(correctionId)
       : null;
-    const isCorrect =
-      selectedAnswerIndex ===
-      this.episode?.questions[questionIndex].correctAnswer;
+    const question = this.episode?.questions[questionIndex];
+    const isCorrect = selectedAnswerIndex === question?.correctAnswer;
+    const answer = question?.answers[selectedAnswerIndex];
 
     const fieldset = input.closest('fieldset');
 
@@ -162,9 +162,6 @@ export class EpisodeQuizComponent implements OnInit {
     }
     input.classList.add(VALIDATED_CLASS);
     correction?.classList.add(VALIDATED_CLASS);
-
-    const answer =
-      this.episode?.questions[questionIndex]?.answers[selectedAnswerIndex];
 
     if (isCorrect) {
       if (fieldset) {
@@ -182,7 +179,7 @@ export class EpisodeQuizComponent implements OnInit {
     fieldset
       .querySelectorAll(
         `.episode-quiz__answer-input.${VALIDATED_CLASS},` +
-          ` .episode-quiz__question-correction.${VALIDATED_CLASS}`,
+          ` .episode-quiz__answer-correction.${VALIDATED_CLASS}`,
       )
       .forEach((element) => element.classList.remove(VALIDATED_CLASS));
   }
