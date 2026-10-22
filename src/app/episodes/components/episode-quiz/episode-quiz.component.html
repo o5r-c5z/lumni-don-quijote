@@ -77,11 +77,13 @@
     @if (isCorrectAnswerLive) {
       <span>Bonne réponse !</span>
     }
-    @if (liveAnswer; as answer) {
-      <span>Mauvaise réponse !</span>
-      &ngsp;
-      @if (answer.translation) {
-        <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ answer.translation }} »</span>
+    @for (validation of [liveValidationCount]; track validation) {
+      @if (liveAnswer; as answer) {
+        <span>Mauvaise réponse !</span>
+        &ngsp;
+        @if (answer.translation) {
+          <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ answer.translation }} »</span>
+        }
       }
     }
   </div>

@@ -43,6 +43,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected VideoType = VideoType;
   protected liveAnswer?: Answer;
   protected isCorrectAnswerLive = false;
+  protected liveValidationCount = 0;
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -208,6 +209,7 @@ export class EpisodeQuizComponent implements OnInit {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
     this.liveAnswer = answer;
+    this.liveValidationCount++;
     this.announcementService.announce(this.incorrectAnswerAnnouncement(answer));
   }
 
