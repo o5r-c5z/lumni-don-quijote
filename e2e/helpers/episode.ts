@@ -163,7 +163,11 @@ export async function resolvedColor(
   }, token);
 }
 
-/** The live region through which the app speaks to screen readers. */
+/**
+ * The quiz's own live region, through which it announces its verdicts to
+ * screen readers. Scoped to the quiz, since the CDK announcer, which the video
+ * and the audio controls still use, is also `aria-live="polite"`.
+ */
 export function liveRegion(page: Page): Locator {
-  return page.locator('.cdk-live-announcer-element');
+  return page.locator('app-episode-quiz [aria-live="polite"]');
 }

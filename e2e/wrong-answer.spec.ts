@@ -111,6 +111,13 @@ test.describe('wrong answer', () => {
     await expect(liveRegion(page)).toHaveText(
       `Mauvaise réponse ! ${translation(0, wrongAnswer(0))}`,
     );
+    // Only the quoted Spanish answer is read with a Spanish voice.
+    const spanish = liveRegion(page).locator('[lang]');
+    await expect(spanish).toHaveCount(1);
+    await expect(spanish).toHaveAttribute('lang', 'es');
+    await expect(spanish).toHaveText(
+      EPISODE.questions[0].answers[wrongAnswer(0)].original,
+    );
 
     await answerWithKeyboard(page, 0, rightAnswer(0), wrongAnswer(0));
     await expect(liveRegion(page)).toHaveText('Bonne réponse !');
