@@ -153,7 +153,7 @@ export class EpisodeQuizComponent implements OnInit {
 
       this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer();
+      this.handleIncorrectAnswer(questionIndex, selectedAnswerIndex);
     }
   }
 
@@ -197,8 +197,17 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(): void {
+  private handleIncorrectAnswer(
+    questionIndex: number,
+    answerIndex: number,
+  ): void {
     this.audioService.playSoundEffect('/audio/App Negative.mp3');
-    this.announcementService.announce('Mauvaise réponse !');
+    const question = this.episode?.questions[questionIndex];
+    const translation = question?.answerTranslations?.[answerIndex];
+    this.announcementService.announce(
+      translation
+        ? `Mauvaise réponse ! « ${question?.answers[answerIndex]} » signifie « ${translation} »`
+        : 'Mauvaise réponse !',
+    );
   }
 }
