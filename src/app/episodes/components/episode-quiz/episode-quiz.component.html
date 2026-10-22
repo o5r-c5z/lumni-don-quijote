@@ -73,7 +73,15 @@
     class="cdk-visually-hidden"
     aria-live="polite"
     aria-atomic="true"
-  >{{ liveMessage }}</div>
+  >
+    @if (liveAnswer; as answer) {
+      <span>Mauvaise réponse !</span>
+      &ngsp;
+      @if (answer.translation) {
+        <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ answer.translation }} »</span>
+      }
+    }
+  </div>
 
   <nav class="episode-quiz__links">
     <a

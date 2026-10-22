@@ -41,7 +41,7 @@ export class EpisodeQuizComponent implements OnInit {
   protected checkedAnswers: Record<number, number> = {};
   protected animationDuration: number = 0.3;
   protected VideoType = VideoType;
-  protected liveMessage = '';
+  protected liveAnswer?: { original: string; translation?: string };
 
   @HostBinding('style.--screen-background-overlay-opacity')
   get backgroundOverlayOpacity() {
@@ -208,7 +208,8 @@ export class EpisodeQuizComponent implements OnInit {
       questionIndex,
       answerIndex,
     );
-    this.liveMessage = message;
+    this.liveAnswer =
+      this.episode?.questions[questionIndex]?.answers[answerIndex];
     this.announcementService.announce(message);
   }
 
