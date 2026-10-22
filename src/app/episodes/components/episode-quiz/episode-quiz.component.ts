@@ -25,6 +25,9 @@ const VALIDATED_CLASS = 'active';
  */
 const LIVE_REGION_DELAY_MS = 100;
 
+/** Brings the wrong-answer sound's loudness down to −23 LUFS. */
+const WRONG_ANSWER_SOUND_VOLUME = 0.26;
+
 /** The verdict on a validated answer: a wrong one is corrected by the answer. */
 type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
 
@@ -213,7 +216,10 @@ export class EpisodeQuizComponent implements OnInit {
     questionIndex: number,
     answerIndex: number,
   ): void {
-    this.audioService.playSoundEffect('/audio/App Negative.mp3', 0.26);
+    this.audioService.playSoundEffect(
+      '/audio/App Negative.mp3',
+      WRONG_ANSWER_SOUND_VOLUME,
+    );
     const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
     this.announce(answer ? { isCorrect: false, answer } : undefined);
   }
