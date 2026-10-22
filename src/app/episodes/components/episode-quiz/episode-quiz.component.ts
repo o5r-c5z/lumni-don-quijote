@@ -134,6 +134,10 @@ export class EpisodeQuizComponent implements OnInit {
       selectedAnswerIndex ===
       this.episode?.questions[questionIndex].correctAnswer;
 
+    input
+      .closest('fieldset')
+      ?.querySelectorAll('.episode-quiz__question-correction.active')
+      .forEach((previous) => previous.classList.remove('active'));
     input.classList.add('active');
     correction?.classList.add('active');
 
