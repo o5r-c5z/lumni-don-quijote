@@ -16,9 +16,10 @@
         </legend>
         @for (answer of question.answers; track answer; let aIndex = $index) {
           @let isCorrectAnswer = aIndex === question.correctAnswer;
+          @let answerId = "question-" + qIndex + "-answer-" + aIndex;
           <input
             required
-            id="question-{{ qIndex }}-answer-{{ aIndex }}"
+            [id]="answerId"
             type="radio"
             name="question-{{ qIndex }}"
             [attr.data-question-index]="qIndex"
@@ -26,23 +27,21 @@
             value="{{ aIndex }}"
             class="episode-quiz__answer-input cdk-visually-hidden"
             [class.correct]="isCorrectAnswer"
-            [attr.aria-label]="answer.original"
+            [attr.aria-labelledby]="answerId + '-text'"
             [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
             (change)="onCheckAnswer(qIndex, aIndex)"
-            [attr.aria-describedby]="
-              'question-' + qIndex + '-answer-' + aIndex + '-correction'
-            "
+            [attr.aria-describedby]="answerId + '-correction'"
             tabindex="0"
           />
-          <label
-            for="question-{{ qIndex }}-answer-{{ aIndex }}"
-            class="episode-quiz__answer-label"
-          >
-            <span class="episode-quiz__answer-text" lang="es">{{
-              answer.original
-            }}</span>
+          <label [for]="answerId" class="episode-quiz__answer-label">
             <span
-              [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
+              [id]="answerId + '-text'"
+              class="episode-quiz__answer-text"
+              lang="es"
+              >{{ answer.original }}</span
+            >
+            <span
+              [id]="answerId + '-correction'"
               class="episode-quiz__question-correction"
               [class.correct]="isCorrectAnswer"
             >
