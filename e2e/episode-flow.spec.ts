@@ -21,11 +21,9 @@ async function playEpisode(page: Page, goThroughVideo: GoThroughVideo) {
   await openTitleScreen(page);
   await page.keyboard.press('Enter');
 
+  // The introduction holds the lesson: the quiz follows it.
   await expect(page).toHaveURL(`/${EPISODE_NUMBER}/video`);
   await goThroughVideo(page, EPISODE.introduction.title);
-
-  await expect(page).toHaveURL(`/${EPISODE_NUMBER}/video?videoType=lesson`);
-  await goThroughVideo(page, EPISODE.lesson.title);
 
   for (const [index, question] of EPISODE.questions.entries()) {
     await expectQuestion(page, index);
@@ -56,5 +54,18 @@ test.describe('episode flow', () => {
     page,
   }) => {
     await playEpisode(page, skipVideo);
+  });
+
+  test('goes from the title screen straight to the quiz with the keyboard', async ({
+    page,
+  }) => {
+    await openTitleScreen(page);
+    await page.keyboard.press('Tab');
+    await expect(
+      page.getByRole('link', { name: "Accès au quiz de l'épisode" }),
+    ).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expectQuestion(page, 0);
   });
 });
