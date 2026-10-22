@@ -174,6 +174,7 @@ export class EpisodeQuizComponent implements OnInit {
   ): void {
     this.audioService.playSoundEffect('/audio/Win 3.mp3');
     this.isCorrectAnswerLive = true;
+    this.liveAnswer = undefined;
 
     timer(2000)
       .pipe(
