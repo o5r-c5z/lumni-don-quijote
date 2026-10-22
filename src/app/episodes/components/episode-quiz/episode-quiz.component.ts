@@ -25,11 +25,11 @@ const VALIDATED_CLASS = 'active';
  */
 const LIVE_REGION_DELAY_MS = 100;
 
-/** Brings the right-answer sound's loudness down to −23 LUFS. */
-const RIGHT_ANSWER_SOUND_VOLUME = 0.41;
+/** Half the volume that brings the right-answer sound to −23 LUFS. */
+const RIGHT_ANSWER_SOUND_VOLUME = 0.21;
 
-/** Brings the wrong-answer sound's loudness down to −23 LUFS. */
-const WRONG_ANSWER_SOUND_VOLUME = 0.26;
+/** Half the volume that brings the wrong-answer sound to −23 LUFS. */
+const WRONG_ANSWER_SOUND_VOLUME = 0.13;
 
 /** The verdict on a validated answer, recalled in its correction. */
 type Verdict = { isCorrect: boolean; answer: Answer };
