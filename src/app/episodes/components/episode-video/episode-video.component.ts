@@ -159,9 +159,13 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
   }
 
   protected get skipDestination(): Destination {
-    return this.videoType === VideoType.Answer || this.videoType === VideoType.Lesson
-      ? this.nextDestination
-      : { path: QUIZ_PATH };
+    switch (this.videoType) {
+      case VideoType.Lesson:
+      case VideoType.Answer:
+        return this.nextDestination;
+      default:
+        return { path: QUIZ_PATH };
+    }
   }
 
   private pathAfterAnswer(): string {
