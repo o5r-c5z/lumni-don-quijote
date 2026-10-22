@@ -157,6 +157,9 @@ export class EpisodeQuizComponent implements OnInit {
     fieldset
       .querySelectorAll('.episode-quiz__question-correction.active')
       .forEach((correction) => correction.classList.remove('active'));
+    fieldset
+      .querySelectorAll('.episode-quiz__answer-input.active')
+      .forEach((input) => input.classList.remove('active'));
   }
 
   private handleCorrectAnswer(
