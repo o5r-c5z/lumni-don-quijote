@@ -196,7 +196,7 @@ Le versionnement d'`uploads/`, un script de vérification des `episode.json` et 
 
 ### Notes de configuration
 
-- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse, volume 0,41), `App Negative.mp3` (mauvaise réponse, volume 0,26) ; ces deux volumes ramènent les sons à −23 LUFS, le niveau sonore des vidéos.
+- Fichiers audio référencés en dur depuis `public/audio/` : `Entertainment_FOND_SONORE.mp3` (fond sonore de l'écran titre et de l'écran Bravo), `Guitar Background Mini_QUIZ.mp3` (musique des questions), `Win 3.mp3` (bonne réponse, volume 0,21), `App Negative.mp3` (mauvaise réponse, volume 0,13) ; ces deux volumes, moitié de ceux qui alignaient les sons sur le niveau sonore des vidéos (−23 LUFS), les placent vers −29 LUFS, 6 dB sous les vidéos.
 - Chemin de sortie du build : `dist/lumni-don-quijote/` ; les fichiers du site sont dans son sous-dossier `browser/`.
 
 ## Crédits

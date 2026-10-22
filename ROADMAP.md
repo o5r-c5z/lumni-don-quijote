@@ -133,9 +133,10 @@ dans un vrai navigateur (section 5).
       elle est vidée à chaque validation puis remplie 100 ms plus tard,
       pour qu'un même verdict soit annoncé de nouveau
 - [x] Retours fonctionnels sur le quiz :
-  - [x] Sons de réponse moins forts, alignés sur le niveau sonore des
-        vidéos (−23 LUFS) : volume 0,26 pour `App Negative.mp3`, 0,41 pour
-        `Win 3.mp3`
+  - [x] Sons de réponse moins forts : environ −29 LUFS, 6 dB sous le
+        niveau sonore des vidéos (−23 LUFS) ; volume 0,13 pour
+        `App Negative.mp3`, 0,21 pour `Win 3.mp3` (moitié des volumes qui
+        les alignaient sur les vidéos)
   - [x] La correction remplace la réponse validée dans sa case, au même
         endroit et dans la couleur habituelle du texte (le rouge ou le vert
         sur le fond clair de la case n'atteignait pas le contraste de 4,5:1) ;
