@@ -25,6 +25,9 @@ const VALIDATED_CLASS = 'active';
  */
 const LIVE_REGION_DELAY_MS = 100;
 
+/** Brings the right-answer sound's loudness down to −23 LUFS. */
+const RIGHT_ANSWER_SOUND_VOLUME = 0.41;
+
 /** Brings the wrong-answer sound's loudness down to −23 LUFS. */
 const WRONG_ANSWER_SOUND_VOLUME = 0.26;
 
@@ -184,7 +187,10 @@ export class EpisodeQuizComponent implements OnInit {
     fieldset: HTMLFieldSetElement,
     questionIndex: number,
   ): void {
-    this.audioService.playSoundEffect('/audio/Win 3.mp3', 0.41);
+    this.audioService.playSoundEffect(
+      '/audio/Win 3.mp3',
+      RIGHT_ANSWER_SOUND_VOLUME,
+    );
     this.announce({ isCorrect: true });
 
     timer(2000)
