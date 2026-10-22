@@ -49,6 +49,11 @@ describe('EpisodeTitleScreenComponent', () => {
     return Array.from(host.querySelectorAll('a'));
   }
 
+  function progressQuizPastFirstQuestion(): void {
+    episodeService.incrementQuizStep();
+    episodeService.incrementQuizStep();
+  }
+
   describe('before the episode is loaded', () => {
     it('renders nothing', async () => {
       const host = await showTitleScreen();
@@ -90,8 +95,7 @@ describe('EpisodeTitleScreenComponent', () => {
 
     it('brings the quiz back to its first question when following the quiz link', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
-      episodeService.incrementQuizStep();
-      episodeService.incrementQuizStep();
+      progressQuizPastFirstQuestion();
       const host = await showTitleScreen();
 
       links(host)[1].click();
@@ -102,8 +106,7 @@ describe('EpisodeTitleScreenComponent', () => {
 
     it('brings the quiz back to its first question when following the episode link', async () => {
       episodeService.setEpisode(createEpisode('La disparition'));
-      episodeService.incrementQuizStep();
-      episodeService.incrementQuizStep();
+      progressQuizPastFirstQuestion();
       const host = await showTitleScreen();
 
       links(host)[0].click();

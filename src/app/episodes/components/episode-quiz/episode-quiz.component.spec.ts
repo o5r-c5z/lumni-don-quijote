@@ -266,9 +266,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(
         radios(fieldsets()[0]).map((input) =>
-          host()
-            .querySelector(`label[for="${input.id}"]`)
-            ?.getAttribute('lang'),
+          label(input)?.getAttribute('lang'),
         ),
       ).toEqual(['es', 'es', 'es']);
     }));
