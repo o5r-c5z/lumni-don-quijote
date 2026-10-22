@@ -468,6 +468,18 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
+    it('hides its correction once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      const second = answer(1);
+
+      expect(correction(first).classList).not.toContain('active');
+      expect(correction(second).classList).toContain('active');
+    }));
+
     it('gives no translation when the question has none', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
