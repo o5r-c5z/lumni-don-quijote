@@ -802,6 +802,18 @@ describe('EpisodeQuizComponent', () => {
       tick(2300);
     }));
 
+    it('puts « Bonne réponse ! » in the live region of the quiz', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(2);
+
+      expect(host().querySelector('[aria-live]')?.textContent?.trim()).toBe(
+        'Bonne réponse !',
+      );
+    }));
+
     it('gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
