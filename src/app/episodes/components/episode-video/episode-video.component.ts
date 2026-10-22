@@ -15,7 +15,6 @@ import { AnnouncementService } from '../../services/announcement.service';
 import { AudioService } from '../../services/audio.service';
 import { EpisodeService } from '../../services/episode.service';
 
-const VIDEO_PATH = '../video';
 const QUIZ_PATH = '../quiz';
 const COMPLETION_PATH = '../completion';
 
@@ -151,10 +150,7 @@ export class EpisodeVideoComponent implements OnInit, OnDestroy {
       case VideoType.Answer:
         return { path: this.pathAfterAnswer() };
       default:
-        return {
-          path: VIDEO_PATH,
-          queryParams: { videoType: VideoType.Lesson },
-        };
+        return { path: QUIZ_PATH };
     }
   }
 
