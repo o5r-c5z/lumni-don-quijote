@@ -700,6 +700,19 @@ describe('EpisodeQuizComponent', () => {
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
+    it('announces « Bonne réponse ! » to screen readers', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+
+      answer(2);
+
+      expect(announcementService.announce).toHaveBeenCalledOnceWith(
+        'Bonne réponse !',
+      );
+      tick(2300);
+    }));
+
     it('gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
