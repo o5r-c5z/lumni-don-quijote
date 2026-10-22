@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import axe from 'axe-core';
 import { axeViolations } from '../../../../testing/axe';
 import { sleep, withMockClock } from '../../../../testing/timers';
 import { Episode, QuizQuestion } from '../../models';
@@ -65,6 +66,37 @@ function tickErrors(milliseconds: number): string[] {
       errors.push(String(error));
     }
   }
+}
+
+/**
+ * The accessible name of `element`, as axe computes it for assistive
+ * technology: text hidden with `display: none` is left out.
+ */
+function accessibleName(element: Element): string {
+  axe.setup(document);
+  try {
+    return axe.commons.text.accessibleText(element);
+  } finally {
+    axe.teardown();
+  }
+}
+
+/** The space between the bottom of `above` and the top of `below`, in px. */
+function verticalGap(above: Element, below: Element): number {
+  return Math.round(
+    below.getBoundingClientRect().top - above.getBoundingClientRect().bottom,
+  );
+}
+
+/**
+ * The language and the trimmed text of each element inside `element` that is
+ * marked with a language.
+ */
+function languageMarks(element: Element): (string | null | undefined)[][] {
+  return Array.from(element.querySelectorAll('[lang]'), (marked) => [
+    marked.getAttribute('lang'),
+    marked.textContent?.trim(),
+  ]);
 }
 
 /** Each error of a timer callback comes out of `tick()` twice. */
@@ -169,6 +201,14 @@ describe('EpisodeQuizComponent', () => {
     return element?.textContent?.replace(/\s+/g, ' ').trim();
   }
 
+  /**
+   * The text of an element as rendered on screen, trimmed: unlike
+   * `textContent`, `innerText` leaves out text the layout hides.
+   */
+  function renderedText(element: HTMLElement): string {
+    return element.innerText.trim();
+  }
+
   /** The text of an answer's correction, whitespace collapsed. */
   function correctionText(input: HTMLInputElement): string | undefined {
     return collapsedText(correction(input));
@@ -180,6 +220,25 @@ describe('EpisodeQuizComponent', () => {
 
   function label(input: HTMLInputElement): HTMLLabelElement {
     return host().querySelector(`label[for="${input.id}"]`)!;
+  }
+
+  /**
+   * The language of the first text node of an element whose trimmed text is
+   * `text`, or `undefined` when there is no such text node.
+   */
+  function languageOfText(element: Element, text: string): string | undefined {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.textContent?.trim() === text) {
+        return node.parentElement?.closest('[lang]')?.getAttribute('lang') ?? '';
+      }
+    }
+    return undefined;
+  }
+
+  /** Narrows the quiz, so that a translated wrong answer's correction wraps. */
+  function narrowQuiz(): void {
+    host().style.width = '240px';
   }
 
   /** The colour a CSS custom property resolves to inside the quiz. */
@@ -257,9 +316,10 @@ describe('EpisodeQuizComponent', () => {
         inputs.map((input) => [
           input.type,
           input.name,
-          host().querySelector(`label[for="${input.id}"]`)?.textContent?.trim(),
+          // A hidden correction inside the label is left out.
+          renderedText(label(input)),
           input.getAttribute('aria-checked'),
-          correction(input).textContent?.trim(),
+          correctionText(input),
           correction(input).classList.contains('active'),
         ]),
       ).toEqual([
@@ -268,7 +328,7 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le chat',
           'false',
-          'Mauvaise réponse !',
+          'Mauvaise réponse ! « Le chat »',
           false,
         ],
         [
@@ -276,7 +336,7 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le jardinier',
           'false',
-          'Mauvaise réponse !',
+          'Mauvaise réponse ! « Le jardinier »',
           false,
         ],
         [
@@ -284,19 +344,52 @@ describe('EpisodeQuizComponent', () => {
           'question-0',
           'Le majordome',
           'false',
-          'Bonne réponse !',
+          'Bonne réponse ! « Le majordome »',
           false,
         ],
       ]);
     }));
 
-    it('marks each answer label as Spanish', fakeAsync(() => {
+    it('lets an answer text extend to the inner edge of its answer box before validation, keeping no room for the hidden correction', fakeAsync(() => {
+      const longAnswer =
+        'En un lugar de la Mancha, de cuyo nombre no quiero acordarme, ' +
+        'no ha mucho tiempo que vivía un hidalgo de los de lanza en ' +
+        'astillero, adarga antigua, rocín flaco y galgo corredor.';
+      episodeService.setEpisode(
+        createEpisode([
+          {
+            ...questions[0],
+            answers: [{ original: longAnswer }, ...questions[0].answers],
+          },
+        ]),
+      );
+      showQuiz();
+      tick(100);
+
+      const [input] = radios(fieldsets()[0]);
+      const answerText = document.getElementById(
+        input.getAttribute('aria-labelledby')!,
+      )!;
+      const textRect = answerText.getBoundingClientRect();
+      const lineHeight = parseFloat(getComputedStyle(answerText).lineHeight);
+      // The answer text wraps, so it takes all the room its box gives it.
+      expect(textRect.height).toBeGreaterThan(1.5 * lineHeight);
+      const box = label(input);
+      const boxStyle = getComputedStyle(box);
+      const innerRight =
+        box.getBoundingClientRect().right -
+        parseFloat(boxStyle.borderRightWidth) -
+        parseFloat(boxStyle.paddingRight);
+      expect(Math.round(innerRight - textRect.right)).toBe(0);
+    }));
+
+    it('marks the answer text of each answer label as Spanish', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
 
       expect(
-        radios(fieldsets()[0]).map((input) =>
-          label(input)?.getAttribute('lang'),
+        radios(fieldsets()[0]).map((input, index) =>
+          languageOfText(label(input), translatedQuestion.answers[index].original),
         ),
       ).toEqual(['es', 'es', 'es']);
     }));
@@ -329,20 +422,13 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
-    it('marks the right answer and its correction as correct', fakeAsync(() => {
+    it("marks only the right answer's radio as correct", fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
 
       expect(
-        radios(fieldsets()[0]).map((input) => [
-          input.classList.contains('correct'),
-          correction(input).classList.contains('correct'),
-        ]),
-      ).toEqual([
-        [false, false],
-        [false, false],
-        [true, true],
-      ]);
+        radios(fieldsets()[0]).map((input) => input.classList.contains('correct')),
+      ).toEqual([false, false, true]);
     }));
 
     it('slides the question in and focuses its first answer after 100 ms', fakeAsync(() => {
@@ -476,6 +562,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
+        0.21,
       );
     }));
 
@@ -502,8 +589,8 @@ describe('EpisodeQuizComponent', () => {
         pressEnterOnValidate();
 
         expect(audioService.playSoundEffect.calls.allArgs()).toEqual([
-          ['/audio/App Negative.mp3'],
-          ['/audio/App Negative.mp3'],
+          ['/audio/App Negative.mp3', 0.13],
+          ['/audio/App Negative.mp3', 0.13],
         ]);
         tick(VERDICT_DELAY);
       }));
@@ -518,10 +605,85 @@ describe('EpisodeQuizComponent', () => {
 
         expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
           '/audio/Win 3.mp3',
+          0.21,
         );
         tick(2400);
       }));
     });
+
+    it('keeps the answer text as the accessible name of each radio button, its correction being only its description', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      const answerTexts = translatedQuestion.answers.map(
+        ({ original }) => original,
+      );
+      const names = () => radios(fieldsets()[0]).map(accessibleName);
+      expect(names()).toEqual(answerTexts);
+
+      const wrong = answer(1);
+      expect(correctionText(wrong)).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+      expect(names()).toEqual(answerTexts);
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      expect(correctionText(right)).toBe('Bonne réponse ! « ¿Eres tú español? »');
+      expect(names()).toEqual(answerTexts);
+    }));
+
+    it("writes a validated answer's correction, wrong or right, in the usual color of an answer text, not in red or green", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      const untouched = radios(fieldsets()[0])[1];
+      const untouchedText = document.getElementById(
+        untouched.getAttribute('aria-labelledby')!,
+      )!;
+      const usualColor = getComputedStyle(untouchedText).color;
+
+      const wrong = answer(0);
+      const wrongColor = getComputedStyle(correction(wrong)).color;
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      const rightColor = getComputedStyle(correction(right)).color;
+
+      expect([wrongColor, rightColor]).toEqual([usualColor, usualColor]);
+      expect(usualColor).toBe(resolvedColor('--text-color'));
+    }));
+
+    it("starts a validated answer's correction, wrong or right, exactly where its answer text started", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode());
+      showQuiz();
+      tick(100);
+      // Measured from the left of the answer box, which the question's slide
+      // moves along with its text.
+      const textStart = (input: HTMLInputElement, text: Element): number => {
+        const range = document.createRange();
+        range.selectNodeContents(text);
+        return Math.round(
+          range.getBoundingClientRect().left -
+            label(input).getBoundingClientRect().left,
+        );
+      };
+      const answerText = (input: HTMLInputElement): Element =>
+        document.getElementById(input.getAttribute('aria-labelledby')!)!;
+      const [wrongInput, , rightInput] = radios(fieldsets()[0]);
+      const answerStarts = [wrongInput, rightInput].map((input) =>
+        textStart(input, answerText(input)),
+      );
+
+      const wrong = answer(0);
+      const wrongStart = textStart(wrong, correction(wrong));
+
+      // Before the 2 s after which the question slides out.
+      const right = answer(2);
+      const rightStart = textStart(right, correction(right));
+
+      expect([wrongStart, rightStart]).toEqual(answerStarts);
+    }));
 
     it('announces its verdicts only through the live region of the quiz, never through the announcement service', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
@@ -540,7 +702,7 @@ describe('EpisodeQuizComponent', () => {
       showQuiz();
       tick(100);
       answer(0);
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « Le chat »');
 
       validate(2);
       expect(collapsedText(liveRegion())).toBe('');
@@ -551,7 +713,9 @@ describe('EpisodeQuizComponent', () => {
 
       tick(1);
       harness.detectChanges();
-      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe(
+        'Bonne réponse ! « Le majordome »',
+      );
       tick(2300);
     }));
 
@@ -589,15 +753,16 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/App Negative.mp3',
+        0.13,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
 
       tick(2000);
-      expect(correction(input).innerText).toBe('Mauvaise réponse !');
+      expect(correction(input).innerText).toBe('Mauvaise réponse ! « Le chat »');
 
       tick(60000);
-      expect(correction(input).innerText).toBe('Mauvaise réponse !');
+      expect(correction(input).innerText).toBe('Mauvaise réponse ! « Le chat »');
       expect(input.classList).toContain('active');
     }));
 
@@ -608,7 +773,7 @@ describe('EpisodeQuizComponent', () => {
 
       answer(0);
 
-      expect(liveRegion()?.textContent?.trim()).toBe('Mauvaise réponse !');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « Le chat »');
     }));
 
     it('puts only the last displayed correction in the live region, its quoted answer marked as Spanish', fakeAsync(() => {
@@ -621,12 +786,7 @@ describe('EpisodeQuizComponent', () => {
 
       const region = liveRegion()!;
       expect(collapsedText(region)).toBe(correctionText(second));
-      expect(
-        Array.from(region.querySelectorAll('[lang]'), (element) => [
-          element.getAttribute('lang'),
-          element.textContent?.trim(),
-        ]),
-      ).toEqual([['es', '¿Soy yo español?']]);
+      expect(languageMarks(region)).toEqual([['es', '¿Soy yo español?']]);
     }));
 
     it('empties the live region when validated twice, then puts the same correction back 100 ms later, so that it is announced again', fakeAsync(() => {
@@ -674,7 +834,21 @@ describe('EpisodeQuizComponent', () => {
       const second = answer(1);
 
       expect(correction(first).innerText).toBe('');
-      expect(correction(second).innerText).toBe('Mauvaise réponse !');
+      expect(correction(second).innerText).toBe(
+        'Mauvaise réponse ! « Le jardinier »',
+      );
+    }));
+
+    it('shows its answer text again, without its correction, once another answer is validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const first = answer(0);
+      answer(1);
+
+      // The box shows only its answer text.
+      expect(renderedText(label(first))).toBe('¿Es él español?');
     }));
 
     it('stays highlighted in red once another answer is checked but not validated', fakeAsync(() => {
@@ -710,6 +884,47 @@ describe('EpisodeQuizComponent', () => {
       ]);
     }));
 
+    it('shows its correction inside its answer box once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      expect(label(input).contains(correction(input))).toBeTrue();
+      expect(correction(input).innerText).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+    }));
+
+    it('shows its correction in place of its answer text once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const input = answer(1);
+
+      // The box shows only the correction, whose quote is then the only
+      // « ¿Soy yo español? » on screen.
+      expect(renderedText(label(input))).toBe(renderedText(correction(input)));
+    }));
+
+    it('keeps showing its correction in place of its answer text once another answer is checked but not validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      const wrong = answer(1);
+      radios(fieldsets()[0])[0].click();
+      harness.detectChanges();
+
+      // The box still shows only the correction, not « ¿Soy yo español? » as
+      // an answer text.
+      expect(renderedText(label(wrong))).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? » signifie « Suis-je espagnol ? »',
+      );
+    }));
+
     it('gives no translation when the question has none', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
@@ -717,10 +932,10 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      expect(correctionText(input)).toBe('Mauvaise réponse !');
+      expect(correctionText(input)).toBe('Mauvaise réponse ! « Le jardinier »');
     }));
 
-    it('gives and puts in the live region only « Mauvaise réponse ! » for an answer without translation among translated ones', fakeAsync(() => {
+    it('recalls an answer without translation among translated ones in its correction and its announcement, with no translation', fakeAsync(() => {
       episodeService.setEpisode(
         createEpisode([
           {
@@ -738,8 +953,12 @@ describe('EpisodeQuizComponent', () => {
 
       const input = answer(1);
 
-      expect(correctionText(input)).toBe('Mauvaise réponse !');
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(correctionText(input)).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? »',
+      );
+      expect(collapsedText(liveRegion())).toBe(
+        'Mauvaise réponse ! « ¿Soy yo español? »',
+      );
     }));
 
     it('gives the translation of the chosen answer when there is one', fakeAsync(() => {
@@ -812,8 +1031,7 @@ describe('EpisodeQuizComponent', () => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
-      // A narrow quiz, so that the correction wraps.
-      host().style.width = '240px';
+      narrowQuiz();
 
       const input = answer(1);
 
@@ -830,6 +1048,32 @@ describe('EpisodeQuizComponent', () => {
       expect(textRect.bottom).toBeLessThanOrEqual(
         nextLabel.getBoundingClientRect().top,
       );
+    }));
+
+    it("reserves no room for a correction: the question's usual gap separates its answer boxes, the question and the links, even when its correction wraps onto several lines", fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      narrowQuiz();
+
+      answer(1);
+
+      const [fieldset] = fieldsets();
+      const usualGap = Math.round(parseFloat(getComputedStyle(fieldset).rowGap));
+      const boxes = [
+        fieldset.querySelector('legend')!,
+        ...radios(fieldset).map(label),
+        validateButton(fieldset),
+      ];
+      const gapsInQuestion = boxes
+        .slice(1)
+        .map((box, index) => verticalGap(boxes[index], box));
+      const gapBeforeLinks = verticalGap(
+        fieldset,
+        host().querySelector('nav')!,
+      );
+      expect(gapsInQuestion).toEqual(boxes.slice(1).map(() => usualGap));
+      expect(gapBeforeLinks).toBe(usualGap);
     }));
 
     it('shows no correction nor translation on screen before validation', fakeAsync(() => {
@@ -853,23 +1097,24 @@ describe('EpisodeQuizComponent', () => {
 
       expect(audioService.playSoundEffect).toHaveBeenCalledOnceWith(
         '/audio/Win 3.mp3',
+        0.21,
       );
       expect(input.classList).toContain('active');
       expect(correction(input).classList).toContain('active');
       expect(fieldsets()[0].disabled).toBeTrue();
     }));
 
-    it('puts « Bonne réponse ! » in the live region of the quiz', fakeAsync(() => {
+    it('puts « Bonne réponse ! » and the recalled answer in the live region of the quiz', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
       tick(100);
 
       answer(2);
 
-      expect(liveRegion()?.textContent?.trim()).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe('Bonne réponse ! « Le majordome »');
     }));
 
-    it('puts only « Bonne réponse ! » in the live region after a wrong answer to the same question', fakeAsync(() => {
+    it('puts only the right answer\'s correction in the live region after a wrong answer to the same question', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
@@ -877,7 +1122,9 @@ describe('EpisodeQuizComponent', () => {
       answer(0);
       answer(2);
 
-      expect(collapsedText(liveRegion())).toBe('Bonne réponse !');
+      expect(collapsedText(liveRegion())).toBe(
+        'Bonne réponse ! « ¿Eres tú español? »',
+      );
     }));
 
     it("puts only the wrong answer's correction in the live region after a wrong answer to the next question", fakeAsync(() => {
@@ -896,18 +1143,35 @@ describe('EpisodeQuizComponent', () => {
 
       const wrong = answer(1);
 
-      expect(correctionText(wrong)).toBe('Mauvaise réponse !');
-      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse !');
+      expect(correctionText(wrong)).toBe('Mauvaise réponse ! « À la cave »');
+      expect(collapsedText(liveRegion())).toBe('Mauvaise réponse ! « À la cave »');
     }));
 
-    it('gives no translation, even when the question has some', fakeAsync(() => {
+    it('recalls the answer, marked as Spanish, and gives no translation, even when the question has some', fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
 
       const input = answer(2);
 
-      expect(correctionText(input)).toBe('Bonne réponse !');
+      expect(correctionText(input)).toBe('Bonne réponse ! « ¿Eres tú español? »');
+      expect(correction(input).closest('[lang="es"]')).toBeNull();
+      expect(languageMarks(correction(input))).toEqual([
+        ['es', '¿Eres tú español?'],
+      ]);
+    }));
+
+    it('shows its correction in place of its answer text once validated', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      // Before the 2 s after which the question slides out.
+      const input = answer(2);
+
+      // The box shows only the correction, whose quote is then the only
+      // « ¿Eres tú español? » on screen.
+      expect(renderedText(label(input))).toBe(renderedText(correction(input)));
     }));
 
     it('has no axe violation once validated', async () => {

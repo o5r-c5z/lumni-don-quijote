@@ -25,8 +25,14 @@ const VALIDATED_CLASS = 'active';
  */
 const LIVE_REGION_DELAY_MS = 100;
 
-/** The verdict on a validated answer: a wrong one is corrected by the answer. */
-type Verdict = { isCorrect: true } | { isCorrect: false; answer: Answer };
+/** Half the volume that brings the right-answer sound to −23 LUFS. */
+const RIGHT_ANSWER_SOUND_VOLUME = 0.21;
+
+/** Half the volume that brings the wrong-answer sound to −23 LUFS. */
+const WRONG_ANSWER_SOUND_VOLUME = 0.13;
+
+/** The verdict on a validated answer, recalled in its correction. */
+type Verdict = { isCorrect: boolean; answer: Answer };
 
 @Component({
   selector: 'app-episode-quiz',
@@ -145,9 +151,9 @@ export class EpisodeQuizComponent implements OnInit {
     const correction = correctionId
       ? document.getElementById(correctionId)
       : null;
-    const isCorrect =
-      selectedAnswerIndex ===
-      this.episode?.questions[questionIndex].correctAnswer;
+    const question = this.episode?.questions[questionIndex];
+    const isCorrect = selectedAnswerIndex === question?.correctAnswer;
+    const answer = question?.answers[selectedAnswerIndex];
 
     const fieldset = input.closest('fieldset');
 
@@ -164,15 +170,16 @@ export class EpisodeQuizComponent implements OnInit {
 
       this.handleCorrectAnswer(fieldset as HTMLFieldSetElement, questionIndex);
     } else {
-      this.handleIncorrectAnswer(questionIndex, selectedAnswerIndex);
+      this.handleIncorrectAnswer();
     }
+    this.announce(answer && { isCorrect, answer });
   }
 
   private clearPreviousValidation(fieldset: HTMLFieldSetElement): void {
     fieldset
       .querySelectorAll(
         `.episode-quiz__answer-input.${VALIDATED_CLASS},` +
-          ` .episode-quiz__question-correction.${VALIDATED_CLASS}`,
+          ` .episode-quiz__answer-correction.${VALIDATED_CLASS}`,
       )
       .forEach((element) => element.classList.remove(VALIDATED_CLASS));
   }
@@ -181,8 +188,10 @@ export class EpisodeQuizComponent implements OnInit {
     fieldset: HTMLFieldSetElement,
     questionIndex: number,
   ): void {
-    this.audioService.playSoundEffect('/audio/Win 3.mp3');
-    this.announce({ isCorrect: true });
+    this.audioService.playSoundEffect(
+      '/audio/Win 3.mp3',
+      RIGHT_ANSWER_SOUND_VOLUME,
+    );
 
     timer(2000)
       .pipe(
@@ -209,13 +218,11 @@ export class EpisodeQuizComponent implements OnInit {
     });
   }
 
-  private handleIncorrectAnswer(
-    questionIndex: number,
-    answerIndex: number,
-  ): void {
-    this.audioService.playSoundEffect('/audio/App Negative.mp3');
-    const answer = this.episode?.questions[questionIndex]?.answers[answerIndex];
-    this.announce(answer ? { isCorrect: false, answer } : undefined);
+  private handleIncorrectAnswer(): void {
+    this.audioService.playSoundEffect(
+      '/audio/App Negative.mp3',
+      WRONG_ANSWER_SOUND_VOLUME,
+    );
   }
 
   private announce(verdict?: Verdict): void {

@@ -132,6 +132,26 @@ dans un vrai navigateur (section 5).
       (`LiveAnnouncer` n'accepte que du texte) ; comme `LiveAnnouncer`,
       elle est vidée à chaque validation puis remplie 100 ms plus tard,
       pour qu'un même verdict soit annoncé de nouveau
+- [x] Retours fonctionnels sur le quiz :
+  - [x] Sons de réponse moins forts : environ −29 LUFS, 6 dB sous le
+        niveau sonore des vidéos (−23 LUFS) ; volume 0,13 pour
+        `App Negative.mp3`, 0,21 pour `Win 3.mp3` (moitié des volumes qui
+        les alignaient sur les vidéos)
+  - [x] La correction remplace la réponse validée dans sa case, au même
+        endroit et dans la couleur habituelle du texte (le rouge ou le vert
+        sur le fond clair de la case n'atteignait pas le contraste de 4,5:1) ;
+        aucune place n'est plus réservée sous les réponses
+  - [x] La correction d'une bonne réponse rappelle la réponse (« Bonne
+        réponse ! « ¿De dónde eres? » »), marquée en espagnol, sans
+        traduction
+  - [x] La correction d'une mauvaise réponse sans traduction rappelle
+        aussi la réponse (« Mauvaise réponse ! « … » »)
+  - [x] Avant la validation, la correction cachée ne prend aucune place
+        dans la case de la réponse
+  - [x] La validation d'une autre réponse fait réapparaître la mauvaise
+        réponse à la place de sa correction
+  - [x] Le bouton radio garde la réponse pour nom accessible ; la
+        correction devient sa description (`aria-describedby`)
 
 ## 5. Tests e2e (Playwright)
 
@@ -146,7 +166,8 @@ vrai navigateur, une fois les fonctionnalités en place.
       après un retour arrière du navigateur en cours de quiz
 - [x] Une mauvaise réponse reste en rouge jusqu'à la validation d'une autre
 - [x] Annonce du verdict et de la traduction aux lecteurs d'écran, la
-      réponse citée marquée en espagnol
+      réponse citée marquée en espagnol, rappelée aussi pour une bonne
+      réponse
 - [x] « Revoir la leçon de Rossinante » depuis une question
 - [x] axe sur chaque écran, contrastes compris
 - [x] Lecteur Vimeo et `episode.json` simulés avec `page.route`

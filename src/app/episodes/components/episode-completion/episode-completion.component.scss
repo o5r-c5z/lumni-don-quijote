@@ -1,12 +1,6 @@
 @use "../../../../styles/figma";
 
 :host {
-  --episode-quiz__question-correction-height: calc(
-    var(--default-line-height) * 1em
-  );
-  --episode-quiz__answer-label-padding-x: calc(var(--spacer) * 7.5);
-  --episode-quiz__answer-label-border-width: 2px;
-
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -16,9 +16,12 @@
         </legend>
         @for (answer of question.answers; track answer; let aIndex = $index) {
           @let isCorrectAnswer = aIndex === question.correctAnswer;
+          @let answerId = "question-" + qIndex + "-answer-" + aIndex;
+          @let answerTextId = answerId + "-text";
+          @let correctionId = answerId + "-correction";
           <input
             required
-            id="question-{{ qIndex }}-answer-{{ aIndex }}"
+            [id]="answerId"
             type="radio"
             name="question-{{ qIndex }}"
             [attr.data-question-index]="qIndex"
@@ -26,32 +29,31 @@
             value="{{ aIndex }}"
             class="episode-quiz__answer-input cdk-visually-hidden"
             [class.correct]="isCorrectAnswer"
+            [attr.aria-labelledby]="answerTextId"
             [attr.aria-checked]="checkedAnswers[qIndex] === aIndex"
             (change)="onCheckAnswer(qIndex, aIndex)"
-            [attr.aria-describedby]="
-              'question-' + qIndex + '-answer-' + aIndex + '-correction'
-            "
+            [attr.aria-describedby]="correctionId"
             tabindex="0"
           />
-          <label
-            for="question-{{ qIndex }}-answer-{{ aIndex }}"
-            class="episode-quiz__answer-label"
-            lang="es"
-          >
-            {{ answer.original }}
+          <label [for]="answerId" class="episode-quiz__answer-label">
+            <span
+              [id]="answerTextId"
+              class="episode-quiz__answer-text"
+              lang="es"
+              >{{ answer.original }}</span
+            >
+            <span
+              [id]="correctionId"
+              class="episode-quiz__answer-correction"
+            >
+              <ng-container
+                *ngTemplateOutlet="
+                  correctionContent;
+                  context: { isCorrect: isCorrectAnswer, answer }
+                "
+              />
+            </span>
           </label>
-          <p
-            [id]="'question-' + qIndex + '-answer-' + aIndex + '-correction'"
-            class="episode-quiz__question-correction"
-            [class.correct]="isCorrectAnswer"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                correctionContent;
-                context: { isCorrect: isCorrectAnswer, answer }
-              "
-            />
-          </p>
         }
         <button
           type="button"
@@ -75,8 +77,7 @@
     }
   </div>
 
-  <!-- The correction of an answer, shown under it and put in the live region.
-       A right answer's correction does not depend on the answer. -->
+  <!-- The correction of an answer, shown inside its answer box and put in the live region. -->
   <ng-template
     #correctionContent
     let-isCorrect="isCorrect"
@@ -86,9 +87,12 @@
       {{ isCorrect ? "Bonne réponse !" : "Mauvaise réponse !" }}
     </span>
     &ngsp;
-    @if (!isCorrect && answer.translation; as translation) {
-      <span>« <span lang="es">{{ answer.original }}</span> » signifie « {{ translation }} »</span>
-    }
+    <span>
+      « <span lang="es">{{ answer.original }}</span> »
+      @if (!isCorrect && answer.translation) {
+        signifie « {{ answer.translation }} »
+      }
+    </span>
   </ng-template>
 
   <nav class="episode-quiz__links">
