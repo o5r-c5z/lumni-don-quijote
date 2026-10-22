@@ -539,6 +539,27 @@ describe('EpisodeQuizComponent', () => {
       );
       tick(2000);
     }));
+
+    it('shows no correction nor translation on screen before validation', fakeAsync(() => {
+      const translatedQuestion = {
+        label: 'Comment dit-on « Es-tu espagnol ? » ?',
+        answers: ['¿Es él español?', '¿Soy yo español?', '¿Eres tú español?'],
+        answerTranslations: [
+          'Est-il espagnol ?',
+          'Suis-je espagnol ?',
+          'Es-tu espagnol ?',
+        ],
+        correctAnswer: 2,
+        answerVideo: { url: 'https://vimeo.com/10', title: 'Réponse 1' },
+      };
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+
+      expect(
+        radios(fieldsets()[0]).map((input) => correction(input).innerText),
+      ).toEqual(['', '', '']);
+    }));
   });
 
   describe('a right answer', () => {
