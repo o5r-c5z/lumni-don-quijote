@@ -138,7 +138,7 @@
   }
 }
 
-.episode-quiz__answer-input.active:not(.correct)
+.episode-quiz__answer-input.active
   + *
   > .episode-quiz__answer-text {
   display: none;
