@@ -143,6 +143,10 @@ dans un vrai navigateur (section 5).
   - [x] La correction d'une bonne réponse rappelle la réponse (« Bonne
         réponse ! « ¿De dónde eres? » »), marquée en espagnol, sans
         traduction
+  - [x] La correction d'une mauvaise réponse sans traduction rappelle
+        aussi la réponse (« Mauvaise réponse ! « … » »)
+  - [x] Avant la validation, la correction cachée ne prend aucune place
+        dans la case de la réponse
   - [x] La validation d'une autre réponse fait réapparaître la mauvaise
         réponse à la place de sa correction
   - [x] Le bouton radio garde la réponse pour nom accessible ; la

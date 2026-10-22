@@ -26,10 +26,10 @@ premier) :
 3. **Questions** — une question à la fois, numérotée (« 1 / 3 »). Une fois
    validée, la réponse choisie laisse place, dans sa case et au même
    endroit, à la correction, écrite dans la couleur habituelle du texte :
-   seul le fond et la bordure passent au rouge ou au vert. Une mauvaise
-   réponse est signalée (« Mauvaise réponse ! »), suivie de sa
-   traduction quand la question en fournit une
-   (« « ¿Soy yo español? » signifie « Suis-je espagnol ? » »). Cette
+   seul le fond et la bordure passent au rouge ou au vert. La correction
+   rappelle toujours la réponse (« Mauvaise réponse ! « ¿Soy yo español? » »),
+   suivie de sa traduction quand la question en fournit une
+   (« … signifie « Suis-je espagnol ? » »). Cette
    correction, comme le rouge de la case, reste affichée jusqu'à la
    validation d'une autre réponse, qui fait réapparaître la réponse ; une
    mauvaise réponse ne fait pas avancer : il faut trouver la bonne. Pour
