@@ -52,10 +52,10 @@
             </span>
             @if (
               aIndex !== question.correctAnswer &&
-              question.answerTranslations?.[aIndex]
+              question.answerTranslations?.[aIndex];
+              as translation
             ) {
-              « {{ answer }} » signifie «
-              {{ question.answerTranslations?.[aIndex] }} »
+              « {{ answer }} » signifie « {{ translation }} »
             }
           </p>
         }
