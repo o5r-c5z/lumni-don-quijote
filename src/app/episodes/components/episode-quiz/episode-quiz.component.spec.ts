@@ -620,6 +620,27 @@ describe('EpisodeQuizComponent', () => {
       expect(region.contains(firstContent)).toBeFalse();
     }));
 
+    it('empties the live region when validated twice, then puts the same correction back 100 ms later, so that it is announced again', fakeAsync(() => {
+      episodeService.setEpisode(createEpisode([translatedQuestion]));
+      showQuiz();
+      tick(100);
+      const first = answer(0);
+      const correctionBefore = correctionText(first);
+      expect(collapsedText(liveRegion())).toBe(correctionBefore);
+
+      const second = validate(0);
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(VERDICT_DELAY - 1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe('');
+
+      tick(1);
+      harness.detectChanges();
+      expect(collapsedText(liveRegion())).toBe(correctionText(second));
+      expect(collapsedText(liveRegion())).toBe(correctionBefore);
+    }));
+
     it('lets the question be answered again', fakeAsync(() => {
       episodeService.setEpisode(createEpisode());
       showQuiz();
