@@ -192,7 +192,7 @@ Le `url` de chaque vidéo est le lien complet du lecteur Vimeo, paramètre `h` c
 
 Le build de production (`npm run build`, fichiers du site dans `dist/lumni-don-quijote/browser/`) et le dossier `uploads/` sont déposés sur le FTP du serveur de production. Le build ne contenant pas `uploads/`, ce dossier y est déposé à part, de sorte que l'application le trouve sous `/uploads`.
 
-Le build contient aussi `.htaccess`, à déposer avec le reste du site, et `index.html` doit être déposé en dernier : voir « Notes de configuration ».
+Le build contient aussi `.htaccess`, à déposer avec le reste du site ; l'ordre du dépôt compte : voir « Notes de configuration ».
 
 Le versionnement d'`uploads/`, un script de vérification des `episode.json` et la copie d'`uploads/` par la configuration de production ne sont pas encore faits : voir la section 9 de `ROADMAP.md`.
 
