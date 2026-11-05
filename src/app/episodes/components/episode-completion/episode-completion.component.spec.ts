@@ -71,7 +71,7 @@ describe('EpisodeCompletionComponent', () => {
   it('displays the parchment as a mostly hidden background', () => {
     expect(host.classList).toContain('screen');
     expect(getComputedStyle(host, '::before').backgroundImage).toMatch(
-      /^url\("[^"]*\/images\/Parchemin_questions\.jpg"\)$/,
+      /^url\("[^"]*\/images\/FOND_Parchemin\.webp"\)$/,
     );
     expect(
       host.style.getPropertyValue('--screen-background-overlay-opacity'),
