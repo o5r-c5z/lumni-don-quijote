@@ -56,7 +56,7 @@ dans un vrai navigateur (section 5).
 - [x] « Revoir la leçon de Rossinante » depuis les questions
 - [x] Musique selon l'écran : fond sonore sur le titre et l'écran Bravo,
       musique du quiz sur les questions, silence pendant les vidéos
-- [x] Fond `FOND_Parchemin.png` sur tous les écrans sauf le titre
+- [x] Fond `FOND_Parchemin.webp` sur tous les écrans sauf le titre
 - [x] Écran titre sans image de fond (`none`) tant qu'`episode.json` n'est
       pas chargé, si son chargement échoue, ou si `titleBackground` est vide
       (auparavant `url("undefined")`, qui faisait demander un fichier
@@ -176,7 +176,7 @@ vrai navigateur, une fois les fonctionnalités en place.
 ## 6. Assets
 
 - [x] Fond commun à tous les écrans sauf le titre :
-      `public/images/FOND_Parchemin.png`
+      `public/images/FOND_Parchemin.webp`
 - [x] Fond sonore du titre et de l'écran Bravo :
       `public/audio/Entertainment_FOND_SONORE.mp3`
 - [x] Fond sonore du quiz : `public/audio/Guitar Background Mini_QUIZ.mp3`
