@@ -488,7 +488,7 @@ describe('EpisodeQuizComponent', () => {
 
       expect(host().classList).toContain('screen');
       expect(getComputedStyle(host(), '::before').backgroundImage).toMatch(
-        /^url\("[^"]*\/images\/Parchemin_questions\.jpg"\)$/,
+        /^url\("[^"]*\/images\/FOND_Parchemin\.png"\)$/,
       );
       expect(
         host().style.getPropertyValue('--screen-background-overlay-opacity'),

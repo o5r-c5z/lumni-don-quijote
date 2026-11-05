@@ -86,7 +86,7 @@ charge pas, affiche « Vous devez entrer un numéro d'épisode valide ».
 - `src/testing/` — utilitaires des tests unitaires (axe-core, minuteries).
 - `src/**/*.spec.ts` — tests unitaires (Karma + Jasmine), un spec à côté de chaque fichier testé.
 - `e2e/`, `playwright.config.ts` — tests de bout en bout Playwright et leurs doublures (`e2e/doubles/`).
-- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/Parchemin_questions.jpg` (fond de tous les écrans sauf le titre), `favicon.ico`, `.htaccess` (configuration pour un hébergement Apache, voir « Notes de configuration »).
+- `public/` — fichiers statiques copiés tels quels : `audio/` (fonds sonores et effets `.mp3`), `images/FOND_Parchemin.png` (fond de tous les écrans sauf le titre), `favicon.ico`, `.htaccess` (configuration pour un hébergement Apache, voir « Notes de configuration »).
 - `ACCESSIBILITY.md` — exigences d'accessibilité du client : exigences générales (contrastes, zones interactives, parcours clavier, iframes, mécaniques de jeu) et règles d'implémentation (HTML, SCSS, TS).
 - `.github/workflows/ci.yml` — CI GitHub Actions : vérification des types, build de production, tests unitaires et e2e sur chaque pull request et sur `main`.
 - `AGENTS.md` — instructions pour les agents de code (en anglais) : commandes, conventions de test, TDD.
