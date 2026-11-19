@@ -2,6 +2,12 @@
 
 .episode-title-screen__links {
   --panel-ratio: 843 / 846;
+  --panel-width: 45%;
+  // The links are centered on the text of the title background (1552 px of
+  // its 2049 px), at the width of the rule under the title. Like the
+  // horizontal padding that places them, both are a share of the screen.
+  --title-text-center: 75.75%;
+  --links-width: 30%;
 
   display: flex;
   flex-direction: column;
@@ -10,8 +16,13 @@
   position: absolute;
   right: 0;
   bottom: 0;
-  padding: 6rem 2rem 0rem 5rem;
-  width: min(45%, var(--screen-max-width) * 0.45);
+  padding: 6rem
+    calc(100% - var(--title-text-center) - var(--links-width) / 2) 0
+    calc(
+      var(--title-text-center) - var(--links-width) / 2 -
+        (100% - var(--panel-width))
+    );
+  width: var(--panel-width);
   aspect-ratio: var(--panel-ratio);
   font-size: figma.figma-font-size-to-rem(37);
 
