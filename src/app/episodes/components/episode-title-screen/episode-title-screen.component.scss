@@ -22,7 +22,7 @@
       var(--title-text-center) - var(--links-width) / 2 -
         (100% - var(--panel-width))
     );
-  width: min(var(--panel-width), var(--screen-max-width) * 0.45);
+  width: var(--panel-width);
   aspect-ratio: var(--panel-ratio);
   font-size: figma.figma-font-size-to-rem(37);
 
