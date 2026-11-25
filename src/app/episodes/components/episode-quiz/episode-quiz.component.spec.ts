@@ -1050,7 +1050,7 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
-    it("reserves no room for a correction: the question's usual gap separates the question, its answer boxes and the links, even when its correction wraps onto several lines", fakeAsync(() => {
+    it("reserves no room for a correction: the question's usual gap separates the question and its answer boxes, and the question's fieldset from the links, even when its correction wraps onto several lines", fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
