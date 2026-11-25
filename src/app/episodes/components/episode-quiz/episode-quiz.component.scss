@@ -170,10 +170,9 @@
 
   .btn {
     border-radius: figma.figma-radius-to-rem(30);
-    padding: 1rem;
+    padding: 1rem 5rem;
     background-color: var(--green-color);
     color: var(--text-color);
-    width: 30%;
     font-size: figma.figma-font-size-to-rem(32);
   }
 }
