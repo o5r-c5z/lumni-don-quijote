@@ -162,10 +162,9 @@
 }
 
 .episode-quiz__links {
-  --gap: var(--spacer);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--gap);
+  gap: var(--spacer);
   justify-content: center;
 
   .btn {
