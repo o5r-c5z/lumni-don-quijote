@@ -154,25 +154,25 @@
 
 .episode-quiz__validate-answer-btn {
   border-radius: figma.figma-radius-to-rem(30);
+  // Twice the spacer around it: this margin adds to the gaps above and below.
+  margin-block: var(--spacer);
   padding: 1rem;
   width: 100%;
   background-color: var(--ultramarine-blue-color);
 }
 
 .episode-quiz__links {
-  --gap: var(--spacer);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--gap);
+  gap: var(--spacer);
   justify-content: center;
 
   .btn {
     border-radius: figma.figma-radius-to-rem(30);
-    padding: 1rem;
+    padding: 1rem 5rem;
     background-color: var(--green-color);
     color: var(--text-color);
-    width: calc(25% - var(--gap) * 3 / 4);
-    font-size: figma.figma-font-size-to-rem(25);
+    font-size: figma.figma-font-size-to-rem(32);
   }
 }
 

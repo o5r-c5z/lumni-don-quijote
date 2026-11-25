@@ -55,6 +55,19 @@ that requires it. Each cycle follows these steps:
 For existing code without tests, first write characterization tests that pin
 down the current behavior, then change it.
 
+## Captures
+
+Before and after captures of a design change are taken with Playwright, in
+Chromium only. Write a throwaway spec in `e2e/`, using the base Playwright
+`test` rather than `e2e/fixtures.ts`. It stubs `episode.json` and the Vimeo
+player with `e2e/doubles/`, and the sounds with the `page.route` call of the
+`page` fixture in `e2e/fixtures.ts`, copied into the spec. It keeps Google
+Fonts, so that the captures show the real font, and the images of `public/`,
+so that the background shows. It opens the screen with the helpers of
+`e2e/helpers/` and calls `page.screenshot()` at 1440×900 and 1024×768. Run
+it with `npx playwright test <spec> --project=chromium`. Then delete the
+spec, `test-results/` and `playwright-report/`: captures are never committed.
+
 ## Accessibility
 
 The application must stay usable with a keyboard and a screen reader. The
