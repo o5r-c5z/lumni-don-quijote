@@ -1050,7 +1050,7 @@ describe('EpisodeQuizComponent', () => {
       );
     }));
 
-    it("reserves no room for a correction: the question's usual gap separates the question and its answer boxes, even when its correction wraps onto several lines", fakeAsync(() => {
+    it("reserves no room for a correction: the question's usual gap separates the question, its answer boxes and the links, even when its correction wraps onto several lines", fakeAsync(() => {
       episodeService.setEpisode(createEpisode([translatedQuestion]));
       showQuiz();
       tick(100);
@@ -1067,7 +1067,12 @@ describe('EpisodeQuizComponent', () => {
       const gapsInQuestion = boxes
         .slice(1)
         .map((box, index) => verticalGap(boxes[index], box));
+      const gapBeforeLinks = verticalGap(
+        fieldset,
+        host().querySelector('nav')!,
+      );
       expect(gapsInQuestion).toEqual(boxes.slice(1).map(() => usualGap));
+      expect(gapBeforeLinks).toBe(usualGap);
     }));
 
     it('shows no correction nor translation on screen before validation', fakeAsync(() => {
