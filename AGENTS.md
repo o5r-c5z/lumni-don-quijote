@@ -65,9 +65,8 @@ player with `e2e/doubles/`, and the sounds with the `page.route` call of the
 Fonts, so that the captures show the real font, and the images of `public/`,
 so that the background shows. It opens the screen with the helpers of
 `e2e/helpers/` and calls `page.screenshot()` at 1440×900 and 1024×768. Run
-it with
-`npx playwright test <spec> --project=chromium`. Then delete the spec,
-`test-results/` and `playwright-report/`: captures are never committed.
+it with `npx playwright test <spec> --project=chromium`. Then delete the
+spec, `test-results/` and `playwright-report/`: captures are never committed.
 
 ## Accessibility
 
