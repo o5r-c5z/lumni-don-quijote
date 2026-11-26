@@ -206,11 +206,6 @@ production ne le copie pas. Les images de titre y sont aussi, via
       n'affiche pas
 - [x] Traduction française de chaque réponse (`translation`)
 - [x] Épisodes 2 à 6 : `uploads/episodes/<n>/episode.json`
-  - Coquilles corrigées : « ¡Hola, amiga! » (EP2 Q3, « ¡Hola amiga¡ »),
-    « a la derecha » (EP4 Q3, « à »), « ¿Cómo te llamas tú? » (EP6 Q1,
-    espace après « ¿ ») ; « Puerta » en majuscule et points finaux retirés
-    là où seules certaines réponses en avaient (EP3 Q1 et Q3, EP4 Q1 et
-    Q3, EP5 Q3), pour que la forme ne trahisse pas la bonne réponse
   - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
     Ruiz »…) : la correction rappelle seulement la réponse
 - [x] Titres des épisodes 2 à 6
