@@ -216,9 +216,10 @@ production ne le copie pas. Les images de titre y sont aussi, via
     Q3, EP5 Q3), pour que la forme ne trahisse pas la bonne réponse
   - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
     Ruiz »…) : la correction rappelle seulement la réponse
-- [ ] Titres des épisodes 2 à 6 : provisoirement « Episodio <n> » (titre
-      lu par les lecteurs d'écran et préfixe des titres des vidéos), en
-      attendant les titres de la série
+- [x] Titres des épisodes 2 à 6 : « Una paella en familia », « El
+      autógrafo » (accent ajouté), « Buscando a Dulcinea », « Tiempo
+      libre », « El hombre y el mar », repris en préfixe des titres des
+      vidéos comme pour l'épisode 1
 - [ ] EP3 Q3 : les réponses A et C sont identiques dans les deux documents
       (« Él no es simpático y ella es graciosa »), C étant la bonne ; texte
       de la réponse A à demander au client
