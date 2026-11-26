@@ -185,8 +185,8 @@ vrai navigateur, une fois les fonctionnalités en place.
       parchemin), dans la même PR que le remplacement de leurs références
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
-- [x] Images de l'écran titre des épisodes 1 à 6 :
-      `uploads/episodes/<n>/Titre_EP_0<n>.jpg` (1920 × 1080), copiées de
+- [x] Images de l'écran titre des épisodes 1 à 11 :
+      `uploads/episodes/<n>/Titre_EP_<nn>.jpg` (1920 × 1080), copiées de
       `_Documents/Épisodes/Titres/` (images des épisodes 1 à 20) ; celle de l'épisode 1 remplace
       `Titre_Episode01.jpg`, qui portait encore les logos BIG et Lumni
 - [ ] À recevoir : personnages éventuels
@@ -205,10 +205,10 @@ production ne le copie pas. Les images de titre y sont aussi, via
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
 - [x] Traduction française de chaque réponse (`translation`)
-- [x] Épisodes 2 à 6 : `uploads/episodes/<n>/episode.json`
+- [x] Épisodes 2 à 11 : `uploads/episodes/<n>/episode.json`
   - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
     Ruiz »…) : la correction rappelle seulement la réponse
-- [x] Titres des épisodes 2 à 6
+- [x] Titres des épisodes 2 à 11
 - [x] `titleBackground` de chaque épisode pointe vers son image de titre
       (section 6)
 
@@ -235,7 +235,7 @@ serveur de production.
 ### Vidéos Vimeo des épisodes
 
 Chaque épisode a son dossier Vimeo, « Don Quijote - EPISODE <n> », avec
-les mêmes cinq vidéos, `EPISODE_0<n>_…` ; pour l'épisode 1 :
+les mêmes cinq vidéos, `EPISODE_<nn>_…` ; pour l'épisode 1 :
 
 | Vidéo (nom sur Vimeo)   | Écran                         |
 | ----------------------- | ----------------------------- |
