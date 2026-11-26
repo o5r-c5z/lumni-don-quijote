@@ -185,10 +185,11 @@ vrai navigateur, une fois les fonctionnalités en place.
       parchemin), dans la même PR que le remplacement de leurs références
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
-- [x] Image de l'écran titre de l'épisode 1 :
-      `uploads/episodes/1/Titre_Episode01.jpg`
-- [ ] À recevoir : images de l'écran titre des épisodes 2 à 6, personnages
-      éventuels
+- [x] Images de l'écran titre des épisodes 1 à 6 :
+      `uploads/episodes/<n>/Titre_EP_0<n>.jpg` (1920 × 1080), tirées de
+      `_Documents/Épisodes/Titres/` ; celle de l'épisode 1 remplace
+      `Titre_Episode01.jpg`, qui portait encore les logos BIG et Lumni
+- [ ] À recevoir : personnages éventuels
 
 ## 7. Données des épisodes
 
@@ -217,16 +218,14 @@ production ne le copie pas. Les images de titre y sont aussi, via
   - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
     Ruiz »…) : la correction rappelle seulement la réponse
 - [x] Titres des épisodes 2 à 6 : « Una paella en familia », « El
-      autógrafo » (accent ajouté), « Buscando a Dulcinea », « Tiempo
+      autógrafo » (accent confirmé par l'image de titre), « Buscando a Dulcinea », « Tiempo
       libre », « El hombre y el mar », repris en préfixe des titres des
       vidéos comme pour l'épisode 1
-- [ ] EP3 Q3 : les réponses A et C sont identiques dans les deux documents
-      (« Él no es simpático y ella es graciosa »), C étant la bonne ; texte
-      de la réponse A à demander au client
-
-L'épisode 1 a son image de titre (`Titre_Episode01.jpg`). En attendant
-celles des épisodes 2 à 6 (section 6), leur `titleBackground` vaut `""` :
-l'écran titre n'a alors pas d'image de fond.
+- [x] EP3 Q3 : la réponse A, identique à la C dans la première livraison,
+      est corrigée par le client : « Él es simpático y ella es graciosa »
+      (« Il est gentil et elle est drôle ») ; C reste la bonne
+- [x] `titleBackground` de chaque épisode pointe vers son image de titre
+      (section 6)
 
 ## 8. Documentation
 
@@ -265,6 +264,13 @@ Le `_1` de `Reponse_Q2_1` vient seulement du nom donné lors de l'upload :
 il n'y a qu'une vidéo de réponse par question. Les liens complets (avec
 `?h=…`) sont dans `uploads/episodes/<n>/episode.json` ; le hash est celui
 du lien de gestion de la vidéo (`/manage/videos/<id>/<hash>`).
+
+### Images de titre livrées
+
+Dans `_Documents/Épisodes/Titres/`, les numéros des fichiers 01 à 06 ne
+suivent pas les épisodes : l'épisode affiché sur l'image fait foi (1 →
+`Titre_EP_04`, 2 → `_02`, 3 → `_05`, 4 → `_03`, 5 → `_01`, 6 → `_06`). Les
+fichiers 07 à 20 correspondent à leur épisode.
 
 ### Musique selon l'écran
 
