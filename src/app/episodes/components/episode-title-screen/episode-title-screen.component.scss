@@ -3,10 +3,10 @@
 .episode-title-screen__links {
   --panel-ratio: 843 / 846;
   --panel-width: 45%;
-  // The links are centered on the text of the title background (1552 px of
-  // its 2049 px), at the width of the rule under the title. Like the
-  // horizontal padding that places them, both are a share of the screen.
-  --title-text-center: 75.75%;
+  // The links are centered on the text of the title background (1458 px of
+  // its 1920 px). Like their width and the horizontal padding that places
+  // them, this center is a share of the screen.
+  --title-text-center: calc(1458 / 1920 * 100%);
   --links-width: 30%;
 
   display: flex;
