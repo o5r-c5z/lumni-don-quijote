@@ -185,14 +185,18 @@ vrai navigateur, une fois les fonctionnalités en place.
       parchemin), dans la même PR que le remplacement de leurs références
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
-- [ ] À recevoir : image de l'écran titre, personnages éventuels
+- [x] Image de l'écran titre de l'épisode 1 :
+      `uploads/episodes/1/Titre_Episode01.jpg`
+- [ ] À recevoir : images de l'écran titre des épisodes 2 à 6, personnages
+      éventuels
 
-## 7. Données de l'épisode 1
+## 7. Données des épisodes
 
 Comme dans Biggle, les contenus des épisodes vivent dans `uploads/`,
 gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par la
 configuration `development` d'`angular.json` (`npm start`) ; le build de
-production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`.
+production ne le copie pas. Les images de titre y sont aussi, via
+`titleBackground`.
 
 - [x] `uploads/episodes/1/episode.json` avec les liens Vimeo complets
       (`https://player.vimeo.com/video/<id>?h=<hash>`)
@@ -200,8 +204,27 @@ production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
 - [x] Traduction française de chaque réponse (`translation`)
+- [x] Épisodes 2 à 6 : `uploads/episodes/<n>/episode.json`, questions de
+      `QUIZ.docx` (bonnes réponses surlignées : EP2 B, B, C ; EP3 B, B, C ;
+      EP4 B, A, A ; EP5 B, A, C ; EP6 C, B, B), traductions de
+      `QUIZ_traduit_fr_corrige.docx`, liens Vimeo des dossiers
+      « Don Quijote - EPISODE <n> »
+  - Coquilles corrigées : « ¡Hola, amiga! » (EP2 Q3, « ¡Hola amiga¡ »),
+    « a la derecha » (EP4 Q3, « à »), « ¿Cómo te llamas tú? » (EP6 Q1,
+    espace après « ¿ ») ; « Puerta » en majuscule et points finaux retirés
+    là où seules certaines réponses en avaient (EP3 Q1 et Q3, EP4 Q1 et
+    Q3, EP5 Q3), pour que la forme ne trahisse pas la bonne réponse
+  - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
+    Ruiz »…) : la correction rappelle seulement la réponse
+- [ ] Titres des épisodes 2 à 6 : provisoirement « Episodio <n> » (titre
+      lu par les lecteurs d'écran et préfixe des titres des vidéos), en
+      attendant les titres de la série
+- [ ] EP3 Q3 : les réponses A et C sont identiques dans les deux documents
+      (« Él no es simpático y ella es graciosa »), C étant la bonne ; texte
+      de la réponse A à demander au client
 
-En attendant l'image de titre (section 6), `titleBackground` vaut `""` :
+L'épisode 1 a son image de titre (`Titre_Episode01.jpg`). En attendant
+celles des épisodes 2 à 6 (section 6), leur `titleBackground` vaut `""` :
 l'écran titre n'a alors pas d'image de fond.
 
 ## 8. Documentation
@@ -224,7 +247,10 @@ serveur de production.
 
 ## Notes
 
-### Vidéos Vimeo de l'épisode 1
+### Vidéos Vimeo des épisodes
+
+Chaque épisode a son dossier Vimeo, « Don Quijote - EPISODE <n> », avec
+les mêmes cinq vidéos, `EPISODE_0<n>_…` ; pour l'épisode 1 :
 
 | Vidéo (nom sur Vimeo)   | Écran                         |
 | ----------------------- | ----------------------------- |
@@ -236,7 +262,8 @@ serveur de production.
 
 Le `_1` de `Reponse_Q2_1` vient seulement du nom donné lors de l'upload :
 il n'y a qu'une vidéo de réponse par question. Les liens complets (avec
-`?h=…`) sont dans `uploads/episodes/1/episode.json`.
+`?h=…`) sont dans `uploads/episodes/<n>/episode.json` ; le hash est celui
+du lien de gestion de la vidéo (`/manage/videos/<id>/<hash>`).
 
 ### Musique selon l'écran
 
