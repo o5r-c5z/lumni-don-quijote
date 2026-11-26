@@ -205,11 +205,7 @@ production ne le copie pas. Les images de titre y sont aussi, via
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
 - [x] Traduction française de chaque réponse (`translation`)
-- [x] Épisodes 2 à 6 : `uploads/episodes/<n>/episode.json`, questions de
-      `QUIZ.docx` (bonnes réponses surlignées : EP2 B, B, C ; EP3 B, B, C ;
-      EP4 B, A, A ; EP5 B, A, C ; EP6 C, B, B), traductions de
-      `QUIZ_traduit_fr_corrige.docx`, liens Vimeo des dossiers
-      « Don Quijote - EPISODE <n> »
+- [x] Épisodes 2 à 6 : `uploads/episodes/<n>/episode.json`
   - Coquilles corrigées : « ¡Hola, amiga! » (EP2 Q3, « ¡Hola amiga¡ »),
     « a la derecha » (EP4 Q3, « à »), « ¿Cómo te llamas tú? » (EP6 Q1,
     espace après « ¿ ») ; « Puerta » en majuscule et points finaux retirés
@@ -217,13 +213,7 @@ production ne le copie pas. Les images de titre y sont aussi, via
     Q3, EP5 Q3), pour que la forme ne trahisse pas la bonne réponse
   - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
     Ruiz »…) : la correction rappelle seulement la réponse
-- [x] Titres des épisodes 2 à 6 : « Una paella en familia », « El
-      autógrafo » (accent confirmé par l'image de titre), « Buscando a Dulcinea », « Tiempo
-      libre », « El hombre y el mar », repris en préfixe des titres des
-      vidéos comme pour l'épisode 1
-- [x] EP3 Q3 : la réponse A, identique à la C dans la première livraison,
-      est corrigée par le client : « Él es simpático y ella es graciosa »
-      (« Il est gentil et elle est drôle ») ; C reste la bonne
+- [x] Titres des épisodes 2 à 6
 - [x] `titleBackground` de chaque épisode pointe vers son image de titre
       (section 6)
 
