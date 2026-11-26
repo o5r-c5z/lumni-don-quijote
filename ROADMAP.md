@@ -186,8 +186,8 @@ vrai navigateur, une fois les fonctionnalités en place.
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
 - [x] Images de l'écran titre des épisodes 1 à 6 :
-      `uploads/episodes/<n>/Titre_EP_0<n>.jpg` (1920 × 1080), tirées de
-      `_Documents/Épisodes/Titres/` ; celle de l'épisode 1 remplace
+      `uploads/episodes/<n>/Titre_EP_0<n>.jpg` (1920 × 1080), copiées de
+      `_Documents/Épisodes/Titres/` (images des épisodes 1 à 20) ; celle de l'épisode 1 remplace
       `Titre_Episode01.jpg`, qui portait encore les logos BIG et Lumni
 - [ ] À recevoir : personnages éventuels
 
@@ -264,13 +264,6 @@ Le `_1` de `Reponse_Q2_1` vient seulement du nom donné lors de l'upload :
 il n'y a qu'une vidéo de réponse par question. Les liens complets (avec
 `?h=…`) sont dans `uploads/episodes/<n>/episode.json` ; le hash est celui
 du lien de gestion de la vidéo (`/manage/videos/<id>/<hash>`).
-
-### Images de titre livrées
-
-Dans `_Documents/Épisodes/Titres/`, les numéros des fichiers 01 à 06 ne
-suivent pas les épisodes : l'épisode affiché sur l'image fait foi (1 →
-`Titre_EP_04`, 2 → `_02`, 3 → `_05`, 4 → `_03`, 5 → `_01`, 6 → `_06`). Les
-fichiers 07 à 20 correspondent à leur épisode.
 
 ### Musique selon l'écran
 
