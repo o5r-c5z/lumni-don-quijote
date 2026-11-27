@@ -185,14 +185,19 @@ vrai navigateur, une fois les fonctionnalités en place.
       parchemin), dans la même PR que le remplacement de leurs références
       dans `src/` et le README, pour que l'app ne charge aucun fichier
       manquant
-- [ ] À recevoir : image de l'écran titre, personnages éventuels
+- [x] Images de l'écran titre des épisodes 1 à 11 :
+      `uploads/episodes/<n>/Titre_EP_<nn>.jpg` (1920 × 1080), copiées de
+      `_Documents/Épisodes/Titres/` (images des épisodes 1 à 20) ; celle de l'épisode 1 remplace
+      `Titre_Episode01.jpg`, qui portait encore les logos BIG et Lumni
+- [ ] À recevoir : personnages éventuels
 
-## 7. Données de l'épisode 1
+## 7. Données des épisodes
 
 Comme dans Biggle, les contenus des épisodes vivent dans `uploads/`,
 gitignoré (`/uploads/` dans `.gitignore`) et servi sous `/uploads` par la
 configuration `development` d'`angular.json` (`npm start`) ; le build de
-production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`.
+production ne le copie pas. Les images de titre y sont aussi, via
+`titleBackground`.
 
 - [x] `uploads/episodes/1/episode.json` avec les liens Vimeo complets
       (`https://player.vimeo.com/video/<id>?h=<hash>`)
@@ -200,9 +205,12 @@ production ne le copie pas. L'image de titre y sera aussi, via `titleBackground`
       « Question N / » ni les lettres des réponses, que l'application
       n'affiche pas
 - [x] Traduction française de chaque réponse (`translation`)
-
-En attendant l'image de titre (section 6), `titleBackground` vaut `""` :
-l'écran titre n'a alors pas d'image de fond.
+- [x] Épisodes 2 à 11 : `uploads/episodes/<n>/episode.json`
+  - Pas de traduction pour les noms propres d'EP2 Q2 (« Pablo López
+    Ruiz »…) : la correction rappelle seulement la réponse
+- [x] Titres des épisodes 2 à 11
+- [x] `titleBackground` de chaque épisode pointe vers son image de titre
+      (section 6)
 
 ## 8. Documentation
 
@@ -224,7 +232,10 @@ serveur de production.
 
 ## Notes
 
-### Vidéos Vimeo de l'épisode 1
+### Vidéos Vimeo des épisodes
+
+Chaque épisode a son dossier Vimeo, « Don Quijote - EPISODE <n> », avec
+les mêmes cinq vidéos, `EPISODE_<nn>_…` ; pour l'épisode 1 :
 
 | Vidéo (nom sur Vimeo)   | Écran                         |
 | ----------------------- | ----------------------------- |
@@ -236,7 +247,8 @@ serveur de production.
 
 Le `_1` de `Reponse_Q2_1` vient seulement du nom donné lors de l'upload :
 il n'y a qu'une vidéo de réponse par question. Les liens complets (avec
-`?h=…`) sont dans `uploads/episodes/1/episode.json`.
+`?h=…`) sont dans `uploads/episodes/<n>/episode.json` ; le hash est celui
+du lien de gestion de la vidéo (`/manage/videos/<id>/<hash>`).
 
 ### Musique selon l'écran
 
